@@ -1,0 +1,188 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "Magary",
+  "projectDescription": "A modern, standalone-first Angular UI component library with glassmorphism design and premium aesthetics",
+  "theme": "palm",
+  "primaryColor": "#55a5c0",
+  "lightColor": "#8975a8",
+  "darkColor": "#b7cbdb",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "installation", "quickstart", "theming"]
+          },
+          {
+            "group": "Components",
+            "pages": [
+              "components/overview",
+              "components/button",
+              "components/speed-dial",
+              "components/split-button",
+              "components/input",
+              "components/checkbox",
+              "components/switch",
+              "components/select",
+              "components/radio",
+              "components/textarea",
+              "components/datepicker",
+              "components/input-number",
+              "components/slider",
+              "components/rating",
+              "components/cascade-select",
+              "components/segmented",
+              "components/card",
+              "components/tabs",
+              "components/accordion",
+              "components/fieldset",
+              "components/toolbar",
+              "components/table",
+              "components/paginator",
+              "components/tree",
+              "components/timeline",
+              "components/organizationchart",
+              "components/dataview",
+              "components/kanban",
+              "components/picklist",
+              "components/orderlist",
+              "components/dialog",
+              "components/tooltip",
+              "components/overlaypanel",
+              "components/confirm-dialog",
+              "components/panelmenu",
+              "components/sidebar",
+              "components/breadcrumb",
+              "components/steps",
+              "components/tieredmenu",
+              "components/contextmenu",
+              "components/menubar",
+              "components/megamenu",
+              "components/slidemenu",
+              "components/image",
+              "components/galleria",
+              "components/carousel",
+              "components/upload",
+              "components/toast",
+              "components/message",
+              "components/avatar",
+              "components/skeleton",
+              "components/divider",
+              "components/tag",
+              "components/grid"
+            ]
+          },
+          {
+            "group": "Services",
+            "pages": ["services/theme-service", "services/toast-service", "services/confirmation-service"]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/styling",
+              "guides/accessibility",
+              "guides/animations",
+              "guides/responsive-design",
+              "guides/drag-and-drop"
+            ]
+          },
+          {
+            "group": "Examples",
+            "pages": [
+              "examples/dashboard",
+              "examples/ecommerce",
+              "examples/logistics"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Core Exports",
+            "pages": ["api/exports"]
+          },
+          {
+            "group": "Interfaces",
+            "pages": ["api/interfaces"]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Standalone-first Angular architecture (v17-21 compatible)",
+    "50+ premium UI components with glassmorphism design",
+    "Native CSS theming with dark mode support",
+    "Built-in accessibility (a11y) with ARIA support",
+    "OnPush change detection for optimal performance",
+    "Drag-and-drop functionality with Atlassian Pragmatic DnD",
+    "Mobile-ready responsive components",
+    "TypeScript-first with full type safety"
+  ],
+  "publicApiSurface": [
+    "MagaryButton",
+    "MagarySpeedDial",
+    "MagarySplitButton",
+    "MagaryInput",
+    "MagaryCheckbox",
+    "MagarySwitch",
+    "MagarySelect",
+    "MagaryRadio",
+    "MagaryRadioGroup",
+    "MagaryTextarea",
+    "MagaryDatepicker",
+    "MagaryInputNumber",
+    "MagarySlider",
+    "MagaryRating",
+    "MagaryCascadeSelect",
+    "MagarySegmented",
+    "MagaryCard",
+    "MagaryTabs",
+    "MagaryTab",
+    "MagaryAccordion",
+    "MagaryAccordionTab",
+    "MagaryFieldset",
+    "MagaryToolbar",
+    "MagaryTable",
+    "MagaryPaginator",
+    "MagaryTree",
+    "MagaryTimeline",
+    "MagaryOrganizationchart",
+    "MagaryDataview",
+    "MagaryKanban",
+    "MagaryPicklist",
+    "MagaryOrderlist",
+    "MagaryDialog",
+    "MagaryTooltip",
+    "MagaryOverlaypanel",
+    "MagaryConfirmDialog",
+    "MagaryPanelmenu",
+    "MagarySidebar",
+    "MagaryBreadcrumb",
+    "MagarySteps",
+    "MagaryTieredmenu",
+    "MagaryContextmenu",
+    "MagaryMenubar",
+    "MagaryMegamenu",
+    "MagarySlidemenu",
+    "MagaryImage",
+    "MagaryGalleria",
+    "MagaryCarousel",
+    "MagaryUpload",
+    "MagaryToast",
+    "MagaryMessage",
+    "MagaryAvatar",
+    "MagarySkeleton",
+    "MagaryDivider",
+    "MagaryTag",
+    "MagaryGrid",
+    "MagaryGridItem",
+    "ThemeService",
+    "ToastService",
+    "ConfirmationService"
+  ]
+}
