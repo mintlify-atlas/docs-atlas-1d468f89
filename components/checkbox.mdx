@@ -1,0 +1,366 @@
+---
+title: 'Checkbox'
+description: 'Binary selection control for enabling or disabling options'
+icon: 'check-square'
+---
+
+## Overview
+
+The Checkbox component allows users to select or deselect options. It supports custom colors, labels, disabled states, and provides a clean, accessible interface.
+
+## Import
+
+```typescript
+import { MagaryCheckbox } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryCheckbox } from 'ng-magary';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagaryCheckbox],
+  template: `
+    <magary-checkbox
+      label="Accept terms and conditions"
+      [(checked)]="accepted"
+      (change)="onAcceptChange($event)"
+    />
+  `
+})
+export class DemoComponent {
+  accepted = false;
+
+  onAcceptChange(checked: boolean) {
+    console.log('Accepted:', checked);
+  }
+}
+```
+
+```html Template
+<magary-checkbox
+  label="Accept terms and conditions"
+  [(checked)]="accepted"
+/>
+```
+</CodeGroup>
+
+## Properties
+
+### Inputs
+
+<ParamField path="checked" type="boolean" default="false" model>
+  Two-way bindable checked state using signal-based model()
+</ParamField>
+
+<ParamField path="label" type="string" default="''">
+  Label text displayed next to the checkbox
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, checkbox is disabled and cannot be toggled
+</ParamField>
+
+<ParamField path="required" type="boolean" default="false">
+  When true, marks the checkbox as required
+</ParamField>
+
+<ParamField path="value" type="unknown" default="null">
+  Value associated with the checkbox (useful in checkbox groups)
+</ParamField>
+
+<ParamField path="color" type="Color" default="'primary'">
+  Color variant of the checkbox
+  
+  Options: `'primary'` | `'success'` | `'danger'` | `'warning'` | `'info'`
+</ParamField>
+
+### Outputs
+
+<ParamField path="change" type="EventEmitter<boolean>">
+  Emitted when the checked state changes. Passes the new checked value.
+</ParamField>
+
+## Examples
+
+### Basic Checkbox
+
+```html
+<magary-checkbox
+  label="Subscribe to newsletter"
+  [(checked)]="subscribed"
+/>
+```
+
+### Without Label
+
+```html
+<magary-checkbox [(checked)]="isChecked" />
+```
+
+### Color Variants
+
+<CodeGroup>
+```html Primary
+<magary-checkbox
+  label="Primary"
+  color="primary"
+  [(checked)]="checked1"
+/>
+```
+
+```html Success
+<magary-checkbox
+  label="Success"
+  color="success"
+  [(checked)]="checked2"
+/>
+```
+
+```html Danger
+<magary-checkbox
+  label="Danger"
+  color="danger"
+  [(checked)]="checked3"
+/>
+```
+
+```html Warning
+<magary-checkbox
+  label="Warning"
+  color="warning"
+  [(checked)]="checked4"
+/>
+```
+
+```html Info
+<magary-checkbox
+  label="Info"
+  color="info"
+  [(checked)]="checked5"
+/>
+```
+</CodeGroup>
+
+### Required Field
+
+```html
+<magary-checkbox
+  label="I agree to the terms and conditions"
+  [(checked)]="agreed"
+  [required]="true"
+/>
+```
+
+### Disabled State
+
+<CodeGroup>
+```html Disabled Unchecked
+<magary-checkbox
+  label="Disabled option"
+  [checked]="false"
+  [disabled]="true"
+/>
+```
+
+```html Disabled Checked
+<magary-checkbox
+  label="Disabled and checked"
+  [checked]="true"
+  [disabled]="true"
+/>
+```
+</CodeGroup>
+
+### With Change Handler
+
+```typescript
+@Component({
+  template: `
+    <magary-checkbox
+      label="Enable notifications"
+      [(checked)]="notificationsEnabled"
+      (change)="onNotificationToggle($event)"
+    />
+  `
+})
+export class SettingsComponent {
+  notificationsEnabled = false;
+
+  onNotificationToggle(enabled: boolean) {
+    console.log('Notifications', enabled ? 'enabled' : 'disabled');
+    this.updateSettings({ notifications: enabled });
+  }
+
+  updateSettings(settings: any) {
+    // API call or state update
+  }
+}
+```
+
+### Checkbox List
+
+```typescript
+@Component({
+  template: `
+    <div class="checkbox-group">
+      <h3>Select features:</h3>
+      @for (feature of features; track feature.id) {
+        <magary-checkbox
+          [label]="feature.name"
+          [(checked)]="feature.selected"
+          [value]="feature.id"
+          (change)="onFeatureToggle(feature, $event)"
+        />
+      }
+    </div>
+  `
+})
+export class FeaturesComponent {
+  features = [
+    { id: 1, name: 'Analytics', selected: false },
+    { id: 2, name: 'Reporting', selected: true },
+    { id: 3, name: 'Exports', selected: false },
+    { id: 4, name: 'API Access', selected: true }
+  ];
+
+  onFeatureToggle(feature: any, checked: boolean) {
+    console.log(`${feature.name}: ${checked}`);
+  }
+}
+```
+
+### Select All Pattern
+
+```typescript
+@Component({
+  template: `
+    <magary-checkbox
+      label="Select All"
+      [(checked)]="selectAll"
+      (change)="onSelectAllChange($event)"
+      color="primary"
+    />
+    <hr>
+    @for (item of items; track item.id) {
+      <magary-checkbox
+        [label]="item.name"
+        [(checked)]="item.selected"
+        (change)="onItemChange()"
+      />
+    }
+  `
+})
+export class SelectAllComponent {
+  selectAll = false;
+  items = [
+    { id: 1, name: 'Item 1', selected: false },
+    { id: 2, name: 'Item 2', selected: false },
+    { id: 3, name: 'Item 3', selected: false }
+  ];
+
+  onSelectAllChange(checked: boolean) {
+    this.items.forEach(item => item.selected = checked);
+  }
+
+  onItemChange() {
+    this.selectAll = this.items.every(item => item.selected);
+  }
+}
+```
+
+### Conditional Enabling
+
+```typescript
+@Component({
+  template: `
+    <magary-checkbox
+      label="Enable advanced options"
+      [(checked)]="advancedEnabled"
+    />
+    
+    <magary-checkbox
+      label="Advanced option 1"
+      [(checked)]="option1"
+      [disabled]="!advancedEnabled"
+    />
+    
+    <magary-checkbox
+      label="Advanced option 2"
+      [(checked)]="option2"
+      [disabled]="!advancedEnabled"
+    />
+  `
+})
+export class ConditionalComponent {
+  advancedEnabled = false;
+  option1 = false;
+  option2 = false;
+}
+```
+
+## Accessibility
+
+The Checkbox component includes comprehensive accessibility features:
+
+- **Keyboard Support**: Space key to toggle
+- **Focus Indicators**: Clear visual focus states
+- **Label Association**: Proper label/input connection
+- **ARIA Attributes**: Checked and disabled states communicated to screen readers
+- **Semantic HTML**: Uses native checkbox input
+
+### Keyboard Support
+
+- **Space**: Toggle checked state
+- **Tab**: Move focus to/from checkbox
+
+### Focus Management
+
+The component tracks and displays focus state:
+- Visual focus ring when focused
+- Focus state maintained during keyboard navigation
+- Disabled checkboxes cannot receive focus
+
+## State Management
+
+The checkbox maintains its state using Angular signals:
+
+```typescript
+// Internal state signals
+checked = model<boolean>(false);  // Two-way bindable
+focused = signal(false);          // Focus state
+disabled = input<boolean>(false); // Disabled state
+```
+
+### Computed Classes
+
+The component automatically applies CSS classes based on state:
+
+```typescript
+containerClasses = computed(() => {
+  const classes = ['magary-checkbox-container'];
+  if (this.disabled()) classes.push('checkbox-disabled');
+  if (this.checked()) classes.push('checkbox-checked');
+  if (this.focused()) classes.push('checkbox-focused');
+  classes.push(`checkbox-${this.color()}`);
+  return classes.join(' ');
+});
+```
+
+## Component Details
+
+- **Selector**: `magary-checkbox`
+- **Source**: `/home/daytona/workspace/source/projects/ng-magary/src/lib/Form/checkbox/checkbox.ts`
+- **Standalone**: Yes (with CommonModule, FormsModule)
+- **Change Detection**: OnPush
+
+## Type Definitions
+
+```typescript
+type Color = 'primary' | 'success' | 'danger' | 'warning' | 'info';
+```

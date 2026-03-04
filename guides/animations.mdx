@@ -1,0 +1,603 @@
+---
+title: Animations
+description: Learn how Magary uses Angular animations to create smooth, performant transitions and effects
+---
+
+## Overview
+
+Magary leverages `@angular/animations` to provide smooth, performant animations across all components. Animations enhance user experience by providing visual feedback and smooth transitions.
+
+## Angular Animations Setup
+
+Animations are built into Magary components, but you need to enable them in your application:
+
+```typescript
+import { provideAnimations } from '@angular/platform-browser/animations';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAnimations(),
+    // other providers
+  ]
+};
+```
+
+<Note>
+If you prefer no animations, use `provideNoopAnimations()` instead.
+</Note>
+
+## Component Animations
+
+Magary components use various animation patterns for different interactions.
+
+### Dialog Animations
+
+Dialogs use scale and fade animations for entry/exit:
+
+```typescript
+@Component({
+  selector: 'magary-dialog',
+  animations: [
+    trigger('maskAnimation', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('300ms cubic-bezier(0, 0, 0.2, 1)', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [
+        animate('200ms cubic-bezier(0, 0, 0.2, 1)', style({ opacity: 0 })),
+      ]),
+    ]),
+    trigger('dialogAnimation', [
+      transition(':enter', [
+        style({ transform: 'scale(0.9)', opacity: 0 }),
+        animate(
+          '300ms cubic-bezier(0.25, 0.8, 0.25, 1)',
+          style({ transform: 'scale(1)', opacity: 1 }),
+        ),
+      ]),
+      transition(':leave', [
+        animate(
+          '200ms cubic-bezier(0.25, 0.8, 0.25, 1)',
+          style({ transform: 'scale(0.9)', opacity: 0 }),
+        ),
+      ]),
+    ]),
+  ],
+})
+export class MagaryDialog { }
+```
+
+**Result:**
+- Backdrop fades in/out with easing
+- Dialog scales up from 90% to 100% while fading in
+- Exit animation is faster (200ms vs 300ms) for snappy feel
+
+### Accordion Animations
+
+Accordions use height transitions for smooth expand/collapse:
+
+```typescript
+@Component({
+  selector: 'magary-accordion-tab',
+  animations: [
+    trigger('tabContent', [
+      state('hidden', style({
+        height: '0',
+        overflow: 'hidden',
+        paddingTop: '0',
+        paddingBottom: '0',
+        opacity: '0',
+      })),
+      state('visible', style({
+        height: '*',          // Calculates actual height
+        overflow: 'hidden',
+        paddingTop: '*',      // Restores original padding
+        paddingBottom: '*',
+        opacity: '1',
+      })),
+      transition('hidden <=> visible', [
+        animate('0.3s cubic-bezier(0.87, 0, 0.13, 1)'),
+      ]),
+    ]),
+  ],
+})
+export class MagaryAccordionTab { }
+```
+
+**Result:**
+- Content smoothly expands/collapses
+- Padding animates with content
+- Uses custom easing for natural motion
+
+### Toast Notifications
+
+Toasts slide in and fade out:
+
+```typescript
+trigger('toastAnimation', [
+  transition(':enter', [
+    style({ transform: 'translateX(100%)', opacity: 0 }),
+    animate(
+      '300ms cubic-bezier(0.25, 0.8, 0.25, 1)',
+      style({ transform: 'translateX(0)', opacity: 1 })
+    ),
+  ]),
+  transition(':leave', [
+    animate(
+      '200ms cubic-bezier(0.25, 0.8, 0.25, 1)',
+      style({ transform: 'translateX(100%)', opacity: 0 })
+    ),
+  ]),
+])
+```
+
+### Message Component
+
+Messages can be dismissed with a slide animation:
+
+```typescript
+trigger('messageAnimation', [
+  transition(':enter', [
+    style({ opacity: 0, transform: 'scaleY(0.8)' }),
+    animate(
+      '200ms cubic-bezier(0.25, 0.8, 0.25, 1)',
+      style({ opacity: 1, transform: 'scaleY(1)' })
+    ),
+  ]),
+  transition(':leave', [
+    animate(
+      '150ms cubic-bezier(0.25, 0.8, 0.25, 1)',
+      style({ opacity: 0, transform: 'scaleY(0.8)' })
+    ),
+  ]),
+])
+```
+
+### Fieldset (Collapsible)
+
+Fieldsets use similar expand/collapse animations:
+
+```typescript
+trigger('fieldsetContent', [
+  state('hidden', style({
+    height: '0',
+    overflow: 'hidden',
+  })),
+  state('visible', style({
+    height: '*',
+    overflow: 'visible',
+  })),
+  transition('hidden <=> visible', [
+    animate('250ms ease-in-out'),
+  ]),
+])
+```
+
+## Easing Functions
+
+Magary uses carefully selected easing functions for natural motion:
+
+### Material Design Easing
+
+```typescript
+// Standard easing for most animations
+'cubic-bezier(0.25, 0.8, 0.25, 1)'
+
+// Deceleration - element entering the screen
+'cubic-bezier(0, 0, 0.2, 1)'
+
+// Acceleration - element leaving the screen  
+'cubic-bezier(0.4, 0, 1, 1)'
+
+// Sharp - quick attention-grabbing
+'cubic-bezier(0.4, 0, 0.6, 1)'
+```
+
+### Custom Easing
+
+```typescript
+// Smooth bounce effect
+'cubic-bezier(0.87, 0, 0.13, 1)'
+
+// Linear
+'linear'
+
+// CSS named functions
+'ease-in-out'
+'ease-in'
+'ease-out'
+```
+
+## CSS Animations
+
+Some components use CSS animations for continuous effects:
+
+### Loading Spinner
+
+```css
+.spin {
+  animation: pi-spin 1s linear infinite;
+}
+
+@keyframes pi-spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+```
+
+Usage:
+```html
+<lucide-icon name="loader-2" class="spin"></lucide-icon>
+```
+
+### Pulse Effect
+
+```css
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+```
+
+### Skeleton Loading
+
+```css
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-200) 0px,
+    var(--surface-100) 40px,
+    var(--surface-200) 80px
+  );
+  background-size: 200px 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+```
+
+## Transition Classes
+
+Magary components use CSS transitions for hover effects:
+
+### Button Transitions
+
+```css
+.p-button {
+  transition: background-color 0.2s, 
+              color 0.2s, 
+              box-shadow 0.2s;
+}
+
+.p-button:hover {
+  background-color: var(--primary-600);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+```
+
+### Form Input Transitions
+
+```css
+.magary-input {
+  transition: border-color 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+.magary-input:focus {
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+}
+```
+
+## Custom Animations
+
+You can create custom animations for Magary components:
+
+### Slide-In Sidebar
+
+```typescript
+import { trigger, transition, style, animate } from '@angular/animations';
+
+@Component({
+  template: `
+    <magary-sidebar [@slideIn]="isOpen">
+      <!-- Sidebar content -->
+    </magary-sidebar>
+  `,
+  animations: [
+    trigger('slideIn', [
+      transition(':enter', [
+        style({ transform: 'translateX(-100%)' }),
+        animate('300ms ease-out', style({ transform: 'translateX(0)' }))
+      ]),
+      transition(':leave', [
+        animate('250ms ease-in', style({ transform: 'translateX(-100%)' }))
+      ])
+    ])
+  ]
+})
+```
+
+### Stagger Animation
+
+Animate list items with a stagger effect:
+
+```typescript
+import { trigger, transition, query, stagger, animate, style } from '@angular/animations';
+
+@Component({
+  animations: [
+    trigger('listAnimation', [
+      transition('* => *', [
+        query(':enter', [
+          style({ opacity: 0, transform: 'translateY(20px)' }),
+          stagger(50, [
+            animate('300ms ease-out', 
+              style({ opacity: 1, transform: 'translateY(0)' })
+            )
+          ])
+        ], { optional: true })
+      ])
+    ])
+  ]
+})
+export class MyListComponent {
+  items = ['Item 1', 'Item 2', 'Item 3'];
+}
+```
+
+```html
+<div [@listAnimation]="items.length">
+  @for (item of items; track item) {
+    <magary-card>{{ item }}</magary-card>
+  }
+</div>
+```
+
+## Performance Considerations
+
+### Use Transform and Opacity
+
+For best performance, animate `transform` and `opacity` properties:
+
+```css
+/* Good - GPU accelerated */
+.animated {
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.animated:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+/* Avoid - causes layout recalculation */
+.slow {
+  transition: width 0.3s, height 0.3s;
+}
+```
+
+### Will-Change Property
+
+Hint to browser about upcoming animations:
+
+```css
+.dialog {
+  will-change: transform, opacity;
+}
+
+/* Remove after animation */
+.dialog.animating {
+  will-change: transform, opacity;
+}
+.dialog.static {
+  will-change: auto;
+}
+```
+
+### Reduce Motion
+
+Respect user preferences:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+<Warning>
+Never disable animations completely in `prefers-reduced-motion`. Use very short durations instead to maintain functionality.
+</Warning>
+
+## Animation States
+
+Track animation state for complex interactions:
+
+```typescript
+import { AnimationEvent } from '@angular/animations';
+
+@Component({
+  template: `
+    <div [@dialogAnimation]="visible() ? 'visible' : 'hidden'"
+         (@dialogAnimation.start)="onAnimationStart($event)"
+         (@dialogAnimation.done)="onAnimationDone($event)">
+      <!-- Dialog content -->
+    </div>
+  `
+})
+export class MyDialog {
+  visible = signal(false);
+  
+  onAnimationStart(event: AnimationEvent) {
+    console.log('Animation started:', event.toState);
+  }
+  
+  onAnimationDone(event: AnimationEvent) {
+    console.log('Animation completed:', event.toState);
+    if (event.toState === 'hidden') {
+      // Clean up after close animation
+    }
+  }
+}
+```
+
+## Best Practices
+
+<Steps>
+  <Step title="Keep Animations Short">
+    Most UI animations should be 200-400ms. Longer animations feel sluggish.
+    
+    ```typescript
+    // Good - snappy
+    animate('250ms ease-out')
+    
+    // Too slow
+    animate('1000ms ease-out')
+    ```
+  </Step>
+  
+  <Step title="Use Appropriate Easing">
+    - **Entering elements:** Deceleration easing (slow down at end)
+    - **Exiting elements:** Acceleration easing (speed up at end)
+    - **Attention grabbing:** Sharp easing
+    - **Most interactions:** Standard easing
+  </Step>
+  
+  <Step title="Exit Faster than Enter">
+    Users are more patient with entering elements than exiting ones.
+    
+    ```typescript
+    transition(':enter', [
+      animate('300ms')  // Enter
+    ]),
+    transition(':leave', [
+      animate('200ms')  // Exit - faster
+    ])
+    ```
+  </Step>
+  
+  <Step title="Provide Visual Feedback">
+    Animate state changes to provide feedback:
+    
+    ```html
+    <magary-button [loading]="isSubmitting">
+      @if (isSubmitting) {
+        <lucide-icon name="loader-2" class="spin"></lucide-icon>
+      }
+      Submit
+    </magary-button>
+    ```
+  </Step>
+  
+  <Step title="Test Performance">
+    Monitor animation performance in DevTools:
+    - Open Chrome DevTools
+    - Go to Performance tab
+    - Record while triggering animations
+    - Look for smooth 60fps
+  </Step>
+</Steps>
+
+## Common Animation Patterns
+
+### Fade
+
+```typescript
+trigger('fade', [
+  transition(':enter', [
+    style({ opacity: 0 }),
+    animate('200ms', style({ opacity: 1 }))
+  ]),
+  transition(':leave', [
+    animate('200ms', style({ opacity: 0 }))
+  ])
+])
+```
+
+### Slide
+
+```typescript
+trigger('slideDown', [
+  transition(':enter', [
+    style({ height: 0, overflow: 'hidden' }),
+    animate('300ms ease-out', style({ height: '*' }))
+  ]),
+  transition(':leave', [
+    animate('250ms ease-in', style({ height: 0 }))
+  ])
+])
+```
+
+### Scale
+
+```typescript
+trigger('scale', [
+  transition(':enter', [
+    style({ transform: 'scale(0)' }),
+    animate('200ms cubic-bezier(0.25, 0.8, 0.25, 1)', 
+      style({ transform: 'scale(1)' })
+    )
+  ])
+])
+```
+
+### Rotate
+
+```typescript
+trigger('rotate', [
+  transition('* => *', [
+    animate('300ms', style({ transform: 'rotate(180deg)' }))
+  ])
+])
+```
+
+<Tip>
+Combine multiple animation properties for richer effects. For example, fade + scale creates a "pop-in" effect.
+</Tip>
+
+## Debugging Animations
+
+### Enable Angular Animation Debugging
+
+```typescript
+import { provideAnimations } from '@angular/platform-browser/animations';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAnimations(),
+  ]
+};
+```
+
+### Chrome DevTools
+
+1. Open DevTools
+2. Go to "More tools" → "Animations"
+3. Trigger your animation
+4. Inspect timing, easing, and playback
+
+## Next Steps
+
+- Learn about [Accessibility](/guides/accessibility) in animations
+- Explore [Responsive Design](/guides/responsive-design)
+- See [Styling & Theming](/guides/styling)

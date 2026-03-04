@@ -1,0 +1,118 @@
+---
+title: 'Tooltip'
+description: 'Display informative text on hover or focus'
+---
+
+## Overview
+
+The Tooltip component displays helpful information when users hover over or focus on an element. It's implemented as a directive that can be applied to any element.
+
+## Import
+
+```typescript
+import { MagaryTooltip } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```html Component
+<button [magaryTooltip]="'Click to submit'">Submit</button>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryTooltip } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryTooltip],
+  template: `
+    <button [magaryTooltip]="'Click to submit'">
+      Submit
+    </button>
+  `
+})
+export class ExampleComponent {}
+```
+</CodeGroup>
+
+## Positioning
+
+<CodeGroup>
+```html Top (Default)
+<button 
+  [magaryTooltip]="'Tooltip on top'"
+  [tooltipPosition]="'top'">
+  Hover me
+</button>
+```
+
+```html Bottom
+<button 
+  [magaryTooltip]="'Tooltip on bottom'"
+  [tooltipPosition]="'bottom'">
+  Hover me
+</button>
+```
+
+```html Left
+<button 
+  [magaryTooltip]="'Tooltip on left'"
+  [tooltipPosition]="'left'">
+  Hover me
+</button>
+```
+
+```html Right
+<button 
+  [magaryTooltip]="'Tooltip on right'"
+  [tooltipPosition]="'right'">
+  Hover me
+</button>
+```
+</CodeGroup>
+
+## Disabled State
+
+```html
+<button 
+  [magaryTooltip]="'This won\'t show'"
+  [tooltipDisabled]="true">
+  No tooltip
+</button>
+```
+
+## Input Properties
+
+<ParamField path="magaryTooltip" type="string">
+  The text content to display in the tooltip
+</ParamField>
+
+<ParamField path="tooltipPosition" type="'top' | 'bottom' | 'left' | 'right'" default="'top'">
+  Position of the tooltip relative to the target element
+</ParamField>
+
+<ParamField path="tooltipDisabled" type="boolean" default="false">
+  Whether the tooltip is disabled
+</ParamField>
+
+## Features
+
+- **Auto-positioning**: Automatically adjusts position to stay within viewport
+- **Keyboard accessible**: Shows on focus, hides on blur or Escape key
+- **ARIA support**: Proper `aria-describedby` relationship
+- **Smart alignment**: Prevents overflow with fallback positioning
+- **Event listeners**: Auto-cleanup on scroll, resize, and escape
+
+## Accessibility
+
+- Uses `role="tooltip"` for screen readers
+- Connects to host element via `aria-describedby`
+- Responds to keyboard focus events
+- Dismissible with Escape key
+
+## Browser Support
+
+Supports all modern browsers with proper positioning and viewport detection.

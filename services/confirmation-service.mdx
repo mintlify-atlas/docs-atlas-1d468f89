@@ -1,0 +1,439 @@
+---
+title: Confirmation Service
+description: Display confirmation dialogs programmatically for user actions
+icon: circle-question
+---
+
+The `MagaryConfirmationService` provides a programmatic way to display confirmation dialogs. It uses RxJS observables to manage confirmation state and callbacks for accept/reject actions.
+
+## Injection
+
+<CodeGroup>
+
+```typescript Component Injection
+import { Component, inject } from '@angular/core';
+import { MagaryConfirmationService } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  template: `
+    <button (click)="confirmDelete()">Delete Item</button>
+  `
+})
+export class ExampleComponent {
+  confirmationService = inject(MagaryConfirmationService);
+
+  confirmDelete() {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete this item?',
+      header: 'Confirm Delete',
+      accept: () => {
+        // Delete logic
+      }
+    });
+  }
+}
+```
+
+```typescript Constructor Injection
+import { Component } from '@angular/core';
+import { MagaryConfirmationService } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  template: `...`
+})
+export class ExampleComponent {
+  constructor(private confirmationService: MagaryConfirmationService) {}
+}
+```
+
+</CodeGroup>
+
+## Properties
+
+### requireConfirmation$
+
+Observable that emits when a confirmation dialog should be displayed.
+
+```typescript
+readonly requireConfirmation$: Observable<Confirmation | null>
+```
+
+**Example:**
+
+```typescript
+this.confirmationService.requireConfirmation$.subscribe(confirmation => {
+  if (confirmation) {
+    console.log('Confirmation requested:', confirmation.message);
+  }
+});
+```
+
+### acceptConfirmation$
+
+Observable that emits when a confirmation is accepted.
+
+```typescript
+readonly acceptConfirmation$: Observable<Confirmation | null>
+```
+
+## Methods
+
+### confirm()
+
+Displays a confirmation dialog with the specified configuration.
+
+<ParamField path="confirmation" type="Confirmation" required>
+  The confirmation configuration object
+</ParamField>
+
+<ParamField path="confirmation.message" type="string">
+  The main message to display in the confirmation dialog
+</ParamField>
+
+<ParamField path="confirmation.header" type="string">
+  The header/title of the confirmation dialog
+</ParamField>
+
+<ParamField path="confirmation.icon" type="string">
+  Custom icon to display in the dialog
+</ParamField>
+
+<ParamField path="confirmation.key" type="string">
+  Unique key to target a specific confirm dialog component
+</ParamField>
+
+<ParamField path="confirmation.accept" type="() => void">
+  Callback function to execute when the user accepts
+</ParamField>
+
+<ParamField path="confirmation.reject" type="() => void">
+  Callback function to execute when the user rejects
+</ParamField>
+
+<ParamField path="confirmation.acceptLabel" type="string">
+  Custom label for the accept button. Default: 'Yes'
+</ParamField>
+
+<ParamField path="confirmation.rejectLabel" type="string">
+  Custom label for the reject button. Default: 'No'
+</ParamField>
+
+<ParamField path="confirmation.acceptVisible" type="boolean">
+  Whether to show the accept button. Default: true
+</ParamField>
+
+<ParamField path="confirmation.rejectVisible" type="boolean">
+  Whether to show the reject button. Default: true
+</ParamField>
+
+<ParamField path="confirmation.acceptButtonStyleClass" type="string">
+  Custom CSS class for the accept button
+</ParamField>
+
+<ParamField path="confirmation.rejectButtonStyleClass" type="string">
+  Custom CSS class for the reject button
+</ParamField>
+
+<ParamField path="confirmation.style" type="Record<string, unknown> | null">
+  Inline styles to apply to the dialog
+</ParamField>
+
+<ParamField path="confirmation.styleClass" type="string">
+  Custom CSS class for the dialog
+</ParamField>
+
+<ParamField path="confirmation.defaultFocus" type="'accept' | 'reject' | 'none'">
+  Which button should receive focus by default
+</ParamField>
+
+**Returns:** `MagaryConfirmationService` (for method chaining)
+
+**Example:**
+
+```typescript
+this.confirmationService.confirm({
+  message: 'Are you sure you want to proceed?',
+  header: 'Confirmation',
+  accept: () => {
+    console.log('Accepted');
+  },
+  reject: () => {
+    console.log('Rejected');
+  }
+});
+```
+
+### close()
+
+Programmatically closes the confirmation dialog.
+
+**Parameters:** None
+
+**Returns:** `MagaryConfirmationService` (for method chaining)
+
+**Example:**
+
+```typescript
+this.confirmationService.close();
+```
+
+### onAccept()
+
+Notifies observers that a confirmation was accepted. This is typically called internally by the confirm dialog component.
+
+**Parameters:** None
+
+**Returns:** `void`
+
+## Usage Examples
+
+<CodeGroup>
+
+```typescript Delete Confirmation
+import { Component, inject } from '@angular/core';
+import { MagaryConfirmationService } from 'ng-magary';
+
+@Component({
+  selector: 'app-user-list',
+  template: `
+    <button (click)="deleteUser(123)">Delete User</button>
+  `
+})
+export class UserListComponent {
+  confirmationService = inject(MagaryConfirmationService);
+
+  deleteUser(userId: number) {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete this user?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        // Call API to delete user
+        console.log('Deleting user:', userId);
+        this.performDelete(userId);
+      },
+      reject: () => {
+        console.log('Delete cancelled');
+      }
+    });
+  }
+
+  performDelete(userId: number) {
+    // Actual delete logic
+  }
+}
+```
+
+```typescript Custom Button Labels
+import { Component, inject } from '@angular/core';
+import { MagaryConfirmationService } from 'ng-magary';
+
+@Component({
+  selector: 'app-file-manager',
+  template: `...`
+})
+export class FileManagerComponent {
+  confirmationService = inject(MagaryConfirmationService);
+
+  confirmSave() {
+    this.confirmationService.confirm({
+      message: 'Do you want to save your changes?',
+      header: 'Unsaved Changes',
+      acceptLabel: 'Save',
+      rejectLabel: 'Discard',
+      accept: () => {
+        this.saveChanges();
+      },
+      reject: () => {
+        this.discardChanges();
+      }
+    });
+  }
+
+  saveChanges() {
+    console.log('Changes saved');
+  }
+
+  discardChanges() {
+    console.log('Changes discarded');
+  }
+}
+```
+
+```typescript Custom Styling
+import { Component, inject } from '@angular/core';
+import { MagaryConfirmationService } from 'ng-magary';
+
+@Component({
+  selector: 'app-danger-zone',
+  template: `...`
+})
+export class DangerZoneComponent {
+  confirmationService = inject(MagaryConfirmationService);
+
+  dangerousAction() {
+    this.confirmationService.confirm({
+      message: 'This action cannot be undone. Are you absolutely sure?',
+      header: 'Danger Zone',
+      acceptLabel: 'Yes, delete everything',
+      rejectLabel: 'Cancel',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-text',
+      defaultFocus: 'reject',
+      accept: () => {
+        this.performDangerousAction();
+      }
+    });
+  }
+
+  performDangerousAction() {
+    console.log('Dangerous action performed');
+  }
+}
+```
+
+```typescript Conditional Buttons
+import { Component, inject } from '@angular/core';
+import { MagaryConfirmationService } from 'ng-magary';
+
+@Component({
+  selector: 'app-notification',
+  template: `...`
+})
+export class NotificationComponent {
+  confirmationService = inject(MagaryConfirmationService);
+
+  showInfoOnly() {
+    this.confirmationService.confirm({
+      message: 'This is an informational message.',
+      header: 'Information',
+      rejectVisible: false, // Hide reject button
+      acceptLabel: 'OK',
+      accept: () => {
+        console.log('User acknowledged');
+      }
+    });
+  }
+}
+```
+
+```typescript Multiple Dialogs with Keys
+import { Component, inject } from '@angular/core';
+import { MagaryConfirmationService } from 'ng-magary';
+
+@Component({
+  selector: 'app-multi-confirm',
+  template: `
+    <!-- Multiple confirm dialog components -->
+    <mag-confirm-dialog key="delete"></mag-confirm-dialog>
+    <mag-confirm-dialog key="save"></mag-confirm-dialog>
+  `
+})
+export class MultiConfirmComponent {
+  confirmationService = inject(MagaryConfirmationService);
+
+  confirmDelete() {
+    this.confirmationService.confirm({
+      key: 'delete',
+      message: 'Delete this item?',
+      header: 'Delete'
+    });
+  }
+
+  confirmSave() {
+    this.confirmationService.confirm({
+      key: 'save',
+      message: 'Save your changes?',
+      header: 'Save'
+    });
+  }
+}
+```
+
+```typescript Programmatic Close
+import { Component, inject } from '@angular/core';
+import { MagaryConfirmationService } from 'ng-magary';
+
+@Component({
+  selector: 'app-timeout-confirm',
+  template: `...`
+})
+export class TimeoutConfirmComponent {
+  confirmationService = inject(MagaryConfirmationService);
+
+  showTimedConfirmation() {
+    this.confirmationService.confirm({
+      message: 'This dialog will close in 5 seconds',
+      header: 'Timed Confirmation'
+    });
+
+    // Auto-close after 5 seconds
+    setTimeout(() => {
+      this.confirmationService.close();
+    }, 5000);
+  }
+}
+```
+
+</CodeGroup>
+
+## Dialog Display
+
+To display confirmation dialogs in your application, you need to include the `mag-confirm-dialog` component in your template:
+
+```html
+<mag-confirm-dialog></mag-confirm-dialog>
+```
+
+Typically, this is added to your root component (e.g., `app.component.html`) so confirmations can be triggered from anywhere in your application.
+
+### Multiple Dialog Instances
+
+You can have multiple confirmation dialog instances using the `key` property:
+
+```html
+<mag-confirm-dialog key="global"></mag-confirm-dialog>
+<mag-confirm-dialog key="delete"></mag-confirm-dialog>
+```
+
+```typescript
+// Target specific dialog
+this.confirmationService.confirm({
+  key: 'delete',
+  message: 'Delete this item?'
+});
+```
+
+## Type Definitions
+
+```typescript
+export interface Confirmation {
+  message?: string;
+  key?: string;
+  icon?: string;
+  header?: string;
+  accept?: () => void;
+  reject?: () => void;
+  acceptLabel?: string;
+  rejectLabel?: string;
+  acceptVisible?: boolean;
+  rejectVisible?: boolean;
+  acceptButtonStyleClass?: string;
+  rejectButtonStyleClass?: string;
+  style?: Record<string, unknown> | null;
+  styleClass?: string;
+  defaultFocus?: 'accept' | 'reject' | 'none';
+}
+```
+
+## Method Chaining
+
+The `confirm()` and `close()` methods return the service instance, allowing for method chaining:
+
+```typescript
+this.confirmationService
+  .confirm({ message: 'First confirmation' })
+  .close();
+```

@@ -1,0 +1,620 @@
+---
+title: "Dashboard Example"
+description: "Build a complete analytics dashboard with KPI cards, tables, and hierarchical views"
+---
+
+## Overview
+
+This example demonstrates how to build a comprehensive analytics dashboard using Magary components. The dashboard includes KPI summary cards, tabbed data sections, hierarchical organization charts, and drill-down capabilities.
+
+<Info>
+  **Time to integrate**: Less than 1 day
+  
+  This recipe shows you how to combine multiple Magary components to create a production-ready analytics interface.
+</Info>
+
+## Key Features
+
+- KPI cards with trend indicators
+- Tabbed navigation for different data views
+- Interactive data tables
+- Tree and organization chart visualizations
+- Overlay panels for quick drill-down details
+- Filter controls with selects
+
+## Components Used
+
+<CardGroup cols={2}>
+  <Card title="MagaryCard" icon="rectangle-wide">
+    Container for KPI metrics
+  </Card>
+  <Card title="MagaryTabs" icon="folder">
+    Organize data into logical sections
+  </Card>
+  <Card title="MagaryTable" icon="table">
+    Display tabular data
+  </Card>
+  <Card title="MagaryTree" icon="sitemap">
+    Show hierarchical data structures
+  </Card>
+  <Card title="MagaryOrganizationChart" icon="diagram-project">
+    Visualize organizational hierarchies
+  </Card>
+  <Card title="MagaryOverlayPanel" icon="window-restore">
+    Quick detail views
+  </Card>
+</CardGroup>
+
+## Project Structure
+
+Organize your dashboard feature with this recommended structure:
+
+```txt
+src/app/dashboard/
+  dashboard.page.ts
+  dashboard.page.html
+  dashboard.page.scss
+  dashboard.models.ts
+  dashboard.repository.ts
+```
+
+## Data Models
+
+Define your domain models for type safety:
+
+```typescript dashboard.models.ts
+export interface Kpi {
+  id: string;
+  label: string;
+  value: number;
+  delta: number;
+  trend: 'UP' | 'DOWN' | 'STABLE';
+}
+
+export interface DashboardRow {
+  name: string;
+  owner: string;
+  status: 'OK' | 'WARN' | 'CRITICAL';
+  updatedAt: string;
+}
+
+export interface OrgNode {
+  label: string;
+  type: string;
+  styleClass: string;
+  expanded: boolean;
+  data: { name: string; avatar: string };
+  children?: OrgNode[];
+}
+```
+
+## Component Implementation
+
+<CodeGroup>
+
+```typescript dashboard.page.ts
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  MagaryCard,
+  MagaryTabs,
+  MagaryTab,
+  MagaryTable,
+  MagaryTree,
+  MagaryOrganizationChart,
+  MagaryOverlayPanel,
+  MagarySelect,
+  MagaryButton,
+} from 'ng-magary';
+import { Kpi, DashboardRow, OrgNode } from './dashboard.models';
+
+@Component({
+  selector: 'app-dashboard-page',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MagaryCard,
+    MagaryTabs,
+    MagaryTab,
+    MagaryTable,
+    MagaryTree,
+    MagaryOrganizationChart,
+    MagaryOverlayPanel,
+    MagarySelect,
+    MagaryButton,
+  ],
+  templateUrl: './dashboard.page.html',
+  styleUrls: ['./dashboard.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class DashboardPage {
+  // KPI metrics
+  readonly kpis = signal<Kpi[]>([
+    { id: '1', label: 'Revenue', value: 125000, delta: 12.5, trend: 'UP' },
+    { id: '2', label: 'Active Users', value: 8432, delta: -3.2, trend: 'DOWN' },
+    { id: '3', label: 'Conversion Rate', value: 3.8, delta: 0.5, trend: 'UP' },
+    { id: '4', label: 'Avg Session', value: 4.2, delta: 0, trend: 'STABLE' },
+  ]);
+
+  // Table data
+  readonly dashboardRows = signal<DashboardRow[]>([
+    { name: 'Project Alpha', owner: 'John Doe', status: 'OK', updatedAt: '2026-03-04' },
+    { name: 'Project Beta', owner: 'Jane Smith', status: 'WARN', updatedAt: '2026-03-03' },
+    { name: 'Project Gamma', owner: 'Bob Wilson', status: 'CRITICAL', updatedAt: '2026-03-02' },
+  ]);
+
+  // Organization hierarchy
+  readonly orgData = signal<OrgNode[]>([
+    {
+      label: 'CEO',
+      type: 'person',
+      styleClass: 'p-person',
+      expanded: true,
+      data: { name: 'Sarah Johnson', avatar: 'assets/avatar-ceo.png' },
+      children: [
+        {
+          label: 'CTO',
+          type: 'person',
+          styleClass: 'p-person',
+          expanded: true,
+          data: { name: 'Mike Chen', avatar: 'assets/avatar-cto.png' },
+          children: [
+            {
+              label: 'Engineering',
+              type: 'department',
+              styleClass: 'p-department',
+              expanded: false,
+              data: { name: 'Engineering Team', avatar: '' },
+            },
+          ],
+        },
+        {
+          label: 'CFO',
+          type: 'person',
+          styleClass: 'p-person',
+          expanded: true,
+          data: { name: 'Lisa Park', avatar: 'assets/avatar-cfo.png' },
+        },
+      ],
+    },
+  ]);
+
+  // Selected filters
+  readonly selectedPeriod = signal('month');
+  readonly selectedRegion = signal('all');
+
+  // Overlay state
+  readonly overlayVisible = signal(false);
+  readonly selectedKpi = signal<Kpi | null>(null);
+
+  // Filter options
+  readonly periodOptions = [
+    { label: 'Last 7 Days', value: 'week' },
+    { label: 'Last 30 Days', value: 'month' },
+    { label: 'Last Quarter', value: 'quarter' },
+    { label: 'Last Year', value: 'year' },
+  ];
+
+  readonly regionOptions = [
+    { label: 'All Regions', value: 'all' },
+    { label: 'North America', value: 'na' },
+    { label: 'Europe', value: 'eu' },
+    { label: 'Asia Pacific', value: 'apac' },
+  ];
+
+  showKpiDetails(kpi: Kpi, event: Event): void {
+    this.selectedKpi.set(kpi);
+    this.overlayVisible.set(true);
+  }
+
+  getTrendIcon(trend: Kpi['trend']): string {
+    switch (trend) {
+      case 'UP': return 'pi pi-arrow-up';
+      case 'DOWN': return 'pi pi-arrow-down';
+      case 'STABLE': return 'pi pi-minus';
+    }
+  }
+
+  getStatusSeverity(status: DashboardRow['status']): string {
+    switch (status) {
+      case 'OK': return 'success';
+      case 'WARN': return 'warning';
+      case 'CRITICAL': return 'danger';
+    }
+  }
+}
+```
+
+```html dashboard.page.html
+<div class="dashboard-container">
+  <!-- Header with filters -->
+  <div class="dashboard-header">
+    <h1>Analytics Dashboard</h1>
+    <div class="filters">
+      <magary-select
+        [options]="periodOptions"
+        [(ngModel)]="selectedPeriod"
+        placeholder="Select period"
+      />
+      <magary-select
+        [options]="regionOptions"
+        [(ngModel)]="selectedRegion"
+        placeholder="Select region"
+      />
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    @for (kpi of kpis(); track kpi.id) {
+      <magary-card
+        class="kpi-card"
+        (click)="showKpiDetails(kpi, $event)"
+      >
+        <div class="kpi-content">
+          <div class="kpi-header">
+            <span class="kpi-label">{{ kpi.label }}</span>
+            <i [class]="getTrendIcon(kpi.trend)" [class.trend-up]="kpi.trend === 'UP'" [class.trend-down]="kpi.trend === 'DOWN'"></i>
+          </div>
+          <div class="kpi-value">{{ kpi.value | number }}</div>
+          <div class="kpi-delta" [class.positive]="kpi.delta > 0" [class.negative]="kpi.delta < 0">
+            {{ kpi.delta > 0 ? '+' : '' }}{{ kpi.delta }}%
+          </div>
+        </div>
+      </magary-card>
+    }
+  </div>
+
+  <!-- Tabbed Content -->
+  <magary-tabs>
+    <magary-tab header="Data Table">
+      <magary-table
+        [value]="dashboardRows()"
+        [paginator]="true"
+        [rows]="10"
+        responsiveLayout="scroll"
+      >
+        <ng-template #header>
+          <tr>
+            <th>Project Name</th>
+            <th>Owner</th>
+            <th>Status</th>
+            <th>Last Updated</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-row>
+          <tr>
+            <td>{{ row.name }}</td>
+            <td>{{ row.owner }}</td>
+            <td>
+              <span class="status-badge" [attr.data-severity]="getStatusSeverity(row.status)">
+                {{ row.status }}
+              </span>
+            </td>
+            <td>{{ row.updatedAt }}</td>
+          </tr>
+        </ng-template>
+      </magary-table>
+    </magary-tab>
+
+    <magary-tab header="Organization">
+      <magary-organization-chart
+        [value]="orgData()"
+        [collapsible]="true"
+      >
+        <ng-template #node let-node>
+          <div class="org-node">
+            @if (node.data.avatar) {
+              <img [src]="node.data.avatar" [alt]="node.data.name" class="node-avatar" />
+            }
+            <div class="node-name">{{ node.data.name }}</div>
+            <div class="node-label">{{ node.label }}</div>
+          </div>
+        </ng-template>
+      </magary-organization-chart>
+    </magary-tab>
+
+    <magary-tab header="Hierarchy Tree">
+      <magary-tree
+        [value]="orgData()"
+        [filter]="true"
+        filterMode="lenient"
+      >
+        <ng-template #node let-node>
+          <div class="tree-node">
+            <i [class]="node.type === 'person' ? 'pi pi-user' : 'pi pi-sitemap'"></i>
+            <span>{{ node.label }} - {{ node.data.name }}</span>
+          </div>
+        </ng-template>
+      </magary-tree>
+    </magary-tab>
+  </magary-tabs>
+
+  <!-- Overlay Panel for KPI Details -->
+  <magary-overlay-panel
+    [(visible)]="overlayVisible"
+    [dismissable]="true"
+    [showCloseIcon]="true"
+  >
+    @if (selectedKpi(); as kpi) {
+      <div class="kpi-details">
+        <h3>{{ kpi.label }} Details</h3>
+        <div class="detail-row">
+          <span class="detail-label">Current Value:</span>
+          <span class="detail-value">{{ kpi.value | number }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Change:</span>
+          <span class="detail-value" [class.positive]="kpi.delta > 0" [class.negative]="kpi.delta < 0">
+            {{ kpi.delta > 0 ? '+' : '' }}{{ kpi.delta }}%
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Trend:</span>
+          <span class="detail-value">{{ kpi.trend }}</span>
+        </div>
+        <magary-button label="View Full Report" styleClass="p-button-sm" />
+      </div>
+    }
+  </magary-overlay-panel>
+</div>
+```
+
+```scss dashboard.page.scss
+.dashboard-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+  }
+
+  .filters {
+    display: flex;
+    gap: 1rem;
+  }
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.kpi-card {
+  cursor: pointer;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+}
+
+.kpi-content {
+  padding: 1rem;
+}
+
+.kpi-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.kpi-label {
+  font-size: 0.875rem;
+  color: var(--text-color-secondary);
+  text-transform: uppercase;
+}
+
+.kpi-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.kpi-delta {
+  font-size: 0.875rem;
+  font-weight: 600;
+
+  &.positive {
+    color: var(--green-500);
+  }
+
+  &.negative {
+    color: var(--red-500);
+  }
+}
+
+.trend-up {
+  color: var(--green-500);
+}
+
+.trend-down {
+  color: var(--red-500);
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+
+  &[data-severity="success"] {
+    background: var(--green-100);
+    color: var(--green-700);
+  }
+
+  &[data-severity="warning"] {
+    background: var(--yellow-100);
+    color: var(--yellow-700);
+  }
+
+  &[data-severity="danger"] {
+    background: var(--red-100);
+    color: var(--red-700);
+  }
+}
+
+.org-node {
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.node-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-bottom: 0.5rem;
+}
+
+.node-name {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.node-label {
+  font-size: 0.875rem;
+  color: var(--text-color-secondary);
+}
+
+.tree-node {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kpi-details {
+  padding: 1rem;
+
+  h3 {
+    margin-top: 0;
+  }
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--surface-border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.detail-label {
+  font-weight: 600;
+}
+
+.detail-value {
+  &.positive {
+    color: var(--green-500);
+  }
+
+  &.negative {
+    color: var(--red-500);
+  }
+}
+```
+
+</CodeGroup>
+
+## Layout Diagram
+
+The dashboard follows this visual structure:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ Analytics Dashboard          [Period ▼] [Region ▼]     │
+├─────────────────────────────────────────────────────────┤
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐│
+│  │ Revenue  │  │  Active  │  │Conversion│  │Avg Session││
+│  │ 125,000  │  │  Users   │  │   Rate   │  │   Time   ││
+│  │  +12.5%  │  │   8,432  │  │   3.8%   │  │   4.2m   ││
+│  └──────────┘  │  -3.2%   │  │  +0.5%   │  │   0.0%   ││
+│                 └──────────┘  └──────────┘  └──────────┘│
+├─────────────────────────────────────────────────────────┤
+│ [Data Table] [Organization] [Hierarchy Tree]            │
+│ ┌───────────────────────────────────────────────────┐   │
+│ │ Project Name    │ Owner       │ Status │ Updated  │   │
+│ ├───────────────────────────────────────────────────┤   │
+│ │ Project Alpha   │ John Doe    │ OK     │ 03/04/26 │   │
+│ │ Project Beta    │ Jane Smith  │ WARN   │ 03/03/26 │   │
+│ │ Project Gamma   │ Bob Wilson  │CRITICAL│ 03/02/26 │   │
+│ └───────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Accessibility Checklist
+
+<AccordionGroup>
+  <Accordion title="Keyboard Navigation">
+    - All interactive elements (cards, tabs, table rows) are keyboard accessible
+    - Tab/Shift+Tab moves focus between controls
+    - Enter/Space activates buttons and toggles
+    - Arrow keys navigate within tree and organization chart
+  </Accordion>
+
+  <Accordion title="ARIA Contracts">
+    - Tabs follow proper `role="tablist"` and `role="tabpanel"` structure
+    - Table has proper header associations
+    - Overlay panel announces open/close states
+    - Status indicators have accessible labels
+  </Accordion>
+
+  <Accordion title="Screen Reader Support">
+    - KPI cards announce label, value, and trend
+    - Tree nodes announce hierarchy level
+    - Table columns have descriptive headers
+    - Loading and error states are announced
+  </Accordion>
+
+  <Accordion title="Visual States">
+    - Focus indicators are visible on all interactive elements
+    - Status colors meet WCAG contrast requirements
+    - Trend indicators use icons in addition to color
+    - Empty states provide clear guidance
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+  **Performance**: Use Angular signals for reactive state management and `OnPush` change detection to minimize re-renders.
+</Tip>
+
+<Warning>
+  **Data Loading**: Always implement loading, empty, and error states for tables and charts to provide clear feedback.
+</Warning>
+
+<Note>
+  **Responsiveness**: The KPI grid automatically adapts to smaller screens using CSS Grid's `auto-fit` and `minmax`.
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Add Charts" icon="chart-line">
+    Integrate chart components for visual data representation
+  </Card>
+  <Card title="Real-time Updates" icon="rotate">
+    Implement WebSocket connections for live dashboard updates
+  </Card>
+  <Card title="Export Data" icon="download">
+    Add CSV/Excel export functionality for tables
+  </Card>
+  <Card title="Custom Filters" icon="filter">
+    Build advanced filtering with date ranges and multi-select
+  </Card>
+</CardGroup>

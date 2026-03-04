@@ -1,0 +1,252 @@
+---
+title: 'Steps'
+description: 'Display progress through numbered steps'
+---
+
+## Overview
+
+Steps component provides a wizard-like navigation showing progress through a multi-step process.
+
+## Import
+
+```typescript
+import { MagarySteps, StepsItem } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```html Component
+<magary-steps
+  [model]="steps"
+  [activeIndex]="activeStep"
+  (activeIndexChange)="onStepChange($event)">
+</magary-steps>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagarySteps, StepsItem } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagarySteps],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  activeStep = 0;
+  
+  steps: StepsItem[] = [
+    { label: 'Personal Info', icon: 'user' },
+    { label: 'Address', icon: 'map-pin' },
+    { label: 'Payment', icon: 'credit-card' },
+    { label: 'Confirmation', icon: 'check-circle' }
+  ];
+  
+  onStepChange(index: number) {
+    this.activeStep = index;
+    console.log('Step changed to:', index);
+  }
+}
+```
+</CodeGroup>
+
+## Interactive Steps
+
+```html
+<magary-steps
+  [model]="steps"
+  [activeIndex]="currentStep"
+  [readonly]="false"
+  (activeIndexChange)="navigateToStep($event)">
+</magary-steps>
+```
+
+## Vertical Orientation
+
+```html
+<magary-steps
+  [model]="steps"
+  [activeIndex]="activeStep"
+  [orientation]="'vertical'">
+</magary-steps>
+```
+
+## With Router Integration
+
+```typescript
+steps: StepsItem[] = [
+  { 
+    label: 'Account',
+    routerLink: '/setup/account',
+    icon: 'user'
+  },
+  { 
+    label: 'Profile',
+    routerLink: '/setup/profile',
+    icon: 'id-card'
+  },
+  { 
+    label: 'Complete',
+    routerLink: '/setup/complete',
+    icon: 'check'
+  }
+];
+```
+
+## With Command Handlers
+
+```typescript
+steps: StepsItem[] = [
+  {
+    label: 'Step 1',
+    command: (event) => {
+      console.log('Step 1 clicked', event);
+      this.validateStep1();
+    }
+  },
+  {
+    label: 'Step 2',
+    command: (event) => {
+      this.validateStep2();
+    }
+  }
+];
+```
+
+## Input Properties
+
+<ParamField path="model" type="StepsItem[]" default="[]">
+  Array of step items
+</ParamField>
+
+<ParamField path="activeIndex" type="number" default="0">
+  Index of the active step
+</ParamField>
+
+<ParamField path="readonly" type="boolean" default="true">
+  Whether steps are clickable
+</ParamField>
+
+<ParamField path="style" type="Record<string, any>">
+  Inline styles for the component
+</ParamField>
+
+<ParamField path="styleClass" type="string">
+  CSS class for the component
+</ParamField>
+
+<ParamField path="orientation" type="'horizontal' | 'vertical'" default="'horizontal'">
+  Layout orientation
+</ParamField>
+
+## Output Events
+
+<ParamField path="activeIndexChange" type="EventEmitter<number>">
+  Emitted when active step changes
+</ParamField>
+
+## StepsItem Interface
+
+```typescript
+interface StepsItem {
+  label: string;
+  icon?: string;
+  command?: (event?: any) => void;
+  url?: string;
+  routerLink?: string | any[];
+  queryParams?: Record<string, unknown>;
+  disabled?: boolean;
+  target?: string;
+  routerLinkActiveOptions?: IsActiveMatchOptions;
+  style?: Record<string, any>;
+  styleClass?: string;
+}
+```
+
+## Complete Example with Content
+
+<CodeGroup>
+```html Component
+<magary-steps
+  [model]="steps"
+  [activeIndex]="activeIndex"
+  [readonly]="false"
+  (activeIndexChange)="activeIndex = $event">
+</magary-steps>
+
+<div class="step-content">
+  <div *ngIf="activeIndex === 0">
+    <h3>Personal Information</h3>
+    <p>Enter your personal details...</p>
+  </div>
+  
+  <div *ngIf="activeIndex === 1">
+    <h3>Address</h3>
+    <p>Enter your address...</p>
+  </div>
+  
+  <div *ngIf="activeIndex === 2">
+    <h3>Confirmation</h3>
+    <p>Review your information...</p>
+  </div>
+</div>
+
+<div class="step-actions">
+  <button 
+    (click)="prevStep()" 
+    [disabled]="activeIndex === 0">
+    Previous
+  </button>
+  
+  <button 
+    (click)="nextStep()"
+    [disabled]="activeIndex === steps.length - 1">
+    Next
+  </button>
+</div>
+```
+
+```typescript TypeScript
+export class WizardComponent {
+  activeIndex = 0;
+  
+  steps: StepsItem[] = [
+    { label: 'Personal', icon: 'user' },
+    { label: 'Address', icon: 'map-pin' },
+    { label: 'Confirm', icon: 'check' }
+  ];
+  
+  nextStep() {
+    if (this.activeIndex < this.steps.length - 1) {
+      this.activeIndex++;
+    }
+  }
+  
+  prevStep() {
+    if (this.activeIndex > 0) {
+      this.activeIndex--;
+    }
+  }
+}
+```
+</CodeGroup>
+
+## Features
+
+- **Horizontal/Vertical**: Support for both orientations
+- **Interactive**: Optional clickable steps
+- **Router integration**: Works with Angular Router
+- **Icons**: Support for step icons
+- **Command handlers**: Execute code on step click
+- **Disabled steps**: Prevent navigation to certain steps
+- **Custom styling**: Full styling control
+
+## Accessibility
+
+- Semantic HTML
+- ARIA attributes
+- Keyboard navigation
+- Screen reader support
+- Focus management

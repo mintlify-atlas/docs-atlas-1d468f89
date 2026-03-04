@@ -1,0 +1,303 @@
+---
+title: 'Avatar'
+description: 'Display user avatars with images, labels, or icons'
+---
+
+## Overview
+
+Avatar component displays user profile images, initials, or icons with support for badges and various shapes.
+
+## Import
+
+```typescript
+import { MagaryAvatar } from 'ng-magary';
+```
+
+## Basic Usage
+
+### Image Avatar
+
+```html
+<magary-avatar
+  [image]="'assets/profile.jpg'"
+  [alt]="'User profile'">
+</magary-avatar>
+```
+
+### Label Avatar
+
+```html
+<magary-avatar
+  [label]="'John Doe'">
+</magary-avatar>
+```
+
+### Icon Avatar
+
+```html
+<magary-avatar
+  [icon]="'user'">
+</magary-avatar>
+```
+
+## Sizes
+
+<CodeGroup>
+```html XSmall
+<magary-avatar
+  [label]="'JD'"
+  [size]="'xsmall'">
+</magary-avatar>
+```
+
+```html Small
+<magary-avatar
+  [label]="'JD'"
+  [size]="'small'">
+</magary-avatar>
+```
+
+```html Normal (Default)
+<magary-avatar
+  [label]="'JD'"
+  [size]="'normal'">
+</magary-avatar>
+```
+
+```html Large
+<magary-avatar
+  [label]="'JD'"
+  [size]="'large'">
+</magary-avatar>
+```
+
+```html XLarge
+<magary-avatar
+  [label]="'JD'"
+  [size]="'xlarge'">
+</magary-avatar>
+```
+</CodeGroup>
+
+## Shapes
+
+<CodeGroup>
+```html Square (Default)
+<magary-avatar
+  [label]="'JD'"
+  [shape]="'square'">
+</magary-avatar>
+```
+
+```html Circle
+<magary-avatar
+  [label]="'JD'"
+  [shape]="'circle'">
+</magary-avatar>
+```
+</CodeGroup>
+
+## With Badge
+
+```html
+<magary-avatar
+  [image]="'assets/profile.jpg'"
+  [badgeValue]="'5'"
+  [badgeSeverity]="'danger'">
+</magary-avatar>
+```
+
+## Badge Severities
+
+```html
+<!-- Info badge -->
+<magary-avatar
+  [label]="'JD'"
+  [badgeValue]="'3'"
+  [badgeSeverity]="'info'">
+</magary-avatar>
+
+<!-- Success badge -->
+<magary-avatar
+  [label]="'JD'"
+  [badgeValue]="'✓'"
+  [badgeSeverity]="'success'">
+</magary-avatar>
+
+<!-- Warning badge -->
+<magary-avatar
+  [label]="'JD'"
+  [badgeValue]="'!'"
+  [badgeSeverity]="'warning'">
+</magary-avatar>
+```
+
+## Clickable Avatar
+
+<CodeGroup>
+```html Component
+<magary-avatar
+  [image]="'assets/profile.jpg'"
+  [clickable]="true"
+  (avatarClick)="handleAvatarClick($event)">
+</magary-avatar>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryAvatar, AvatarClickEvent } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryAvatar],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  handleAvatarClick(event: AvatarClickEvent) {
+    if (event.type === 'avatar') {
+      console.log('Avatar clicked');
+      // Navigate to profile
+    } else if (event.type === 'badge') {
+      console.log('Badge clicked');
+      // Show notifications
+    }
+  }
+}
+```
+</CodeGroup>
+
+## Loading State
+
+```html
+<magary-avatar
+  [label]="'JD'"
+  [loading]="true">
+</magary-avatar>
+```
+
+## Disabled State
+
+```html
+<magary-avatar
+  [label]="'JD'"
+  [disabled]="true">
+</magary-avatar>
+```
+
+## Input Properties
+
+<ParamField path="label" type="string">
+  Text label (displays initials automatically)
+</ParamField>
+
+<ParamField path="image" type="string">
+  Image URL
+</ParamField>
+
+<ParamField path="icon" type="string">
+  Lucide icon name
+</ParamField>
+
+<ParamField path="shape" type="'circle' | 'square'" default="'square'">
+  Shape of the avatar
+</ParamField>
+
+<ParamField path="size" type="'xsmall' | 'small' | 'normal' | 'large' | 'xlarge'" default="'normal'">
+  Size of the avatar
+</ParamField>
+
+<ParamField path="badgeValue" type="string | number">
+  Value to display in badge
+</ParamField>
+
+<ParamField path="badgeSeverity" type="'info' | 'success' | 'warning' | 'danger'" default="'danger'">
+  Severity level of badge
+</ParamField>
+
+<ParamField path="alt" type="string" default="'Avatar'">
+  Alt text for image
+</ParamField>
+
+<ParamField path="clickable" type="boolean" default="false">
+  Make avatar clickable
+</ParamField>
+
+<ParamField path="loading" type="boolean" default="false">
+  Show loading state
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  Disable avatar interaction
+</ParamField>
+
+<ParamField path="customStyle" type="Record<string, unknown>">
+  Custom inline styles
+</ParamField>
+
+## Output Events
+
+<ParamField path="avatarClick" type="EventEmitter<AvatarClickEvent>">
+  Emitted when avatar or badge is clicked
+</ParamField>
+
+## Interfaces
+
+```typescript
+interface AvatarClickEvent {
+  type: 'avatar' | 'badge';
+  data?: {
+    label?: string;
+    image?: string;
+    icon?: string;
+    value?: string | number;
+    severity?: BadgeSeverity;
+  };
+}
+
+type AvatarSize = 'xsmall' | 'small' | 'normal' | 'large' | 'xlarge';
+type AvatarShape = 'circle' | 'square';
+type BadgeSeverity = 'info' | 'success' | 'warning' | 'danger';
+```
+
+## Features
+
+- **Multiple types**: Image, label (initials), or icon
+- **Automatic initials**: Extracts initials from label
+- **Badge support**: Notification badges
+- **5 sizes**: From xsmall to xlarge
+- **2 shapes**: Circle and square
+- **Clickable**: Optional click handlers
+- **Loading state**: Visual loading indicator
+- **Image fallback**: Falls back to label/icon on error
+
+## Avatar Group Example
+
+```html
+<div class="avatar-group">
+  <magary-avatar
+    [image]="'assets/user1.jpg'"
+    [size]="'small'"
+    [shape]="'circle'">
+  </magary-avatar>
+  
+  <magary-avatar
+    [image]="'assets/user2.jpg'"
+    [size]="'small'"
+    [shape]="'circle'">
+  </magary-avatar>
+  
+  <magary-avatar
+    [label]="'+5'"
+    [size]="'small'"
+    [shape]="'circle'">
+  </magary-avatar>
+</div>
+```
+
+## Accessibility
+
+- Alt text for images
+- ARIA labels
+- Keyboard accessible when clickable
+- Screen reader support

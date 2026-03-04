@@ -1,0 +1,128 @@
+---
+title: 'SlideMenu'
+description: 'Animated sliding menu with breadcrumb navigation'
+---
+
+## Overview
+
+SlideMenu displays a menu with animated slide transitions for navigating through submenus.
+
+## Import
+
+```typescript
+import { MagarySlideMenu, MenuItem } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```html Component
+<magary-slidemenu 
+  [model]="items"
+  [menuWidth]="300"
+  [viewportHeight]="400">
+</magary-slidemenu>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagarySlideMenu, MenuItem } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagarySlideMenu],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  items: MenuItem[] = [
+    {
+      label: 'Electronics',
+      icon: 'laptop',
+      items: [
+        {
+          label: 'Computers',
+          icon: 'monitor',
+          items: [
+            { label: 'Desktop', routerLink: '/desktop' },
+            { label: 'Laptop', routerLink: '/laptop' }
+          ]
+        },
+        {
+          label: 'Mobile',
+          icon: 'smartphone',
+          items: [
+            { label: 'Phones', routerLink: '/phones' },
+            { label: 'Tablets', routerLink: '/tablets' }
+          ]
+        }
+      ]
+    },
+    {
+      label: 'Clothing',
+      icon: 'shirt',
+      items: [
+        { label: 'Men', routerLink: '/men' },
+        { label: 'Women', routerLink: '/women' },
+        { label: 'Kids', routerLink: '/kids' }
+      ]
+    }
+  ];
+}
+```
+</CodeGroup>
+
+## Custom Dimensions
+
+```html
+<magary-slidemenu 
+  [model]="items"
+  [menuWidth]="'400px'"
+  [viewportHeight]="'600px'">
+</magary-slidemenu>
+```
+
+## Input Properties
+
+<ParamField path="model" type="MenuItem[]" default="[]">
+  Array of menu items
+</ParamField>
+
+<ParamField path="style" type="Record<string, any>">
+  Inline styles for the component
+</ParamField>
+
+<ParamField path="styleClass" type="string" default="''">
+  CSS class for the component
+</ParamField>
+
+<ParamField path="menuWidth" type="number | string" default="300">
+  Width of the menu (pixels or CSS string)
+</ParamField>
+
+<ParamField path="viewportHeight" type="number | string" default="400">
+  Height of the viewport (pixels or CSS string)
+</ParamField>
+
+## Features
+
+- **Slide animation**: Smooth transitions between levels
+- **Back navigation**: Navigate back through breadcrumbs
+- **Header display**: Shows current submenu title
+- **Router integration**: Works with Angular Router
+- **Icons**: Support for Lucide icons
+- **Nested levels**: Unlimited depth
+- **Compact design**: Good for mobile interfaces
+
+## Navigation
+
+- Click an item with subitems to slide to that submenu
+- Use back button to return to previous level
+- Animated transitions between levels
+
+## Accessibility
+
+- ARIA attributes
+- Keyboard navigation
+- Focus management
+- Screen reader support

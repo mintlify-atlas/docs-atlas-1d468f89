@@ -1,0 +1,252 @@
+---
+title: Introduction
+description: Premium Angular UI component library built with standalone-first architecture, glassmorphism design, and high-performance rendering
+---
+
+<div align="center">
+  <img src="https://raw.githubusercontent.com/JhoanGon/magary/main/projects/demo-app/public/assets/magary_logo.webp" alt="Magary Logo" width="120" />
+</div>
+
+# Welcome to ng-magary
+
+**ng-magary** is a premium, modern UI component library for Angular, designed exclusively with the **Standalone-First** paradigm. Built for developers who demand aesthetic excellence and uncompromising performance, Magary delivers glassmorphism styling, fluid animations, and architectural simplicity from the first import.
+
+<CardGroup cols={2}>
+  <Card title="Live Demo" icon="globe" href="https://magary.pages.dev">
+    Explore interactive examples and full documentation
+  </Card>
+  <Card title="GitHub Repository" icon="github" href="https://github.com/JhoanGon/magary">
+    View source code, report issues, and contribute
+  </Card>
+</CardGroup>
+
+## Why Magary?
+
+Magary eliminates the complexity of traditional Angular component libraries by embracing modern Angular's standalone components. No more bloated NgModules, no heavy preprocessor dependencies—just pure, modular components that integrate seamlessly into your application.
+
+<Note>
+  **Standalone-First Philosophy**: Import only what you need, where you need it. Every component is a standalone Angular component with zero module dependencies.
+</Note>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Standalone First" icon="rocket">
+    Direct architectural integration without NgModule verbosity. Import components directly where needed.
+  </Card>
+  <Card title="Native CSS Theming" icon="palette">
+    Pure CSS variables enable glassmorphism and dark mode without preprocessor coupling.
+  </Card>
+  <Card title="Mobile-Ready" icon="mobile">
+    Highly responsive designs with controlled overflows, touch actions, and dynamic viewports.
+  </Card>
+  <Card title="Accessibility" icon="universal-access">
+    Grade-A a11y with keyboard navigation, ARIA roles, and native screen reader support.
+  </Card>
+  <Card title="High Performance" icon="gauge-high">
+    100% OnPush change detection strategy across all components for optimal rendering.
+  </Card>
+  <Card title="Modern Icons" icon="icons">
+    Built-in Lucide icon integration with 1000+ beautiful, consistent icons.
+  </Card>
+</CardGroup>
+
+## Angular Compatibility
+
+<Tip>
+  Magary supports Angular **v17**, **v18**, **v19**, **v20**, and **v21**—covering all modern Angular versions.
+</Tip>
+
+The library is tested and optimized for:
+- Angular 17.x
+- Angular 18.x
+- Angular 19.x
+- Angular 20.x
+- Angular 21.x
+
+## Architecture Overview
+
+### Standalone Components
+
+Every component in Magary is a standalone Angular component:
+
+```typescript
+import { Component } from '@angular/core';
+import { MagaryButton, MagaryCard } from 'ng-magary';
+
+@Component({
+  standalone: true,
+  selector: 'app-home',
+  imports: [MagaryButton, MagaryCard],
+  template: `
+    <magary-card>
+      <h2>Welcome to Magary</h2>
+      <magary-button label="Get Started" severity="info" />
+    </magary-card>
+  `
+})
+export class HomeComponent {}
+```
+
+### Component Categories
+
+Magary organizes components into logical categories:
+
+<Accordion title="Button Components">
+  - **MagaryButton**: Primary action buttons with multiple variants
+  - **MagarySpeedDial**: Floating action button with expandable menu
+  - **MargarySplitButton**: Combined button with dropdown menu
+</Accordion>
+
+<Accordion title="Form Components">
+  - **MagaryInput**: Text input with validation support
+  - **MagarySelect**: Dropdown selection with search
+  - **MagaryCheckbox**: Checkbox with custom styling
+  - **MagarySwitch**: Toggle switch component
+  - **MagaryRadio**: Radio button group
+  - **MagaryTextarea**: Multi-line text input
+  - **MagaryDatepicker**: Date selection component
+  - **MagaryInputNumber**: Numeric input with controls
+  - **MagarySlider**: Range slider component
+  - **MagaryRating**: Star rating component
+  - **MagarySegmented**: Segmented control selector
+  - **MargaryCascadeSelect**: Hierarchical selection
+</Accordion>
+
+<Accordion title="Data Display">
+  - **MagaryTable**: Advanced data table with sorting and filtering
+  - **MagaryDataView**: Flexible data presentation layouts
+  - **MagaryTree**: Hierarchical tree structure
+  - **MagaryTimeline**: Event timeline visualization
+  - **MagaryOrganizationChart**: Organization hierarchy display
+  - **MagaryKanban**: Kanban board with drag-and-drop
+  - **MagaryPaginator**: Pagination controls
+  - **MagaryPicklist**: Dual-list selection
+  - **MagaryOrderlist**: Reorderable list component
+</Accordion>
+
+<Accordion title="Panel Components">
+  - **MagaryCard**: Content card with glassmorphism
+  - **MagaryAccordion**: Expandable content sections
+  - **MagaryTabs**: Tabbed interface navigation
+  - **MagaryToolbar**: Action toolbar component
+  - **MagaryFieldset**: Grouped form fields
+</Accordion>
+
+<Accordion title="Overlay Components">
+  - **MagaryDialog**: Modal dialog windows
+  - **MagaryTooltip**: Contextual tooltips
+  - **MagaryOverlayPanel**: Floating content panel
+  - **MagaryConfirmDialog**: Confirmation dialogs
+</Accordion>
+
+<Accordion title="Menu Components">
+  - **MagaryMenubar**: Horizontal menu bar
+  - **MagaryPanelMenu**: Collapsible panel menu
+  - **MargarySidebar**: Slide-out sidebar navigation
+  - **MagaryBreadcrumb**: Breadcrumb navigation
+  - **MagarySteps**: Step-by-step navigation
+  - **MagaryTieredMenu**: Multi-level dropdown menu
+  - **MagaryContextMenu**: Right-click context menu
+  - **MagaryMegaMenu**: Large dropdown menu with sections
+  - **MagarySlideMenu**: Nested slide-out menu
+</Accordion>
+
+<Accordion title="Media Components">
+  - **MagaryImage**: Optimized image display
+  - **MagaryGalleria**: Image gallery with lightbox
+  - **MagaryCarousel**: Image/content carousel
+</Accordion>
+
+<Accordion title="Miscellaneous">
+  - **MagaryAvatar**: User avatar display
+  - **MargarySkeleton**: Loading skeleton screens
+  - **MagaryDivider**: Content divider
+  - **MagaryTag**: Label and badge component
+  - **MagaryToast**: Toast notifications
+  - **MagaryMessage**: Inline messages
+</Accordion>
+
+<Accordion title="Grid System">
+  - **MagaryGrid**: Responsive dashboard grid
+  - **MagaryGridItem**: Grid item component
+</Accordion>
+
+<Accordion title="File Upload">
+  - **MagaryUpload**: File upload with drag-and-drop
+</Accordion>
+
+### Design Philosophy
+
+<CardGroup cols={2}>
+  <Card title="Glassmorphism" icon="sparkles">
+    Semi-transparent backgrounds with backdrop blur create depth and modern aesthetics.
+  </Card>
+  <Card title="Fluid Animations" icon="wand-magic-sparkles">
+    Smooth transitions powered by Angular animations for delightful interactions.
+  </Card>
+  <Card title="CSS Variables" icon="paintbrush">
+    Complete theming control through CSS custom properties—no build-time configuration.
+  </Card>
+  <Card title="Responsive Design" icon="desktop">
+    Mobile-first approach with touch-optimized interactions and dynamic viewport handling.
+  </Card>
+</CardGroup>
+
+## Performance Characteristics
+
+<Tip>
+  All Magary components use **OnPush change detection** strategy, ensuring minimal rendering overhead and maximum performance in large applications.
+</Tip>
+
+### Key Performance Features:
+
+- **Tree-Shakeable**: Import only the components you use
+- **No Side Effects**: `"sideEffects": false` ensures optimal bundling
+- **Lazy Loading**: Load components on-demand with Angular's lazy loading
+- **Minimal Dependencies**: Core library has zero runtime dependencies beyond Angular
+
+## License & Third-Party Attribution
+
+<Note>
+  **ng-magary** is open-source software released under the MIT License. The library respects and acknowledges third-party open-source dependencies including `@atlaskit/pragmatic-drag-and-drop` and `gridstack`.
+</Note>
+
+Complete license attributions are available in the [THIRD_PARTY_NOTICES.md](https://github.com/JhoanGon/magary/blob/main/projects/ng-magary/THIRD_PARTY_NOTICES.md) file.
+
+## Next Steps
+
+<Steps>
+  <Step title="Installation">
+    Install Magary and required peer dependencies
+    
+    [View Installation Guide →](/installation)
+  </Step>
+  
+  <Step title="Quick Start">
+    Build your first Magary component in minutes
+    
+    [View Quick Start →](/quickstart)
+  </Step>
+  
+  <Step title="Customize Theming">
+    Learn to customize themes and create your own
+    
+    [View Theming Guide →](/theming)
+  </Step>
+</Steps>
+
+<CardGroup cols={2}>
+  <Card title="Explore Components" icon="grid" href="/components/overview">
+    Browse the complete component library
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/exports">
+    Detailed API documentation for all components
+  </Card>
+</CardGroup>
+
+---
+
+<div align="center">
+  Built with dedication to accelerate your frontends! 🚀
+</div>

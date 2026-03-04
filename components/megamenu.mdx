@@ -1,0 +1,110 @@
+---
+title: 'MegaMenu'
+description: 'Large multi-column menu component'
+---
+
+## Overview
+
+MegaMenu displays a large menu with multiple columns of items, ideal for complex navigation structures.
+
+## Import
+
+```typescript
+import { MagaryMegaMenu, MenuItem } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```html Component
+<magary-megamenu [model]="items"></magary-megamenu>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryMegaMenu, MenuItem } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryMegaMenu],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  items: MenuItem[] = [
+    {
+      label: 'Products',
+      icon: 'package',
+      items: [
+        // Column 1
+        [
+          { label: 'Electronics', routerLink: '/electronics' },
+          { label: 'Computers', routerLink: '/computers' },
+          { label: 'Phones', routerLink: '/phones' }
+        ],
+        // Column 2
+        [
+          { label: 'Clothing', routerLink: '/clothing' },
+          { label: 'Shoes', routerLink: '/shoes' },
+          { label: 'Accessories', routerLink: '/accessories' }
+        ]
+      ]
+    },
+    {
+      label: 'Services',
+      icon: 'briefcase',
+      items: [
+        [
+          { label: 'Consulting', routerLink: '/consulting' },
+          { label: 'Support', routerLink: '/support' }
+        ]
+      ]
+    }
+  ];
+}
+```
+</CodeGroup>
+
+## Vertical Orientation
+
+```html
+<magary-megamenu 
+  [model]="items"
+  [orientation]="'vertical'">
+</magary-megamenu>
+```
+
+## Input Properties
+
+<ParamField path="model" type="MenuItem[]" default="[]">
+  Array of menu items with column structure
+</ParamField>
+
+<ParamField path="orientation" type="'horizontal' | 'vertical'" default="'horizontal'">
+  Menu orientation
+</ParamField>
+
+<ParamField path="style" type="Record<string, any>">
+  Inline styles for the component
+</ParamField>
+
+<ParamField path="styleClass" type="string" default="''">
+  CSS class for the component
+</ParamField>
+
+## Features
+
+- **Multi-column layout**: Display items in columns
+- **Horizontal/Vertical**: Support for both orientations
+- **Hover activation**: Panels open on hover
+- **Router integration**: Works with Angular Router
+- **Icons**: Support for Lucide icons
+- **Large content**: Ideal for complex navigation
+- **Click outside**: Auto-close behavior
+
+## Accessibility
+
+- ARIA attributes
+- Keyboard navigation
+- Focus management
+- Screen reader support

@@ -1,0 +1,296 @@
+---
+title: 'Upload'
+description: 'File upload component with drag and drop'
+---
+
+## Overview
+
+Upload component provides file upload functionality with drag-and-drop support, progress tracking, and preview capabilities.
+
+## Import
+
+```typescript
+import { MagaryUpload } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```html Component
+<magary-upload
+  [mode]="'basic'"
+  [chooseLabel]="'Select File'"
+  (onSelect)="onFileSelect($event)">
+</magary-upload>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryUpload, UploadEvent } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryUpload],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  onFileSelect(event: UploadEvent) {
+    console.log('Files selected:', event.files);
+  }
+}
+```
+</CodeGroup>
+
+## Advanced Mode
+
+```html
+<magary-upload
+  [mode]="'advanced'"
+  [url]="'https://api.example.com/upload'"
+  [name]="'file'"
+  [multiple]="true"
+  [accept]="'image/*'"
+  [maxFileSize]="5000000"
+  [chooseLabel]="'Select'"
+  [uploadLabel]="'Upload'"
+  [cancelLabel]="'Cancel'"
+  (onUpload)="onUpload($event)"
+  (onError)="onError($event)">
+</magary-upload>
+```
+
+## With File Type Restriction
+
+```html
+<!-- Only images -->
+<magary-upload
+  [accept]="'image/*'"
+  [maxFileSize]="5000000">
+</magary-upload>
+
+<!-- PDFs and Word documents -->
+<magary-upload
+  [accept]="'.pdf,.doc,.docx'">
+</magary-upload>
+```
+
+## Multiple Files
+
+```html
+<magary-upload
+  [multiple]="true"
+  [accept]="'image/*'"
+  (onSelect)="handleMultipleFiles($event)">
+</magary-upload>
+```
+
+## With HTTP Upload
+
+<CodeGroup>
+```html Component
+<magary-upload
+  [mode]="'advanced'"
+  [url]="uploadUrl"
+  [name]="'document'"
+  [withCredentials]="true"
+  (onUpload)="handleUploadComplete($event)"
+  (onError)="handleUploadError($event)">
+</magary-upload>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryUpload, UploadEvent } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryUpload],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  uploadUrl = 'https://api.example.com/upload';
+  
+  handleUploadComplete(event: UploadEvent) {
+    console.log('Upload complete:', event.files);
+  }
+  
+  handleUploadError(error: { error: string }) {
+    console.error('Upload failed:', error.error);
+  }
+}
+```
+</CodeGroup>
+
+## Input Properties
+
+<ParamField path="mode" type="'basic' | 'advanced'" default="'basic'">
+  Upload mode (basic = auto, advanced = manual)
+</ParamField>
+
+<ParamField path="multiple" type="boolean" default="false">
+  Allow multiple file selection
+</ParamField>
+
+<ParamField path="accept" type="string" default="'*'">
+  Accepted file types (MIME or extensions)
+</ParamField>
+
+<ParamField path="maxFileSize" type="number">
+  Maximum file size in bytes
+</ParamField>
+
+<ParamField path="url" type="string" default="''">
+  Upload endpoint URL
+</ParamField>
+
+<ParamField path="name" type="string" default="'file'">
+  Form field name for the file
+</ParamField>
+
+<ParamField path="chooseLabel" type="string" default="'Choose'">
+  Label for choose button
+</ParamField>
+
+<ParamField path="chooseIcon" type="string" default="'plus'">
+  Icon for choose button
+</ParamField>
+
+<ParamField path="uploadLabel" type="string" default="'Upload'">
+  Label for upload button
+</ParamField>
+
+<ParamField path="uploadIcon" type="string" default="'upload'">
+  Icon for upload button
+</ParamField>
+
+<ParamField path="cancelLabel" type="string" default="'Cancel'">
+  Label for cancel button
+</ParamField>
+
+<ParamField path="cancelIcon" type="string" default="'x'">
+  Icon for cancel button
+</ParamField>
+
+<ParamField path="withCredentials" type="boolean" default="false">
+  Send credentials with upload request
+</ParamField>
+
+## Output Events
+
+<ParamField path="onUpload" type="EventEmitter<UploadEvent>">
+  Callback when files are uploaded
+</ParamField>
+
+<ParamField path="onSelect" type="EventEmitter<UploadEvent>">
+  Callback when files are selected
+</ParamField>
+
+<ParamField path="onClear" type="EventEmitter<void>">
+  Callback when files are cleared
+</ParamField>
+
+<ParamField path="onError" type="EventEmitter<{error: string}>">
+  Callback when an error occurs
+</ParamField>
+
+## Interfaces
+
+```typescript
+interface UploadEvent {
+  originalEvent: Event;
+  files: File[];
+}
+```
+
+## Features
+
+- **Drag and drop**: Drop files onto the component
+- **Multiple files**: Upload multiple files at once
+- **File type filtering**: Accept specific file types
+- **Size validation**: Enforce maximum file size
+- **Progress tracking**: Visual upload progress
+- **Image preview**: Preview selected images
+- **HTTP upload**: Built-in HTTP upload support
+- **File management**: Remove files before upload
+- **Custom icons**: Customize button icons
+
+## Complete Example
+
+<CodeGroup>
+```html Component
+<magary-upload
+  [mode]="'advanced'"
+  [url]="'https://api.example.com/upload'"
+  [name]="'files'"
+  [multiple]="true"
+  [accept]="'image/png,image/jpeg'"
+  [maxFileSize]="10000000"
+  [chooseLabel]="'Select Images'"
+  [uploadLabel]="'Upload All'"
+  [cancelLabel]="'Clear'"
+  (onSelect)="onSelect($event)"
+  (onUpload)="onUpload($event)"
+  (onError)="onError($event)"
+  (onClear)="onClear()">
+</magary-upload>
+
+<div *ngIf="uploadedFiles.length > 0" class="mt-4">
+  <h3>Uploaded Files</h3>
+  <ul>
+    <li *ngFor="let file of uploadedFiles">
+      {{ file.name }} ({{ formatSize(file.size) }})
+    </li>
+  </ul>
+</div>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryUpload, UploadEvent } from 'ng-magary';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryUpload, CommonModule],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  uploadedFiles: File[] = [];
+  
+  onSelect(event: UploadEvent) {
+    console.log('Selected files:', event.files);
+  }
+  
+  onUpload(event: UploadEvent) {
+    this.uploadedFiles = [...this.uploadedFiles, ...event.files];
+    console.log('Upload complete');
+  }
+  
+  onError(error: { error: string }) {
+    alert('Upload error: ' + error.error);
+  }
+  
+  onClear() {
+    console.log('Files cleared');
+  }
+  
+  formatSize(bytes: number): string {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+}
+```
+</CodeGroup>
+
+## Accessibility
+
+- Keyboard accessible file input
+- ARIA labels
+- Focus management
+- Screen reader support

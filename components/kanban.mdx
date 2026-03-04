@@ -1,0 +1,338 @@
+---
+title: 'Kanban'
+description: 'Kanban board component with drag-and-drop cards across columns.'
+---
+
+## Overview
+
+The Kanban component provides a visual board for managing tasks or items across different stages or columns. It features drag-and-drop functionality powered by Atlassian's Pragmatic Drag and Drop library, allowing users to move cards between columns.
+
+## Import
+
+```typescript
+import { MagaryKanban, MagaryKanbanColumn, MagaryKanbanItem } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component, signal } from '@angular/core';
+import { MagaryKanban, MagaryKanbanColumn, MagaryKanbanMoveEvent } from 'ng-magary';
+
+@Component({
+  selector: 'app-kanban-demo',
+  standalone: true,
+  imports: [MagaryKanban],
+  template: `
+    <magary-kanban
+      [(columns)]="columns"
+      [dragDrop]="true"
+      (onMove)="onMove($event)">
+    </magary-kanban>
+  `
+})
+export class KanbanDemoComponent {
+  columns = signal<MagaryKanbanColumn[]>([
+    {
+      id: 'todo',
+      title: 'To Do',
+      items: [
+        { id: '1', label: 'Task 1', description: 'First task' },
+        { id: '2', label: 'Task 2', description: 'Second task' }
+      ]
+    },
+    {
+      id: 'in-progress',
+      title: 'In Progress',
+      items: [
+        { id: '3', label: 'Task 3', description: 'Third task' }
+      ]
+    },
+    {
+      id: 'done',
+      title: 'Done',
+      items: []
+    }
+  ]);
+
+  onMove(event: MagaryKanbanMoveEvent) {
+    console.log('Moved:', event.item.label);
+    console.log('From:', event.fromColumnId, 'To:', event.toColumnId);
+  }
+}
+```
+
+```html Template
+<magary-kanban
+  [(columns)]="columns"
+  [dragDrop]="true"
+  (onMove)="onMove($event)">
+</magary-kanban>
+```
+</CodeGroup>
+
+## With Custom Card Template
+
+```html
+<magary-kanban [(columns)]="columns" [dragDrop]="true">
+  <ng-template #kanbanItemTemplate 
+               let-item 
+               let-column="column"
+               let-columnIndex="columnIndex"
+               let-itemIndex="itemIndex">
+    <div class="kanban-card">
+      <div class="card-header">
+        <h4>{{ item.label }}</h4>
+        <span class="badge" [class]="item.priority">{{ item.priority }}</span>
+      </div>
+      <p class="text-sm">{{ item.description }}</p>
+      <div class="card-footer">
+        <img [src]="item.assignee?.avatar" class="avatar" />
+        <span class="text-xs">{{ item.dueDate | date }}</span>
+      </div>
+    </div>
+  </ng-template>
+</magary-kanban>
+```
+
+## With Custom Column Header
+
+```html
+<magary-kanban [(columns)]="columns" [dragDrop]="true">
+  <ng-template #kanbanColumnHeaderTemplate let-column let-index="index">
+    <div class="custom-column-header">
+      <div class="flex items-center gap-2">
+        <i [class]="column.icon"></i>
+        <h3>{{ column.title }}</h3>
+        <span class="badge">{{ column.items.length }}</span>
+      </div>
+      <button (click)="addCard(column.id)" class="btn-sm">
+        + Add Card
+      </button>
+    </div>
+  </ng-template>
+  
+  <ng-template #kanbanItemTemplate let-item>
+    <div class="kanban-card">{{ item.label }}</div>
+  </ng-template>
+</magary-kanban>
+```
+
+## Properties
+
+<ParamField path="columns" type="MagaryKanbanColumn[]" default="[]">
+  Array of kanban columns, each containing its items. This is a model property supporting two-way binding.
+</ParamField>
+
+<ParamField path="listStyle" type="Record<string, string | number> | null" default="null">
+  Inline styles to apply to each column list container.
+</ParamField>
+
+<ParamField path="dragDrop" type="boolean" default="true">
+  Enables or disables drag-and-drop functionality.
+</ParamField>
+
+## Events
+
+<ParamField path="onColumnsChange" type="EventEmitter<MagaryKanbanColumn[]>">
+  Emitted when columns array changes (cards moved between columns).
+</ParamField>
+
+<ParamField path="onMove" type="EventEmitter<MagaryKanbanMoveEvent>">
+  Emitted when a card is successfully moved. Contains detailed move information.
+</ParamField>
+
+## Interfaces
+
+### MagaryKanbanColumn
+
+```typescript
+interface MagaryKanbanColumn<TItem extends MagaryKanbanItem = MagaryKanbanItem> {
+  id: string;           // Unique column identifier
+  title?: string;       // Column title
+  items: TItem[];       // Array of items in this column
+}
+```
+
+### MagaryKanbanItem
+
+```typescript
+type MagaryKanbanItem = Record<string, unknown> & {
+  id: string;          // Unique item identifier (required)
+  label?: unknown;     // Item label/title
+}
+```
+
+### MagaryKanbanMoveEvent
+
+```typescript
+interface MagaryKanbanMoveEvent<TItem extends MagaryKanbanItem = MagaryKanbanItem> {
+  item: TItem;              // The moved item
+  fromColumnId: string;     // Source column ID
+  toColumnId: string;       // Destination column ID
+  fromIndex: number;        // Original index in source column
+  toIndex: number;          // New index in destination column
+  columns: MagaryKanbanColumn<TItem>[]; // Updated columns array
+}
+```
+
+## Templates
+
+### kanbanItemTemplate
+
+Customize card rendering:
+
+```html
+<ng-template #kanbanItemTemplate 
+             let-item 
+             let-column="column"
+             let-columnIndex="columnIndex"
+             let-itemIndex="itemIndex">
+  <!-- Custom card content -->
+</ng-template>
+```
+
+### kanbanColumnHeaderTemplate
+
+Customize column header:
+
+```html
+<ng-template #kanbanColumnHeaderTemplate let-column let-index="index">
+  <!-- Custom column header -->
+</ng-template>
+```
+
+## Drag and Drop Behavior
+
+The Kanban uses Atlassian's Pragmatic Drag and Drop:
+
+- Cards can be dragged within the same column (reordering)
+- Cards can be dragged between different columns
+- Visual feedback during drag operations
+- Drop zones highlighted on hover
+- Automatic scroll when dragging near edges
+
+## Advanced Example
+
+```typescript
+import { Component, signal } from '@angular/core';
+
+interface Task extends MagaryKanbanItem {
+  id: string;
+  label: string;
+  description: string;
+  priority: 'low' | 'medium' | 'high';
+  assignee?: {
+    name: string;
+    avatar: string;
+  };
+  dueDate?: Date;
+  tags?: string[];
+}
+
+@Component({
+  template: `
+    <magary-kanban [(columns)]="columns" [dragDrop]="true" (onMove)="onTaskMove($event)">
+      <ng-template #kanbanColumnHeaderTemplate let-column let-index="index">
+        <div class="column-header">
+          <h3>{{ column.title }}</h3>
+          <span class="item-count">{{ column.items.length }}</span>
+          <button (click)="addTask(column.id)">+ Add</button>
+        </div>
+      </ng-template>
+      
+      <ng-template #kanbanItemTemplate let-task let-column="column">
+        <div class="task-card" [class.priority-high]="task.priority === 'high'">
+          <div class="task-header">
+            <h4>{{ task.label }}</h4>
+            <button (click)="deleteTask(column.id, task.id)">×</button>
+          </div>
+          <p class="task-description">{{ task.description }}</p>
+          <div class="task-tags">
+            @for (tag of task.tags; track tag) {
+              <span class="tag">{{ tag }}</span>
+            }
+          </div>
+          <div class="task-footer">
+            @if (task.assignee) {
+              <img [src]="task.assignee.avatar" [alt]="task.assignee.name" />
+            }
+            @if (task.dueDate) {
+              <span class="due-date">{{ task.dueDate | date:'short' }}</span>
+            }
+          </div>
+        </div>
+      </ng-template>
+    </magary-kanban>
+  `,
+  styles: [`
+    .task-card {
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    .priority-high {
+      border-left: 4px solid #ef4444;
+    }
+  `]
+})
+export class AdvancedKanbanComponent {
+  columns = signal<MagaryKanbanColumn<Task>[]>([...]);
+
+  onTaskMove(event: MagaryKanbanMoveEvent<Task>) {
+    // Update backend
+    this.updateTaskStatus(event.item.id, event.toColumnId);
+  }
+
+  addTask(columnId: string) {
+    // Add new task logic
+  }
+
+  deleteTask(columnId: string, taskId: string) {
+    // Delete task logic
+  }
+
+  updateTaskStatus(taskId: string, newStatus: string) {
+    // API call to update task
+  }
+}
+```
+
+## Styling
+
+Key CSS classes:
+
+- `magary-kanban-host` - Main container
+- `magary-kanban` - Kanban board wrapper
+- `magary-kanban-column` - Individual column
+- `magary-kanban-column-header` - Column header
+- `magary-kanban-column-body` - Column items container
+- `magary-kanban-item` - Individual card
+- `magary-kanban-item-dragging` - Card being dragged
+- `magary-kanban-item-over` - Drop target indicator
+- `magary-kanban-column-over` - Column drop target
+
+## Use Cases
+
+- **Project Management**: Track tasks through workflow stages
+- **Sales Pipeline**: Manage deals through sales stages
+- **Recruitment**: Track candidates through hiring process
+- **Support Tickets**: Manage tickets by status
+- **Content Workflow**: Track content through editorial stages
+
+## Accessibility
+
+- Keyboard navigation support (via drag-and-drop library)
+- ARIA labels for columns and cards
+- Focus management during drag operations
+- Screen reader announcements for move operations
+
+## Performance
+
+The component uses signals for reactive updates and Angular's change detection strategy OnPush for optimal performance. The drag-and-drop library efficiently handles DOM manipulations.
+
+## Source
+
+View source: `projects/ng-magary/src/lib/Data/kanban/kanban.ts:84`

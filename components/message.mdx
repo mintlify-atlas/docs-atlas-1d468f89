@@ -1,0 +1,270 @@
+---
+title: 'Message'
+description: 'Display inline message notifications'
+---
+
+## Overview
+
+Message component displays inline messages with different severity levels.
+
+## Import
+
+```typescript
+import { MagaryMessage } from 'ng-magary';
+```
+
+## Basic Usage
+
+```html
+<magary-message
+  [severity]="'success'"
+  [text]="'Operation completed successfully'">
+</magary-message>
+```
+
+## Severity Levels
+
+<CodeGroup>
+```html Success
+<magary-message
+  [severity]="'success'"
+  [text]="'Your changes have been saved'">
+</magary-message>
+```
+
+```html Info
+<magary-message
+  [severity]="'info'"
+  [text]="'New updates are available'">
+</magary-message>
+```
+
+```html Warning
+<magary-message
+  [severity]="'warn'"
+  [text]="'Your session will expire soon'">
+</magary-message>
+```
+
+```html Error
+<magary-message
+  [severity]="'error'"
+  [text]="'Failed to save changes'">
+</magary-message>
+```
+</CodeGroup>
+
+## With Detail Text
+
+```html
+<magary-message
+  [severity]="'info'"
+  [text]="'New Version Available'"
+  [detail]="'Version 2.0 includes new features and bug fixes'">
+</magary-message>
+```
+
+## Closable Message
+
+<CodeGroup>
+```html Component
+<magary-message
+  [severity]="'warn'"
+  [text]="'Important Notice'"
+  [detail]="'Please read the terms and conditions'"
+  [closable]="true"
+  (onClose)="handleClose($event)">
+</magary-message>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryMessage } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryMessage],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  handleClose(event: Event) {
+    console.log('Message closed');
+  }
+}
+```
+</CodeGroup>
+
+## Auto-Dismiss
+
+```html
+<magary-message
+  [severity]="'success'"
+  [text]="'File uploaded'"
+  [life]="3000">
+</magary-message>
+```
+
+## Custom Icon
+
+```html
+<magary-message
+  [severity]="'info'"
+  [text]="'Custom Icon Message'"
+  [icon]="'bell'">
+</magary-message>
+```
+
+## Conditional Display
+
+<CodeGroup>
+```html Component
+<magary-message
+  *ngIf="showMessage"
+  [severity]="'success'"
+  [text]="'Form submitted successfully'">
+</magary-message>
+
+<form (ngSubmit)="onSubmit()">
+  <!-- form fields -->
+  <button type="submit">Submit</button>
+</form>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryMessage } from 'ng-magary';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryMessage, CommonModule],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  showMessage = false;
+  
+  onSubmit() {
+    // Submit logic
+    this.showMessage = true;
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+      this.showMessage = false;
+    }, 3000);
+  }
+}
+```
+</CodeGroup>
+
+## Input Properties
+
+<ParamField path="severity" type="'success' | 'info' | 'warn' | 'error' | 'secondary' | 'contrast'" default="'info'">
+  Severity level of the message
+</ParamField>
+
+<ParamField path="text" type="string">
+  Summary text to display
+</ParamField>
+
+<ParamField path="detail" type="string">
+  Detailed message text
+</ParamField>
+
+<ParamField path="icon" type="string">
+  Custom icon (Lucide icon name)
+</ParamField>
+
+<ParamField path="closable" type="boolean" default="false">
+  Show close button
+</ParamField>
+
+<ParamField path="life" type="number">
+  Auto-dismiss duration in milliseconds
+</ParamField>
+
+## Output Events
+
+<ParamField path="onClose" type="EventEmitter<Event>">
+  Callback when message is closed
+</ParamField>
+
+## Complete Example
+
+<CodeGroup>
+```html Component
+<div class="messages-container">
+  <magary-message
+    *ngFor="let msg of messages"
+    [severity]="msg.severity"
+    [text]="msg.text"
+    [detail]="msg.detail"
+    [closable]="true"
+    (onClose)="removeMessage(msg)">
+  </magary-message>
+</div>
+
+<button (click)="addSuccess()">Add Success</button>
+<button (click)="addError()">Add Error</button>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryMessage } from 'ng-magary';
+import { CommonModule } from '@angular/common';
+
+interface Message {
+  severity: 'success' | 'error' | 'warn' | 'info';
+  text: string;
+  detail?: string;
+}
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryMessage, CommonModule],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  messages: Message[] = [];
+  
+  addSuccess() {
+    this.messages.push({
+      severity: 'success',
+      text: 'Success',
+      detail: 'Operation completed successfully'
+    });
+  }
+  
+  addError() {
+    this.messages.push({
+      severity: 'error',
+      text: 'Error',
+      detail: 'Something went wrong'
+    });
+  }
+  
+  removeMessage(msg: Message) {
+    this.messages = this.messages.filter(m => m !== msg);
+  }
+}
+```
+</CodeGroup>
+
+## Features
+
+- **Multiple severities**: 6 severity levels
+- **Closable**: Optional close button
+- **Auto-dismiss**: Configurable timeout
+- **Custom icons**: Override default icons
+- **Animations**: Smooth enter/exit
+- **Detailed text**: Summary and detail support
+- **Inline display**: Shows within page flow
+
+## Accessibility
+
+- ARIA role="alert" for important messages
+- Semantic severity colors
+- Keyboard accessible close button
+- Screen reader support

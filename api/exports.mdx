@@ -1,0 +1,286 @@
+---
+title: Exports
+description: Complete reference of all exported components, directives, and services from ng-magary
+---
+
+# Exports
+
+This page provides a complete reference of all components, directives, and services exported from the `ng-magary` library.
+
+## Import Statement
+
+All exports can be imported from the main package:
+
+```typescript
+import { MagaryButton, MagaryTable, MagaryThemeService } from 'ng-magary';
+```
+
+## Button Components
+
+Components for user interactions and actions.
+
+| Export | Type | Description |
+|--------|------|-------------|
+| `MagaryButton` | Component | Primary button component with variants, sizes, and icons |
+| `MagarySpeedDial` | Component | Floating action button with expandable menu |
+| `MagarySplitButton` | Component | Button with a primary action and dropdown menu |
+
+### Example
+
+```typescript
+import { MagaryButton, MagarySpeedDial } from 'ng-magary';
+```
+
+## Data Components
+
+Components for displaying and managing data.
+
+| Export | Type | Description |
+|--------|------|-------------|
+| `MagaryTable` | Component | Advanced data table with sorting, filtering, and pagination |
+| `MagaryTemplate` | Directive | Template directive for customizing table and other components |
+| `MagaryPaginator` | Component | Pagination control for data navigation |
+| `MagaryTree` | Component | Hierarchical tree view for nested data |
+| `MagaryUITreeNode` | Component | Internal tree node component |
+| `MagaryTimeline` | Component | Display events in chronological order |
+| `MagaryOrganizationChart` | Component | Visualize organizational hierarchies |
+| `MagaryOrganizationChartNode` | Component | Internal node component for organization chart |
+| `MagaryPickList` | Component | Dual-list selection component |
+| `MagaryOrderList` | Component | Ordered list with drag-and-drop reordering |
+| `MagaryDataView` | Component | Display data in grid or list layout |
+| `MagaryKanban` | Component | Kanban board for task management |
+
+### Example
+
+```typescript
+import { MagaryTable, MagaryPaginator, MagaryTree } from 'ng-magary';
+```
+
+## File Components
+
+Components for file operations.
+
+| Export | Type | Description |
+|--------|------|-------------|
+| `MagaryUpload` | Component | File upload component with drag-and-drop support |
+
+### Example
+
+```typescript
+import { MagaryUpload } from 'ng-magary';
+```
+
+## Form Components
+
+Components for form inputs and validation.
+
+| Export | Type | Description |
+|--------|------|-------------|
+| `MagaryCascadeSelect` | Component | Hierarchical dropdown selection |
+| `MagaryInput` | Component | Text input component |
+| `MagaryCheckbox` | Component | Checkbox input |
+| `MagarySwitch` | Component | Toggle switch |
+| `MagarySegmented` | Component | Segmented control for grouped options |
+| `MagarySelect` | Component | Dropdown select component |
+| `MagaryRadio` | Component | Radio button input |
+| `MagaryRadioGroup` | Component | Container for radio buttons |
+| `MagaryTextarea` | Component | Multi-line text input |
+| `MagaryDatepicker` | Component | Date selection component |
+| `MagaryInputNumber` | Component | Numeric input with increment/decrement |
+| `MagarySlider` | Component | Range slider input |
+| `MagaryRating` | Component | Star rating input |
+
+### Example
+
+```typescript
+import { MagaryInput, MagarySelect, MagaryDatepicker } from 'ng-magary';
+```
+
+## Media Components
+
+Components for displaying media content.
+
+| Export | Type | Description |
+|--------|------|-------------|
+| `MagaryImage` | Component | Enhanced image display with lazy loading |
+| `MagaryGalleria` | Component | Image gallery with thumbnails and navigation |
+| `MagaryCarousel` | Component | Carousel/slider for content rotation |
+| `MagaryCarouselComponent` | Component | Alternative export name for carousel |
+
+### Example
+
+```typescript
+import { MagaryImage, MagaryGalleria, MagaryCarousel } from 'ng-magary';
+```
+
+## Menu Components
+
+Navigation and menu components.
+
+| Export | Type | Description |
+|--------|------|-------------|
+| `MagaryPanelMenu` | Component | Accordion-style menu panel |
+| `MagarySidebar` | Component | Collapsible sidebar navigation |
+| `MagaryBreadcrumb` | Component | Breadcrumb navigation trail |
+| `MagarySteps` | Component | Step-by-step progress indicator |
+| `MagaryTieredMenu` | Component | Multi-level hierarchical menu |
+| `MagaryContextMenu` | Component | Right-click context menu |
+| `MagaryMenubar` | Component | Horizontal menu bar |
+| `MagaryMegaMenu` | Component | Large dropdown menu with groups |
+| `MagarySlideMenu` | Component | Sliding menu with sub-menus |
+
+### Example
+
+```typescript
+import { MagaryMenubar, MagarySidebar, MagaryBreadcrumb } from 'ng-magary';
+```
+
+## Message Components
+
+Components for user feedback and notifications.
+
+| Export | Type | Description |
+|--------|------|-------------|
+| `MagaryToast` | Component | Toast notification container |
+| `MagaryToastItem` | Component | Individual toast message |
+| `MagaryToastService` | Service | Service for managing toast notifications |
+| `MagaryMessage` | Component | Inline message display |
+
+### Example
+
+```typescript
+import { MagaryToast, MagaryToastService, MagaryMessage } from 'ng-magary';
+```
+
+## Misc Components
+
+Utility and miscellaneous components.
+
+| Export | Type | Description |
+|--------|------|-------------|
+| `MagaryAvatar` | Component | User avatar display |
+| `MagarySkeleton` | Component | Loading skeleton placeholder |
+| `MagaryDivider` | Component | Visual content separator |
+| `MagaryTag` | Component | Label or tag for categorization |
+
+### Example
+
+```typescript
+import { MagaryAvatar, MagarySkeleton, MagaryTag } from 'ng-magary';
+```
+
+## Overlay Components
+
+Components for overlays and modals.
+
+| Export | Type | Description |
+|--------|------|-------------|
+| `MagaryTooltip` | Directive | Tooltip directive for hover information |
+| `MagaryDialog` | Component | Modal dialog component |
+| `MagaryOverlayPanel` | Component | Floating overlay panel |
+| `MagaryConfirmDialog` | Component | Confirmation dialog |
+| `MagaryConfirmationService` | Service | Service for confirmation dialogs |
+
+### Example
+
+```typescript
+import { MagaryDialog, MagaryTooltip, MagaryConfirmationService } from 'ng-magary';
+```
+
+## Panel Components
+
+Container and layout components.
+
+| Export | Type | Description |
+|--------|------|-------------|
+| `MagaryCard` | Component | Content card container |
+| `MagaryFieldset` | Component | Fieldset for grouping form elements |
+| `MagaryTabs` | Component | Tabbed content container |
+| `MagaryTab` | Component | Individual tab component |
+| `MagaryToolbar` | Component | Toolbar for actions and controls |
+| `MagaryAccordion` | Component | Accordion container |
+| `MagaryAccordionTab` | Component | Individual accordion panel |
+
+### Example
+
+```typescript
+import { MagaryCard, MagaryTabs, MagaryTab, MagaryAccordion } from 'ng-magary';
+```
+
+## Grid Components
+
+Responsive grid layout components.
+
+| Export | Type | Description |
+|--------|------|-------------|
+| `MagaryGrid` | Component | Grid container for responsive layouts |
+| `MagaryGridItem` | Component | Grid item component |
+
+### Example
+
+```typescript
+import { MagaryGrid, MagaryGridItem } from 'ng-magary';
+```
+
+## Services
+
+Global services for application-wide functionality.
+
+| Export | Type | Description |
+|--------|------|-------------|
+| `MagaryThemeService` | Service | Service for managing application themes |
+| `MagaryToastService` | Service | Service for displaying toast notifications |
+| `MagaryConfirmationService` | Service | Service for confirmation dialogs |
+
+### Example
+
+```typescript
+import { MagaryThemeService, MagaryToastService } from 'ng-magary';
+
+// In your component
+constructor(
+  private themeService: MagaryThemeService,
+  private toastService: MagaryToastService
+) {}
+```
+
+## Complete Import Example
+
+```typescript
+import {
+  // Button
+  MagaryButton,
+  MagarySpeedDial,
+  MagarySplitButton,
+  
+  // Data
+  MagaryTable,
+  MagaryTree,
+  MagaryPaginator,
+  
+  // Form
+  MagaryInput,
+  MagarySelect,
+  MagaryDatepicker,
+  MagaryCheckbox,
+  
+  // Menu
+  MagaryMenubar,
+  MagarySidebar,
+  MagaryBreadcrumb,
+  
+  // Services
+  MagaryThemeService,
+  MagaryToastService,
+  
+  // Interfaces
+  MenuItem,
+  MagaryTreeNode,
+  SpeedDialItem
+} from 'ng-magary';
+```
+
+## See Also
+
+- [Interfaces](/api/interfaces) - TypeScript interfaces and type definitions
+- [Components](/components) - Detailed component documentation

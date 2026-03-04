@@ -1,0 +1,588 @@
+---
+title: Accessibility
+description: Learn how Magary ensures accessible components with ARIA attributes, keyboard navigation, and screen reader support
+---
+
+## Overview
+
+Accessibility is a core principle in Magary. All components are built with WCAG 2.1 AA compliance in mind, featuring comprehensive ARIA attributes, keyboard navigation, and screen reader support.
+
+## ARIA Attributes
+
+Magary components use appropriate ARIA attributes to provide semantic meaning to assistive technologies.
+
+### Roles
+
+Components use semantic HTML roles to describe their purpose:
+
+```html
+<!-- Dialog component -->
+<div role="dialog" 
+     aria-modal="true" 
+     aria-labelledby="dialog-title">
+  <h2 id="dialog-title">Confirmation</h2>
+  <!-- Dialog content -->
+</div>
+
+<!-- Toolbar component -->
+<div role="toolbar" aria-label="Text formatting">
+  <!-- Toolbar buttons -->
+</div>
+
+<!-- Alert messages -->
+<div role="alert" 
+     aria-live="assertive" 
+     aria-atomic="true">
+  Error: Please fix the validation errors
+</div>
+```
+
+### Labels and Descriptions
+
+All interactive elements have accessible labels:
+
+```html
+<!-- Tabs component -->
+<div role="tablist" 
+     aria-orientation="horizontal"
+     aria-label="Tabs">
+  <button role="tab" 
+          aria-selected="true"
+          aria-controls="panel-1"
+          tabindex="0">
+    Overview
+  </button>
+</div>
+
+<!-- Accordion -->
+<button aria-controls="section-1" 
+        aria-expanded="false"
+        aria-label="Section 1">
+  Click to expand
+</button>
+<div id="section-1" 
+     role="region" 
+     aria-labelledby="header-1">
+  <!-- Content -->
+</div>
+```
+
+### Live Regions
+
+Dynamic content updates are announced to screen readers:
+
+```html
+<!-- Toast notifications -->
+<div role="alert"
+     aria-live="assertive"
+     aria-atomic="true">
+  File uploaded successfully!
+</div>
+
+<!-- Carousel -->
+<div aria-live="polite"
+     aria-label="Image carousel">
+  <!-- Carousel items -->
+</div>
+```
+
+## Keyboard Navigation
+
+All Magary components are fully keyboard accessible following standard patterns.
+
+### Focus Management
+
+Components manage focus appropriately:
+
+```typescript
+// Dialog traps focus when opened
+@Component({
+  selector: 'magary-dialog',
+  // ...
+})
+export class MagaryDialog {
+  trapFocus = input(true, { transform: booleanAttribute });
+  autoFocus = input(true, { transform: booleanAttribute });
+  
+  // Focus is automatically trapped in dialog
+  // Escape key closes dialog
+  @HostListener('document:keydown.escape', ['$event'])
+  onEscape(event: KeyboardEvent) {
+    if (this.closeOnEscape()) {
+      this.close();
+    }
+  }
+}
+```
+
+### Keyboard Patterns
+
+#### Tabs Component
+
+Follows the ARIA tabs pattern:
+
+```typescript
+onTabKeydown(event: KeyboardEvent, index: number): void {
+  const total = this.tabs().length;
+  let nextIndex = index;
+  let shouldFocus = false;
+
+  switch (event.key) {
+    case 'ArrowRight':
+      nextIndex = index + 1 > total - 1 ? 0 : index + 1;
+      shouldFocus = true;
+      break;
+    case 'ArrowLeft':
+      nextIndex = index - 1 < 0 ? total - 1 : index - 1;
+      shouldFocus = true;
+      break;
+    case 'Home':
+      nextIndex = 0;
+      shouldFocus = true;
+      break;
+    case 'End':
+      nextIndex = total - 1;
+      shouldFocus = true;
+      break;
+  }
+  
+  if (shouldFocus) {
+    event.preventDefault();
+    this.selectTab(nextIndex);
+  }
+}
+```
+
+**Keyboard shortcuts:**
+- `Arrow Right/Left` - Navigate between tabs
+- `Home` - Jump to first tab
+- `End` - Jump to last tab
+- `Tab` - Move focus to tab panel content
+
+#### Gallery Component
+
+Provides rich keyboard navigation:
+
+```typescript
+@HostListener('document:keydown', ['$event'])
+handleKeyboardEvent(event: KeyboardEvent) {
+  if (!this.enableKeyboardNavigation()) return;
+
+  switch (event.key) {
+    case 'ArrowLeft':
+      event.preventDefault();
+      this.prev();
+      break;
+    case 'ArrowRight':
+      event.preventDefault();
+      this.next();
+      break;
+    case 'Escape':
+      this.closePreview();
+      break;
+    case ' ':
+      event.preventDefault();
+      this.togglePlayPause();
+      break;
+    case '+':
+    case '=':
+      event.preventDefault();
+      this.zoomIn();
+      break;
+    case '-':
+      event.preventDefault();
+      this.zoomOut();
+      break;
+    case '0':
+      event.preventDefault();
+      this.resetZoom();
+      break;
+    case 'f':
+    case 'F':
+      event.preventDefault();
+      this.toggleFullScreen();
+      break;
+  }
+}
+```
+
+**Keyboard shortcuts:**
+- `Arrow Left/Right` - Previous/Next image
+- `Space` - Play/Pause slideshow
+- `+/-` - Zoom in/out
+- `0` - Reset zoom
+- `F` - Toggle fullscreen
+- `Escape` - Exit fullscreen or preview
+
+#### Dialog Component
+
+```typescript
+// Escape key handling
+@HostListener('document:keydown.escape', ['$event'])
+onEscape(event: KeyboardEvent) {
+  if (this.closeOnEscape() && this.visible()) {
+    event.preventDefault();
+    this.close();
+  }
+}
+```
+
+<Note>
+All overlay components (Dialog, OverlayPanel, Tooltip, etc.) support Escape key to dismiss.
+</Note>
+
+### Tab Index Management
+
+Components use `tabindex` correctly:
+
+```html
+<!-- Active tab is focusable -->
+<button role="tab" 
+        tabindex="0" 
+        aria-selected="true">
+  Active Tab
+</button>
+
+<!-- Inactive tabs are not in tab order -->
+<button role="tab" 
+        tabindex="-1" 
+        aria-selected="false">
+  Inactive Tab
+</button>
+
+<!-- Disabled accordion header -->
+<button aria-controls="section-1" 
+        tabindex="-1" 
+        aria-disabled="true">
+  Disabled Section
+</button>
+```
+
+## Screen Reader Support
+
+### Descriptive Labels
+
+Components provide context for screen reader users:
+
+```html
+<!-- Button with icon only -->
+<magary-button icon="x" 
+               ariaLabel="Close dialog"
+               iconOnly="true">
+</magary-button>
+
+<!-- Avatar with image -->
+<magary-avatar image="user.jpg" 
+               alt="John Doe profile picture">
+</magary-avatar>
+
+<!-- Carousel indicators -->
+<button aria-label="Go to slide 3 of 5"
+        aria-current="false">
+  3
+</button>
+```
+
+### State Announcements
+
+```html
+<!-- Loading state -->
+<div role="status" 
+     aria-label="Loading content">
+  <div class="loading-spinner" aria-hidden="true"></div>
+</div>
+
+<!-- Accordion expansion state -->
+<button aria-expanded="true">
+  Expanded Section
+</button>
+
+<!-- Selected state -->
+<button aria-selected="true">
+  Selected Option
+</button>
+```
+
+### Hide Decorative Elements
+
+```html
+<!-- Decorative icon hidden from screen readers -->
+<lucide-icon name="chevron-down" 
+             aria-hidden="true">
+</lucide-icon>
+
+<!-- Close button with accessible label -->
+<button aria-label="Close">
+  <lucide-icon name="x" aria-hidden="true"></lucide-icon>
+</button>
+```
+
+## Component-Specific Accessibility
+
+### Dialog
+
+```html
+<magary-dialog [(visible)]="showDialog"
+               header="User Settings"
+               [modal]="true"
+               [trapFocus]="true"
+               [autoFocus]="true"
+               [closeOnEscape]="true"
+               ariaLabel="User settings dialog">
+  <!-- Dialog content -->
+</magary-dialog>
+```
+
+Features:
+- Focus is trapped within dialog when `trapFocus="true"`
+- First focusable element is auto-focused when `autoFocus="true"`
+- `Escape` key closes dialog when `closeOnEscape="true"`
+- Modal backdrop prevents interaction with background
+- Focus returns to trigger element on close
+
+### Tabs
+
+```html
+<magary-tabs tabListAriaLabel="Product information">
+  <magary-tab label="Overview">...</magary-tab>
+  <magary-tab label="Specifications">...</magary-tab>
+  <magary-tab label="Reviews">...</magary-tab>
+</magary-tabs>
+```
+
+Features:
+- Roving tabindex pattern (only active tab is focusable)
+- Arrow keys navigate between tabs
+- `Home`/`End` keys jump to first/last tab
+- Screen readers announce tab count and position
+
+### Accordion
+
+```html
+<magary-accordion>
+  <magary-accordion-tab header="Section 1">
+    Content for section 1
+  </magary-accordion-tab>
+  <magary-accordion-tab header="Section 2" [disabled]="true">
+    Content for section 2
+  </magary-accordion-tab>
+</magary-accordion>
+```
+
+Features:
+- Each header is a button with `aria-expanded` state
+- Panel content has `role="region"`
+- Disabled tabs have `aria-disabled="true"` and `tabindex="-1"`
+- Headers are linked to content via `aria-controls`
+
+### Form Controls
+
+```html
+<!-- Input with label -->
+<label for="email-input">Email Address</label>
+<magary-input id="email-input"
+              [(ngModel)]="email"
+              placeholder="Enter your email"
+              [required]="true"
+              aria-describedby="email-hint">
+</magary-input>
+<span id="email-hint">We'll never share your email</span>
+
+<!-- Checkbox with label -->
+<magary-checkbox [(ngModel)]="agreed"
+                 inputId="terms-checkbox"
+                 ariaLabel="I agree to terms">
+</magary-checkbox>
+<label for="terms-checkbox">I agree to the terms</label>
+```
+
+<Tip>
+Always provide labels for form controls. Use `aria-describedby` to link help text and error messages.
+</Tip>
+
+## Reduced Motion
+
+Magary respects the `prefers-reduced-motion` media query:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  .tab-content {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .p-button {
+    transition: none !important;
+  }
+}
+```
+
+When users have reduced motion enabled, animations are disabled or significantly reduced.
+
+## Color Contrast
+
+All Magary themes meet WCAG AA contrast requirements:
+
+- **Normal text:** 4.5:1 minimum contrast ratio
+- **Large text:** 3:1 minimum contrast ratio
+- **Interactive elements:** 3:1 contrast against background
+
+Example from the light theme:
+```css
+:root {
+  --text-primary: #0f172a;    /* High contrast on white */
+  --text-secondary: #475569;  /* Meets AA standard */
+  --text-tertiary: #94a3b8;   /* Large text only */
+}
+```
+
+## Best Practices
+
+<Steps>
+  <Step title="Always Provide Labels">
+    Every interactive element should have an accessible name via `aria-label`, `aria-labelledby`, or associated `<label>`.
+    
+    ```html
+    <!-- Good -->
+    <magary-button icon="trash" ariaLabel="Delete item"></magary-button>
+    
+    <!-- Bad -->
+    <magary-button icon="trash"></magary-button>
+    ```
+  </Step>
+  
+  <Step title="Test with Keyboard Only">
+    Ensure all functionality is accessible without a mouse. Tab through your interface and verify:
+    - All interactive elements are reachable
+    - Focus order is logical
+    - Focus indicators are visible
+    - Keyboard shortcuts work as expected
+  </Step>
+  
+  <Step title="Test with Screen Reader">
+    Use a screen reader (NVDA, JAWS, VoiceOver) to verify:
+    - All content is announced correctly
+    - State changes are communicated
+    - Navigation is intuitive
+  </Step>
+  
+  <Step title="Maintain Focus Visibility">
+    Never remove focus outlines without providing a clear alternative.
+    
+    ```css
+    /* Bad */
+    button:focus {
+      outline: none;
+    }
+    
+    /* Good */
+    button:focus-visible {
+      outline: 2px solid var(--primary-500);
+      outline-offset: 2px;
+    }
+    ```
+  </Step>
+  
+  <Step title="Provide Text Alternatives">
+    All non-text content should have text alternatives.
+    
+    ```html
+    <magary-avatar image="user.jpg" 
+                   alt="User profile picture">
+    </magary-avatar>
+    
+    <magary-button icon="download" 
+                   ariaLabel="Download report">
+    </magary-button>
+    ```
+  </Step>
+</Steps>
+
+## Testing Tools
+
+Recommended tools for accessibility testing:
+
+- **axe DevTools** - Browser extension for automated testing
+- **WAVE** - Web accessibility evaluation tool
+- **Lighthouse** - Built into Chrome DevTools
+- **Screen Readers:**
+  - NVDA (Windows, free)
+  - JAWS (Windows)
+  - VoiceOver (macOS/iOS)
+  - TalkBack (Android)
+
+<Warning>
+Automated tools catch only ~30% of accessibility issues. Manual testing with keyboard and screen readers is essential.
+</Warning>
+
+## Common Patterns
+
+### Skip Links
+
+Provide skip links for keyboard users:
+
+```html
+<a href="#main-content" class="skip-link">
+  Skip to main content
+</a>
+
+<magary-sidebar>
+  <!-- Navigation -->
+</magary-sidebar>
+
+<main id="main-content">
+  <!-- Main content -->
+</main>
+```
+
+```css
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  z-index: 100;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+```
+
+### Loading States
+
+```html
+<magary-button [loading]="isSubmitting"
+               loadingIcon="loader-2">
+  <span aria-live="polite">
+    @if (isSubmitting) {
+      Submitting...
+    } @else {
+      Submit
+    }
+  </span>
+</magary-button>
+```
+
+### Error Messages
+
+```html
+<magary-input [(ngModel)]="username"
+              [class.invalid]="hasError"
+              aria-describedby="username-error"
+              aria-invalid="{{ hasError }}">
+</magary-input>
+
+@if (hasError) {
+  <span id="username-error" 
+        role="alert" 
+        class="error-message">
+    Username is required
+  </span>
+}
+```
+
+## Next Steps
+
+- Learn about [Styling & Theming](/guides/styling)
+- Explore [Animations](/guides/animations)
+- See [Responsive Design](/guides/responsive-design) patterns

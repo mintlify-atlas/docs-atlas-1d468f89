@@ -1,0 +1,377 @@
+---
+title: 'Split Button'
+description: 'Combined button with primary action and dropdown menu for additional options'
+icon: 'split'
+---
+
+## Overview
+
+The Split Button component combines a primary action button with a dropdown menu of additional actions. It's ideal for presenting a default action alongside related alternatives.
+
+## Import
+
+```typescript
+import { MagarySplitButton } from 'ng-magary';
+import { MenuItem } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagarySplitButton, MenuItem } from 'ng-magary';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagarySplitButton],
+  template: `
+    <magary-split-button
+      label="Save"
+      [model]="saveOptions"
+      (onClick)="save()"
+      (itemClick)="onMenuItemClick($event)"
+    />
+  `
+})
+export class DemoComponent {
+  saveOptions: MenuItem[] = [
+    { label: 'Save as Draft', command: () => this.saveAsDraft() },
+    { label: 'Save as Template', command: () => this.saveAsTemplate() },
+    { label: 'Save and Close', command: () => this.saveAndClose() }
+  ];
+
+  save() {
+    console.log('Default save action');
+  }
+
+  onMenuItemClick(event: { item: MenuItem; originalEvent: MouseEvent }) {
+    console.log('Menu item clicked:', event.item.label);
+  }
+
+  saveAsDraft() { console.log('Saving as draft...'); }
+  saveAsTemplate() { console.log('Saving as template...'); }
+  saveAndClose() { console.log('Saving and closing...'); }
+}
+```
+
+```html Template
+<magary-split-button
+  label="Save"
+  icon="save"
+  [model]="saveOptions"
+  severity="primary"
+  (onClick)="save()"
+/>
+```
+</CodeGroup>
+
+## Properties
+
+### Inputs
+
+<ParamField path="label" type="string" default="'Save'">
+  Text label for the primary action button
+</ParamField>
+
+<ParamField path="icon" type="string" default="undefined">
+  Lucide icon name to display on the primary button
+</ParamField>
+
+<ParamField path="model" type="MenuItem[]" default="[]">
+  Array of menu items for the dropdown menu. Each item can have a label, icon, command, and other properties.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, both the primary button and dropdown are disabled
+</ParamField>
+
+<ParamField path="severity" type="Severity" default="'primary'">
+  Visual style variant
+  
+  Options: `'primary'` | `'secondary'` | `'success'` | `'info'` | `'warning'` | `'help'` | `'danger'`
+</ParamField>
+
+<ParamField path="size" type="Size" default="'md'">
+  Size of the button
+  
+  Options: `'sm'` | `'md'` | `'lg'`
+</ParamField>
+
+<ParamField path="menuPosition" type="MenuPosition" default="'start'">
+  Alignment of the dropdown menu
+  
+  Options: `'start'` | `'end'`
+</ParamField>
+
+<ParamField path="styleClass" type="string" default="''">
+  Additional CSS classes to apply to the component
+</ParamField>
+
+<ParamField path="backgroundColor" type="string | null" default="null">
+  Custom background color (CSS color value)
+</ParamField>
+
+<ParamField path="textColor" type="string | null" default="null">
+  Custom text color (CSS color value)
+</ParamField>
+
+<ParamField path="iconSize" type="number" default="18">
+  Size of the icon in pixels
+</ParamField>
+
+<ParamField path="menuAriaLabel" type="string | null" default="null">
+  Custom ARIA label for the dropdown menu button
+</ParamField>
+
+<ParamField path="closeOnItemSelect" type="boolean" default="true">
+  When true, the dropdown closes after selecting a menu item
+</ParamField>
+
+### Outputs
+
+<ParamField path="onClick" type="EventEmitter<MouseEvent>">
+  Emitted when the primary action button is clicked
+</ParamField>
+
+<ParamField path="onDropdownClick" type="EventEmitter<MouseEvent>">
+  Emitted when the dropdown toggle button is clicked
+</ParamField>
+
+<ParamField path="itemClick" type="EventEmitter<{ item: MenuItem; originalEvent: MouseEvent }>">
+  Emitted when a menu item is clicked. Includes the selected item and original mouse event.
+</ParamField>
+
+## MenuItem Interface
+
+```typescript
+interface MenuItem {
+  label?: string;           // Display text
+  icon?: string;            // Lucide icon name
+  command?: (event: any) => void;  // Action to execute
+  disabled?: boolean;       // Disable the item
+  separator?: boolean;      // Render as separator
+  styleClass?: string;      // Custom CSS classes
+  [key: string]: any;       // Additional properties
+}
+```
+
+## Examples
+
+### Basic Split Button
+
+```html
+<magary-split-button
+  label="Save"
+  [model]="items"
+  (onClick)="save()"
+/>
+```
+
+```typescript
+items: MenuItem[] = [
+  { label: 'Update', command: () => this.update() },
+  { label: 'Delete', command: () => this.delete() }
+];
+```
+
+### With Icons
+
+```typescript
+items: MenuItem[] = [
+  { label: 'New', icon: 'file-plus', command: () => this.create() },
+  { label: 'Open', icon: 'folder-open', command: () => this.open() },
+  { separator: true },
+  { label: 'Recent', icon: 'clock', command: () => this.showRecent() }
+];
+```
+
+```html
+<magary-split-button
+  label="File"
+  icon="file"
+  [model]="items"
+  severity="primary"
+/>
+```
+
+### Severity Variants
+
+<CodeGroup>
+```html Primary
+<magary-split-button
+  label="Save"
+  [model]="items"
+  severity="primary"
+/>
+```
+
+```html Success
+<magary-split-button
+  label="Approve"
+  [model]="items"
+  severity="success"
+/>
+```
+
+```html Danger
+<magary-split-button
+  label="Delete"
+  [model]="items"
+  severity="danger"
+/>
+```
+</CodeGroup>
+
+### Sizes
+
+<CodeGroup>
+```html Small
+<magary-split-button
+  label="Save"
+  [model]="items"
+  size="sm"
+/>
+```
+
+```html Medium
+<magary-split-button
+  label="Save"
+  [model]="items"
+  size="md"
+/>
+```
+
+```html Large
+<magary-split-button
+  label="Save"
+  [model]="items"
+  size="lg"
+/>
+```
+</CodeGroup>
+
+### Menu Alignment
+
+<CodeGroup>
+```html Start Aligned
+<magary-split-button
+  label="Actions"
+  [model]="items"
+  menuPosition="start"
+/>
+```
+
+```html End Aligned
+<magary-split-button
+  label="Actions"
+  [model]="items"
+  menuPosition="end"
+/>
+```
+</CodeGroup>
+
+### Custom Colors
+
+```html
+<magary-split-button
+  label="Custom"
+  [model]="items"
+  backgroundColor="#6366f1"
+  textColor="#ffffff"
+/>
+```
+
+### Disabled State
+
+```html
+<magary-split-button
+  label="Save"
+  [model]="items"
+  [disabled]="true"
+/>
+```
+
+### With Disabled Items
+
+```typescript
+items: MenuItem[] = [
+  { label: 'Edit', command: () => this.edit() },
+  { label: 'Delete', disabled: true },
+  { separator: true },
+  { label: 'Archive', command: () => this.archive() }
+];
+```
+
+### Keep Menu Open
+
+```html
+<magary-split-button
+  label="Actions"
+  [model]="items"
+  [closeOnItemSelect]="false"
+  (itemClick)="handleItemClick($event)"
+/>
+```
+
+## Accessibility
+
+The Split Button component includes comprehensive accessibility features:
+
+- **Keyboard Navigation**: Full keyboard support for both button and menu
+- **ARIA Attributes**: Proper ARIA roles and labels
+- **Focus Management**: Smart focus handling between button and menu items
+- **Screen Reader Support**: Descriptive labels and states
+
+### Keyboard Support
+
+#### Dropdown Trigger
+- **Enter/Space**: Open menu and focus first item
+- **ArrowDown**: Open menu and focus first item
+- **ArrowUp**: Open menu and focus last item
+- **Escape**: Close menu and return focus to trigger
+
+#### Menu Items
+- **ArrowDown**: Focus next item
+- **ArrowUp**: Focus previous item
+- **Home**: Focus first item
+- **End**: Focus last item
+- **Enter/Space**: Select item and execute command
+- **Escape**: Close menu and return focus to trigger
+- **Tab**: Close menu and move focus to next element
+
+## Behavior
+
+### Auto-Close
+
+The dropdown automatically closes when:
+- A menu item is clicked (if `closeOnItemSelect` is true)
+- User clicks outside the component
+- User presses the Escape key
+- User presses Tab to move focus away
+
+### Focus Management
+
+The component manages focus intelligently:
+- Opening the menu focuses the first enabled item
+- Closing with Escape returns focus to the dropdown trigger
+- Arrow keys cycle through enabled items only
+- Disabled items are skipped during keyboard navigation
+
+## Component Details
+
+- **Selector**: `magary-split-button`
+- **Source**: `/home/daytona/workspace/source/projects/ng-magary/src/lib/Button/split-button/split-button.ts`
+- **Standalone**: Yes
+- **Change Detection**: OnPush
+
+## Type Definitions
+
+```typescript
+type Severity = 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'help' | 'danger';
+
+type Size = 'sm' | 'md' | 'lg';
+
+type MenuPosition = 'start' | 'end';
+```

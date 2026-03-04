@@ -1,0 +1,132 @@
+---
+title: 'Toolbar'
+description: 'A container component for grouping and organizing action buttons and controls.'
+---
+
+## Overview
+
+The Toolbar component provides a styled container for organizing action buttons, controls, and other UI elements in a horizontal or vertical layout. It's commonly used for displaying contextual actions related to a specific view or data table.
+
+## Import
+
+```typescript
+import { MagaryToolbar } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryToolbar } from 'ng-magary';
+import { MagaryButton } from 'ng-magary';
+
+@Component({
+  selector: 'app-toolbar-demo',
+  standalone: true,
+  imports: [MagaryToolbar, MagaryButton],
+  template: `
+    <magary-toolbar>
+      <div class="flex gap-2">
+        <magary-button label="New" icon="plus" />
+        <magary-button label="Edit" icon="pencil" />
+        <magary-button label="Delete" icon="trash" severity="danger" />
+      </div>
+      <div class="flex gap-2 ml-auto">
+        <magary-button label="Export" icon="download" variant="outlined" />
+      </div>
+    </magary-toolbar>
+  `
+})
+export class ToolbarDemoComponent {}
+```
+
+```html Template
+<magary-toolbar>
+  <div class="flex gap-2">
+    <magary-button label="New" icon="plus" />
+    <magary-button label="Edit" icon="pencil" />
+    <magary-button label="Delete" icon="trash" severity="danger" />
+  </div>
+  <div class="flex gap-2 ml-auto">
+    <magary-button label="Export" icon="download" variant="outlined" />
+  </div>
+</magary-toolbar>
+```
+</CodeGroup>
+
+## With Custom Styling
+
+```html
+<magary-toolbar 
+  [style]="{ padding: '1.5rem', backgroundColor: '#f8f9fa' }"
+  styleClass="custom-toolbar">
+  <h2>Page Actions</h2>
+  <div class="toolbar-actions">
+    <magary-button label="Save" icon="save" />
+    <magary-button label="Cancel" variant="text" />
+  </div>
+</magary-toolbar>
+```
+
+## Properties
+
+<ParamField path="style" type="Record<string, string | number> | null" default="null">
+  Inline styles to apply to the toolbar container.
+</ParamField>
+
+<ParamField path="styleClass" type="string" default="''">
+  CSS class name(s) to apply to the toolbar element.
+</ParamField>
+
+## Content Projection
+
+The Toolbar component uses `<ng-content>` for content projection, allowing you to place any content inside:
+
+```html
+<magary-toolbar>
+  <!-- Left side actions -->
+  <div class="toolbar-start">
+    <magary-button label="Action 1" />
+  </div>
+  
+  <!-- Right side actions -->
+  <div class="toolbar-end">
+    <magary-button label="Action 2" />
+  </div>
+</magary-toolbar>
+```
+
+## Styling
+
+The toolbar applies the following CSS classes:
+- `magary-toolbar` - Main container class
+
+You can customize the appearance using CSS:
+
+```css
+.magary-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--border-radius);
+}
+```
+
+## Use Cases
+
+- **Table Actions**: Provide CRUD operations for data tables
+- **Form Actions**: Group save, cancel, and reset buttons
+- **Page Headers**: Display contextual actions in page headers
+- **Filter Controls**: Organize search and filter controls
+
+## Accessibility
+
+The Toolbar component is a simple container with no specific ARIA requirements. Ensure that buttons and controls within the toolbar have proper labels and ARIA attributes.
+
+## Source
+
+View source: `projects/ng-magary/src/lib/Panel/toolbar/toolbar.ts:18`

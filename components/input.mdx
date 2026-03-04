@@ -1,0 +1,491 @@
+---
+title: 'Input'
+description: 'Versatile text input component with validation, icons, and multiple variants'
+icon: 'text-cursor-input'
+---
+
+## Overview
+
+The Input component provides a feature-rich text input field with support for various input types, validation, prefix/suffix icons, error states, and multiple visual variants.
+
+## Import
+
+```typescript
+import { MagaryInput } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryInput } from 'ng-magary';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagaryInput],
+  template: `
+    <magary-input
+      label="Email"
+      placeholder="Enter your email"
+      [(value)]="email"
+      type="email"
+      (inputFocus)="onFocus($event)"
+    />
+  `
+})
+export class DemoComponent {
+  email = '';
+
+  onFocus(event: FocusEvent) {
+    console.log('Input focused', event);
+  }
+}
+```
+
+```html Template
+<magary-input
+  label="Email"
+  placeholder="Enter your email"
+  [(value)]="email"
+  type="email"
+/>
+```
+</CodeGroup>
+
+## Properties
+
+### Inputs
+
+<ParamField path="value" type="string" default="''" model>
+  Two-way bindable input value using signal-based model()
+</ParamField>
+
+<ParamField path="placeholder" type="string" default="''">
+  Placeholder text displayed when input is empty
+</ParamField>
+
+<ParamField path="type" type="InputType" default="'text'">
+  HTML input type
+  
+  Options: `'text'` | `'email'` | `'password'` | `'number'` | `'tel'` | `'url'` | `'search'`
+</ParamField>
+
+<ParamField path="size" type="InputSize" default="'normal'">
+  Size of the input field
+  
+  Options: `'small'` | `'normal'` | `'large'`
+</ParamField>
+
+<ParamField path="variant" type="InputVariant" default="'outlined'">
+  Visual style variant
+  
+  Options: `'filled'` | `'outlined'` | `'underlined'`
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, input is disabled and cannot be edited
+</ParamField>
+
+<ParamField path="readonly" type="boolean" default="false">
+  When true, input is read-only
+</ParamField>
+
+<ParamField path="required" type="boolean" default="false">
+  When true, field is required and validated on blur
+</ParamField>
+
+<ParamField path="loading" type="boolean" default="false">
+  When true, displays loading indicator in suffix position
+</ParamField>
+
+<ParamField path="error" type="string" default="''">
+  Error message to display below the input
+</ParamField>
+
+<ParamField path="success" type="boolean" default="false">
+  When true, displays success state styling
+</ParamField>
+
+<ParamField path="label" type="string" default="''">
+  Label text displayed above the input
+</ParamField>
+
+<ParamField path="ariaLabel" type="string" default="''">
+  Custom ARIA label for accessibility. Falls back to label or placeholder.
+</ParamField>
+
+<ParamField path="helpText" type="string" default="''">
+  Helper text displayed below the input
+</ParamField>
+
+<ParamField path="prefixIcon" type="string" default="''">
+  Lucide icon name to display at the start of the input
+</ParamField>
+
+<ParamField path="suffixIcon" type="string" default="''">
+  Lucide icon name to display at the end of the input
+</ParamField>
+
+<ParamField path="width" type="string" default="'100%'">
+  Custom width (CSS value)
+</ParamField>
+
+<ParamField path="maxLength" type="number | undefined" default="undefined">
+  Maximum number of characters allowed
+</ParamField>
+
+### Outputs
+
+<ParamField path="inputFocus" type="EventEmitter<FocusEvent>">
+  Emitted when the input receives focus
+</ParamField>
+
+<ParamField path="inputBlur" type="EventEmitter<FocusEvent>">
+  Emitted when the input loses focus. Triggers validation.
+</ParamField>
+
+<ParamField path="iconClick" type="EventEmitter<'prefix' | 'suffix'>">
+  Emitted when prefix or suffix icon is clicked
+</ParamField>
+
+## Examples
+
+### Input Types
+
+<CodeGroup>
+```html Text
+<magary-input
+  label="Username"
+  type="text"
+  [(value)]="username"
+/>
+```
+
+```html Email
+<magary-input
+  label="Email"
+  type="email"
+  [(value)]="email"
+  [required]="true"
+/>
+```
+
+```html Password
+<magary-input
+  label="Password"
+  type="password"
+  [(value)]="password"
+/>
+```
+
+```html Number
+<magary-input
+  label="Age"
+  type="number"
+  [(value)]="age"
+/>
+```
+</CodeGroup>
+
+### Visual Variants
+
+<CodeGroup>
+```html Outlined
+<magary-input
+  label="Name"
+  variant="outlined"
+  [(value)]="name"
+/>
+```
+
+```html Filled
+<magary-input
+  label="Name"
+  variant="filled"
+  [(value)]="name"
+/>
+```
+
+```html Underlined
+<magary-input
+  label="Name"
+  variant="underlined"
+  [(value)]="name"
+/>
+```
+</CodeGroup>
+
+### Sizes
+
+<CodeGroup>
+```html Small
+<magary-input
+  label="Email"
+  size="small"
+  [(value)]="email"
+/>
+```
+
+```html Normal
+<magary-input
+  label="Email"
+  size="normal"
+  [(value)]="email"
+/>
+```
+
+```html Large
+<magary-input
+  label="Email"
+  size="large"
+  [(value)]="email"
+/>
+```
+</CodeGroup>
+
+### With Icons
+
+<CodeGroup>
+```html Prefix Icon
+<magary-input
+  label="Search"
+  prefixIcon="search"
+  placeholder="Search..."
+  [(value)]="searchTerm"
+/>
+```
+
+```html Suffix Icon
+<magary-input
+  label="Email"
+  suffixIcon="mail"
+  type="email"
+  [(value)]="email"
+/>
+```
+
+```html Both Icons
+<magary-input
+  label="Website"
+  prefixIcon="globe"
+  suffixIcon="external-link"
+  type="url"
+  [(value)]="website"
+/>
+```
+</CodeGroup>
+
+### Password with Toggle
+
+```html
+<!-- Password type automatically includes show/hide toggle -->
+<magary-input
+  label="Password"
+  type="password"
+  [(value)]="password"
+  helpText="Must be at least 8 characters"
+/>
+```
+
+### With Validation
+
+<CodeGroup>
+```html Required Field
+<magary-input
+  label="Email"
+  type="email"
+  [required]="true"
+  [(value)]="email"
+  helpText="Required field"
+/>
+```
+
+```html Custom Error
+<magary-input
+  label="Username"
+  [(value)]="username"
+  [error]="usernameError"
+/>
+```
+
+```typescript Component
+usernameError = '';
+
+validateUsername() {
+  if (this.username.length < 3) {
+    this.usernameError = 'Username must be at least 3 characters';
+  } else {
+    this.usernameError = '';
+  }
+}
+```
+</CodeGroup>
+
+### Success State
+
+```html
+<magary-input
+  label="Email"
+  type="email"
+  [(value)]="email"
+  [success]="emailValid"
+  helpText="Email verified successfully"
+/>
+```
+
+### Loading State
+
+```html
+<magary-input
+  label="Username"
+  [(value)]="username"
+  [loading]="checkingAvailability"
+  helpText="Checking availability..."
+/>
+```
+
+### Character Limit
+
+```html
+<magary-input
+  label="Bio"
+  [(value)]="bio"
+  [maxLength]="160"
+  helpText="Maximum 160 characters"
+/>
+```
+
+### Icon Click Handler
+
+```typescript
+@Component({
+  template: `
+    <magary-input
+      label="Search"
+      prefixIcon="search"
+      suffixIcon="x"
+      [(value)]="searchTerm"
+      (iconClick)="onIconClick($event)"
+    />
+  `
+})
+export class SearchComponent {
+  searchTerm = '';
+
+  onIconClick(position: 'prefix' | 'suffix') {
+    if (position === 'suffix') {
+      this.searchTerm = ''; // Clear on suffix icon click
+    } else {
+      this.performSearch(); // Search on prefix icon click
+    }
+  }
+}
+```
+
+### Disabled and Readonly
+
+<CodeGroup>
+```html Disabled
+<magary-input
+  label="Email"
+  [(value)]="email"
+  [disabled]="true"
+/>
+```
+
+```html Readonly
+<magary-input
+  label="User ID"
+  [(value)]="userId"
+  [readonly]="true"
+/>
+```
+</CodeGroup>
+
+## Validation
+
+The input component includes built-in validation:
+
+### Required Field Validation
+
+When `required` is true, the component validates on blur:
+
+```html
+<magary-input
+  label="Name"
+  [(value)]="name"
+  [required]="true"
+/>
+<!-- Shows "Campo obligatorio" error if empty on blur -->
+```
+
+### Email Validation
+
+When `type="email"`, validates email format on blur:
+
+```html
+<magary-input
+  label="Email"
+  type="email"
+  [(value)]="email"
+/>
+<!-- Shows "Correo electrónico inválido" for invalid emails -->
+```
+
+### Custom Validation
+
+Use the `error` input for custom validation messages:
+
+```typescript
+validatePassword() {
+  if (this.password.length < 8) {
+    this.passwordError = 'Password must be at least 8 characters';
+  } else if (!/[A-Z]/.test(this.password)) {
+    this.passwordError = 'Password must contain an uppercase letter';
+  } else {
+    this.passwordError = '';
+  }
+}
+```
+
+## Accessibility
+
+The Input component includes comprehensive accessibility features:
+
+- **ARIA Labels**: Auto-generated from label, ariaLabel, or placeholder
+- **ARIA Described By**: Links to error/help text
+- **Error Announcements**: Screen readers announce validation errors
+- **Focus Indicators**: Clear visual focus states
+- **Input Modes**: Appropriate inputmode for mobile keyboards
+
+### Password Visibility Toggle
+
+- **ARIA Label**: "Show password" / "Hide password"
+- **Keyboard Accessible**: Fully accessible via keyboard
+- **Icon Updates**: Visual indication of current state
+
+## Component Details
+
+- **Selector**: `magary-input`
+- **Source**: `/home/daytona/workspace/source/projects/ng-magary/src/lib/Form/input/input.ts`
+- **Standalone**: Yes (with CommonModule, FormsModule, LucideAngularModule)
+- **Change Detection**: OnPush
+
+## Type Definitions
+
+```typescript
+type InputType = 
+  | 'text' 
+  | 'email' 
+  | 'password' 
+  | 'number' 
+  | 'tel' 
+  | 'url' 
+  | 'search';
+
+type InputSize = 'small' | 'normal' | 'large';
+
+type InputVariant = 'filled' | 'outlined' | 'underlined';
+```

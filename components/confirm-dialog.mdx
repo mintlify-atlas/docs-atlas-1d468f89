@@ -1,0 +1,197 @@
+---
+title: 'ConfirmDialog'
+description: 'Display confirmation dialogs for user actions'
+---
+
+## Overview
+
+ConfirmDialog is used to confirm user actions with accept/reject callbacks. It works with the `MagaryConfirmationService` to show confirmation prompts.
+
+## Import
+
+```typescript
+import { MagaryConfirmDialog, MagaryConfirmationService } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```html Component
+<button (click)="confirm()">Delete</button>
+
+<magary-confirm-dialog></magary-confirm-dialog>
+```
+
+```typescript TypeScript
+import { Component, inject } from '@angular/core';
+import { MagaryConfirmDialog, MagaryConfirmationService } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryConfirmDialog],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  private confirmationService = inject(MagaryConfirmationService);
+  
+  confirm() {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete this item?',
+      header: 'Confirm Delete',
+      icon: 'trash',
+      accept: () => {
+        // Handle accept
+        console.log('Item deleted');
+      },
+      reject: () => {
+        // Handle reject
+        console.log('Delete cancelled');
+      }
+    });
+  }
+}
+```
+</CodeGroup>
+
+## Custom Labels
+
+```html
+<magary-confirm-dialog
+  [acceptLabel]="'Confirm'"
+  [rejectLabel]="'Cancel'"
+  [acceptIcon]="'check'"
+  [rejectIcon]="'x'">
+</magary-confirm-dialog>
+```
+
+## Multiple Dialogs with Keys
+
+<CodeGroup>
+```html Component
+<!-- Multiple confirm dialogs for different contexts -->
+<magary-confirm-dialog key="delete"></magary-confirm-dialog>
+<magary-confirm-dialog key="save"></magary-confirm-dialog>
+```
+
+```typescript TypeScript
+deleteItem() {
+  this.confirmationService.confirm({
+    key: 'delete',
+    message: 'Delete this item?',
+    accept: () => this.performDelete()
+  });
+}
+
+saveChanges() {
+  this.confirmationService.confirm({
+    key: 'save',
+    message: 'Save changes?',
+    accept: () => this.performSave()
+  });
+}
+```
+</CodeGroup>
+
+## Hide Buttons
+
+```typescript
+this.confirmationService.confirm({
+  message: 'This is just a notification',
+  header: 'Info',
+  rejectVisible: false // Hide reject button
+});
+```
+
+## Input Properties
+
+<ParamField path="header" type="string">
+  Header text for the dialog
+</ParamField>
+
+<ParamField path="icon" type="string">
+  Icon to display in the dialog
+</ParamField>
+
+<ParamField path="message" type="string">
+  Message text to display
+</ParamField>
+
+<ParamField path="key" type="string">
+  Key to match specific confirmation requests
+</ParamField>
+
+<ParamField path="acceptLabel" type="string" default="'Yes'">
+  Label for the accept button
+</ParamField>
+
+<ParamField path="rejectLabel" type="string" default="'No'">
+  Label for the reject button
+</ParamField>
+
+<ParamField path="acceptIcon" type="string">
+  Icon for the accept button
+</ParamField>
+
+<ParamField path="rejectIcon" type="string">
+  Icon for the reject button
+</ParamField>
+
+<ParamField path="acceptVisible" type="boolean" default="true">
+  Show/hide the accept button
+</ParamField>
+
+<ParamField path="rejectVisible" type="boolean" default="true">
+  Show/hide the reject button
+</ParamField>
+
+<ParamField path="dismissableMask" type="boolean" default="false">
+  Whether clicking the backdrop dismisses the dialog
+</ParamField>
+
+<ParamField path="closeOnEscape" type="boolean" default="true">
+  Close dialog on Escape key
+</ParamField>
+
+## Confirmation Interface
+
+```typescript
+interface Confirmation {
+  message?: string;
+  key?: string;
+  icon?: string;
+  header?: string;
+  accept?: () => void;
+  reject?: () => void;
+  acceptLabel?: string;
+  rejectLabel?: string;
+  acceptVisible?: boolean;
+  rejectVisible?: boolean;
+}
+```
+
+## Service API
+
+<ParamField path="confirm(confirmation: Confirmation)" type="void">
+  Show a confirmation dialog
+</ParamField>
+
+<ParamField path="close()" type="void">
+  Close the active confirmation dialog
+</ParamField>
+
+## Features
+
+- **Service-based**: Trigger from anywhere in your app
+- **Multiple instances**: Support multiple dialogs with keys
+- **Customizable**: Override all labels and icons
+- **Button visibility**: Show/hide accept or reject buttons
+- **Callbacks**: Accept and reject handlers
+- **Keyboard support**: Escape to close
+
+## Accessibility
+
+- Uses underlying dialog component's accessibility features
+- Proper focus management
+- Keyboard navigation
+- ARIA attributes

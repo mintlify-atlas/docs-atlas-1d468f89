@@ -1,0 +1,406 @@
+---
+title: 'OrderList'
+description: 'Reorderable list with drag-and-drop and button controls for changing item order.'
+---
+
+## Overview
+
+The OrderList component displays a list of items that can be reordered using drag-and-drop or button controls. It's ideal for managing priorities, sequences, or any ordered collection of items.
+
+## Import
+
+```typescript
+import { MagaryOrderList } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component, signal } from '@angular/core';
+import { MagaryOrderList } from 'ng-magary';
+
+@Component({
+  selector: 'app-orderlist-demo',
+  standalone: true,
+  imports: [MagaryOrderList],
+  template: `
+    <magary-order-list
+      [(value)]="items"
+      header="Task Priority"
+      [dragDrop]="true"
+      (onReorder)="onReorder($event)">
+    </magary-order-list>
+  `
+})
+export class OrderListDemoComponent {
+  items = signal([
+    { id: 1, label: 'High Priority Task', status: 'urgent' },
+    { id: 2, label: 'Medium Priority Task', status: 'normal' },
+    { id: 3, label: 'Low Priority Task', status: 'low' }
+  ]);
+
+  onReorder(reorderedItems: any[]) {
+    console.log('New order:', reorderedItems);
+  }
+}
+```
+
+```html Template
+<magary-order-list
+  [(value)]="items"
+  header="Task Priority"
+  [dragDrop]="true"
+  (onReorder)="onReorder($event)">
+</magary-order-list>
+```
+</CodeGroup>
+
+## With Custom Item Template
+
+```html
+<magary-order-list
+  [(value)]="tasks"
+  header="My Tasks"
+  [dragDrop]="true"
+  [showControls]="true">
+  <ng-template #itemTemplate let-task>
+    <div class="task-item">
+      <div class="flex items-center gap-3">
+        <i class="icon-{{ task.icon }}"></i>
+        <div class="flex-1">
+          <h4 class="font-semibold">{{ task.label }}</h4>
+          <p class="text-sm text-gray-600">{{ task.description }}</p>
+        </div>
+        <span class="badge" [class]="task.priority">
+          {{ task.priority }}
+        </span>
+      </div>
+    </div>
+  </ng-template>
+</magary-order-list>
+```
+
+## With Selection
+
+```typescript
+@Component({
+  template: `
+    <magary-order-list
+      [(value)]="items"
+      [(selection)]="selectedItems"
+      header="Items"
+      [dragDrop]="true"
+      [showControls]="true"
+      (onSelectionChange)="onSelectionChange($event)">
+    </magary-order-list>
+    
+    <div class="mt-4">
+      <p>Selected: {{ selectedItems().length }} items</p>
+    </div>
+  `
+})
+export class OrderListSelectionComponent {
+  items = signal([...]);
+  selectedItems = signal([]);
+
+  onSelectionChange(selected: any[]) {
+    console.log('Selection changed:', selected);
+  }
+}
+```
+
+## Properties
+
+<ParamField path="value" type="any[]" default="[]">
+  Array of items in the list. This is a model property supporting two-way binding.
+</ParamField>
+
+<ParamField path="selection" type="any[]" default="[]">
+  Array of selected items. This is a model property supporting two-way binding.
+</ParamField>
+
+<ParamField path="header" type="string | null" default="null">
+  Header text to display above the list.
+</ParamField>
+
+<ParamField path="listStyle" type="Record<string, string | number> | null" default="null">
+  Inline styles to apply to the list container.
+</ParamField>
+
+<ParamField path="dragDrop" type="boolean" default="false">
+  Enables drag-and-drop functionality for reordering items.
+</ParamField>
+
+<ParamField path="showControls" type="boolean" default="true">
+  Whether to show the reorder control buttons (move up, down, top, bottom).
+</ParamField>
+
+## Events
+
+<ParamField path="onReorder" type="EventEmitter<any[]>">
+  Emitted when items are reordered. Contains the new ordered array.
+</ParamField>
+
+<ParamField path="onSelectionChange" type="EventEmitter<any[]>">
+  Emitted when the selection changes. Contains the array of selected items.
+</ParamField>
+
+## Item Template
+
+Customize item rendering:
+
+```html
+<magary-order-list [(value)]="items">
+  <ng-template #itemTemplate let-item>
+    <div class="custom-item">
+      <span>{{ item.label }}</span>
+      <span class="badge">{{ item.category }}</span>
+    </div>
+  </ng-template>
+</magary-order-list>
+```
+
+## Control Buttons
+
+When `showControls` is true, four buttons are available:
+
+- **Move to Top**: Move selected items to the beginning
+- **Move Up**: Move selected items up one position
+- **Move Down**: Move selected items down one position
+- **Move to Bottom**: Move selected items to the end
+
+## Selection Behavior
+
+Items can be selected by:
+- **Click**: Single selection (or deselect if already selected)
+- **Ctrl/Cmd + Click**: Toggle selection for multiple items
+- Selected items can be moved together using control buttons
+
+## Drag and Drop
+
+When `dragDrop` is enabled:
+
+- Drag items to reorder them
+- Drop between items to insert at position
+- Visual feedback during drag operations
+- Powered by Atlassian's Pragmatic Drag and Drop
+
+## Advanced Example
+
+```typescript
+import { Component, signal } from '@angular/core';
+
+interface Task {
+  id: number;
+  label: string;
+  description: string;
+  priority: 'high' | 'medium' | 'low';
+  assignee?: string;
+  dueDate?: Date;
+  completed: boolean;
+}
+
+@Component({
+  template: `
+    <div class="orderlist-container">
+      <div class="flex justify-between items-center mb-4">
+        <h2>Task Priority Queue</h2>
+        <button (click)="addTask()" class="btn btn-primary">Add Task</button>
+      </div>
+      
+      <magary-order-list
+        [(value)]="tasks"
+        [(selection)]="selectedTasks"
+        header="Tasks ({{ tasks().length }})"
+        [listStyle]="{ height: '600px' }"
+        [dragDrop]="true"
+        [showControls]="true"
+        (onReorder)="onTaskReorder($event)"
+        (onSelectionChange)="onSelectionChange($event)">
+        <ng-template #itemTemplate let-task>
+          <div class="task-card" [class.completed]="task.completed">
+            <div class="task-header">
+              <input 
+                type="checkbox" 
+                [checked]="task.completed"
+                (change)="toggleComplete(task)" />
+              <h4>{{ task.label }}</h4>
+              <span class="priority-badge" [class]="'priority-' + task.priority">
+                {{ task.priority }}
+              </span>
+            </div>
+            <p class="task-description">{{ task.description }}</p>
+            <div class="task-footer">
+              @if (task.assignee) {
+                <span class="assignee">👤 {{ task.assignee }}</span>
+              }
+              @if (task.dueDate) {
+                <span class="due-date">📅 {{ task.dueDate | date:'short' }}</span>
+              }
+            </div>
+          </div>
+        </ng-template>
+      </magary-order-list>
+      
+      <div class="selection-info">
+        @if (selectedTasks().length > 0) {
+          <div class="flex gap-2">
+            <button (click)="deleteSelected()" class="btn btn-danger">
+              Delete Selected ({{ selectedTasks().length }})
+            </button>
+            <button (click)="markSelectedComplete()" class="btn btn-success">
+              Mark Complete
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  `,
+  styles: [`
+    .task-card {
+      padding: 1rem;
+      background: white;
+      border-radius: 0.5rem;
+      border: 1px solid #e5e7eb;
+    }
+    .task-card.completed {
+      opacity: 0.6;
+      text-decoration: line-through;
+    }
+    .priority-badge {
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .priority-high {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .priority-medium {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .priority-low {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+  `]
+})
+export class TaskOrderListComponent {
+  tasks = signal<Task[]>([...]);
+  selectedTasks = signal<Task[]>([]);
+
+  onTaskReorder(reorderedTasks: Task[]) {
+    console.log('Tasks reordered');
+    this.updateTaskPriorities(reorderedTasks);
+  }
+
+  onSelectionChange(selected: Task[]) {
+    console.log('Selected tasks:', selected.length);
+  }
+
+  toggleComplete(task: Task) {
+    const tasks = this.tasks();
+    const index = tasks.findIndex(t => t.id === task.id);
+    if (index !== -1) {
+      tasks[index].completed = !tasks[index].completed;
+      this.tasks.set([...tasks]);
+    }
+  }
+
+  deleteSelected() {
+    const selected = this.selectedTasks();
+    const tasks = this.tasks().filter(t => !selected.includes(t));
+    this.tasks.set(tasks);
+    this.selectedTasks.set([]);
+  }
+
+  markSelectedComplete() {
+    const selected = this.selectedTasks();
+    const tasks = this.tasks().map(t => 
+      selected.includes(t) ? { ...t, completed: true } : t
+    );
+    this.tasks.set(tasks);
+  }
+
+  updateTaskPriorities(tasks: Task[]) {
+    // Update backend with new order
+  }
+
+  addTask() {
+    // Add new task
+  }
+}
+```
+
+## Styling
+
+Key CSS classes:
+
+- `magary-order-list` - Main container
+- `orderlist-header` - Header section
+- `orderlist-controls` - Control buttons container
+- `orderlist-list` - List element
+- `orderlist-item` - Individual item
+- `orderlist-item-selected` - Selected item
+- `orderlist-item-dragging` - Item being dragged
+- `orderlist-item-over` - Drop target indicator
+
+## Custom Styling Example
+
+```css
+.magary-order-list {
+  border: 1px solid var(--surface-border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.orderlist-header {
+  background: var(--surface-100);
+  padding: 1rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.orderlist-item {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--surface-border);
+  cursor: move;
+  transition: background 0.2s;
+}
+
+.orderlist-item:hover {
+  background: var(--surface-50);
+}
+
+.orderlist-item-selected {
+  background: var(--primary-50);
+  border-left: 3px solid var(--primary-color);
+}
+```
+
+## Use Cases
+
+- **Task Prioritization**: Order tasks by priority
+- **Playlist Management**: Reorder songs in a playlist
+- **Menu Ordering**: Arrange menu items
+- **Feature Ranking**: Rank features by importance
+- **Step Sequencing**: Define step order in a process
+
+## Accessibility
+
+- Keyboard navigation with Tab and Arrow keys
+- Enter/Space to select items
+- ARIA labels for controls and list
+- Focus management during drag operations
+- Screen reader announcements for reorder operations
+
+## Performance
+
+The component uses Angular signals and OnPush change detection for optimal performance. The reorder utility from Pragmatic Drag and Drop ensures efficient list updates.
+
+## Source
+
+View source: `projects/ng-magary/src/lib/Data/orderlist/orderlist.ts:47`

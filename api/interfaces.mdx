@@ -1,0 +1,563 @@
+---
+title: Interfaces
+description: TypeScript interfaces and type definitions for ng-magary components
+---
+
+# Interfaces
+
+This page documents the TypeScript interfaces and type definitions used throughout the ng-magary library.
+
+## Import Statement
+
+```typescript
+import { MenuItem, MagaryTreeNode, SpeedDialItem, BreadcrumbItem } from 'ng-magary';
+```
+
+## Menu Interfaces
+
+### MenuItem
+
+Universal menu item interface used across menu components.
+
+<ParamField path="label" type="string">
+  Display label for the menu item
+</ParamField>
+
+<ParamField path="icon" type="string">
+  Icon name (Lucide icon)
+</ParamField>
+
+<ParamField path="command" type="(event?: unknown) => void">
+  Callback function executed when item is clicked
+</ParamField>
+
+<ParamField path="url" type="string">
+  External URL to navigate to
+</ParamField>
+
+<ParamField path="target" type="string">
+  HTML target attribute for URL links (e.g., `_blank`)
+</ParamField>
+
+<ParamField path="routerLink" type="string | readonly unknown[] | UrlTree | null">
+  Angular router link
+</ParamField>
+
+<ParamField path="queryParams" type="Record<string, unknown>">
+  Query parameters for router navigation
+</ParamField>
+
+<ParamField path="route" type="string">
+  Route path
+</ParamField>
+
+<ParamField path="items" type="MenuItem[]">
+  Nested menu items (canonical property)
+</ParamField>
+
+<ParamField path="children" type="MenuItem[]">
+  Nested menu items (backward-compatible alias). Prefer `items` for new code
+</ParamField>
+
+<ParamField path="expanded" type="boolean">
+  Whether the item is expanded (for hierarchical menus)
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Whether the item is disabled
+</ParamField>
+
+<ParamField path="visible" type="boolean">
+  Whether the item is visible
+</ParamField>
+
+<ParamField path="separator" type="boolean">
+  Whether this item is a separator
+</ParamField>
+
+<ParamField path="id" type="string">
+  Unique identifier for the item
+</ParamField>
+
+<ParamField path="badge" type="string">
+  Badge text to display
+</ParamField>
+
+<ParamField path="badgeSeverity" type="MenuBadgeSeverity">
+  Badge severity: `'success' | 'info' | 'warning' | 'danger' | 'contrast'`
+</ParamField>
+
+<ParamField path="iconSize" type="number">
+  Size of the icon in pixels
+</ParamField>
+
+<ParamField path="styleClass" type="string">
+  Custom CSS class
+</ParamField>
+
+<ParamField path="iconClass" type="string">
+  Custom CSS class for the icon
+</ParamField>
+
+<ParamField path="metadata" type="unknown">
+  Custom metadata for the item
+</ParamField>
+
+#### Example
+
+```typescript
+const menuItems: MenuItem[] = [
+  {
+    label: 'Home',
+    icon: 'home',
+    routerLink: '/'
+  },
+  {
+    label: 'Products',
+    icon: 'package',
+    items: [
+      { label: 'Electronics', routerLink: '/products/electronics' },
+      { label: 'Clothing', routerLink: '/products/clothing' }
+    ]
+  },
+  {
+    label: 'Settings',
+    icon: 'settings',
+    command: () => console.log('Settings clicked'),
+    badge: '3',
+    badgeSeverity: 'warning'
+  }
+];
+```
+
+### BreadcrumbItem
+
+Interface for breadcrumb navigation items.
+
+<ParamField path="label" type="string">
+  Display label for the breadcrumb
+</ParamField>
+
+<ParamField path="icon" type="string">
+  Icon name
+</ParamField>
+
+<ParamField path="command" type="(event?) => void">
+  Callback function when item is clicked
+</ParamField>
+
+<ParamField path="url" type="string">
+  External URL
+</ParamField>
+
+<ParamField path="routerLink" type="RouterLinkTarget">
+  Angular router link
+</ParamField>
+
+<ParamField path="queryParams" type="Record<string, unknown>">
+  Router query parameters
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Whether the breadcrumb is disabled
+</ParamField>
+
+<ParamField path="target" type="string">
+  HTML target attribute
+</ParamField>
+
+<ParamField path="style" type="Record<string, string | number | null | undefined>">
+  Inline styles
+</ParamField>
+
+<ParamField path="styleClass" type="string">
+  Custom CSS class
+</ParamField>
+
+<ParamField path="fragment" type="string">
+  URL fragment
+</ParamField>
+
+<ParamField path="preserveFragment" type="boolean">
+  Whether to preserve the fragment
+</ParamField>
+
+<ParamField path="skipLocationChange" type="boolean">
+  Whether to skip location change
+</ParamField>
+
+<ParamField path="replaceUrl" type="boolean">
+  Whether to replace the URL
+</ParamField>
+
+<ParamField path="state" type="Record<string, unknown>">
+  Navigation state
+</ParamField>
+
+#### Example
+
+```typescript
+const breadcrumbs: BreadcrumbItem[] = [
+  { label: 'Home', icon: 'home', routerLink: '/' },
+  { label: 'Products', routerLink: '/products' },
+  { label: 'Electronics', routerLink: '/products/electronics' }
+];
+```
+
+## Button Interfaces
+
+### SpeedDialItem
+
+Interface for speed dial action items.
+
+<ParamField path="icon" type="string" required>
+  Icon name (Lucide icon)
+</ParamField>
+
+<ParamField path="tooltip" type="string">
+  Tooltip text displayed on hover
+</ParamField>
+
+<ParamField path="command" type="(event?: Event) => void">
+  Callback function when item is clicked
+</ParamField>
+
+<ParamField path="id" type="string">
+  Unique identifier
+</ParamField>
+
+<ParamField path="ariaLabel" type="string">
+  ARIA label for accessibility
+</ParamField>
+
+<ParamField path="backgroundColor" type="string">
+  Custom background color
+</ParamField>
+
+<ParamField path="disabled" type="boolean">
+  Whether the item is disabled
+</ParamField>
+
+#### Example
+
+```typescript
+const speedDialItems: SpeedDialItem[] = [
+  {
+    icon: 'plus',
+    tooltip: 'Add New',
+    command: () => this.addNew(),
+    backgroundColor: '#4CAF50'
+  },
+  {
+    icon: 'edit',
+    tooltip: 'Edit',
+    command: () => this.edit()
+  },
+  {
+    icon: 'trash',
+    tooltip: 'Delete',
+    command: () => this.delete(),
+    disabled: !this.hasSelection()
+  }
+];
+```
+
+## Tree Interfaces
+
+### MagaryTreeNode
+
+Interface for tree node data structure.
+
+<ParamField path="label" type="string">
+  Display label for the node
+</ParamField>
+
+<ParamField path="header" type="string">
+  Header text (used in organization chart)
+</ParamField>
+
+<ParamField path="data" type="unknown">
+  Custom data associated with the node
+</ParamField>
+
+<ParamField path="icon" type="string">
+  Icon name
+</ParamField>
+
+<ParamField path="expandedIcon" type="string">
+  Icon to show when node is expanded
+</ParamField>
+
+<ParamField path="collapsedIcon" type="string">
+  Icon to show when node is collapsed
+</ParamField>
+
+<ParamField path="children" type="MagaryTreeNode[]">
+  Child nodes
+</ParamField>
+
+<ParamField path="leaf" type="boolean">
+  Whether the node is a leaf node (no children)
+</ParamField>
+
+<ParamField path="expanded" type="boolean">
+  Whether the node is expanded
+</ParamField>
+
+<ParamField path="type" type="string">
+  Node type identifier
+</ParamField>
+
+<ParamField path="parent" type="MagaryTreeNode">
+  Reference to parent node
+</ParamField>
+
+<ParamField path="partialSelected" type="boolean">
+  Whether the node is partially selected (some children selected)
+</ParamField>
+
+<ParamField path="styleClass" type="string">
+  Custom CSS class
+</ParamField>
+
+<ParamField path="draggable" type="boolean">
+  Whether the node can be dragged
+</ParamField>
+
+<ParamField path="droppable" type="boolean">
+  Whether other nodes can be dropped on this node
+</ParamField>
+
+<ParamField path="selectable" type="boolean">
+  Whether the node can be selected
+</ParamField>
+
+<ParamField path="key" type="string">
+  Unique key for the node
+</ParamField>
+
+#### Example
+
+```typescript
+const treeData: MagaryTreeNode[] = [
+  {
+    label: 'Documents',
+    icon: 'folder',
+    expandedIcon: 'folder-open',
+    collapsedIcon: 'folder',
+    expanded: true,
+    children: [
+      {
+        label: 'Work',
+        icon: 'briefcase',
+        children: [
+          { label: 'Report.pdf', icon: 'file', leaf: true },
+          { label: 'Presentation.pptx', icon: 'file', leaf: true }
+        ]
+      },
+      {
+        label: 'Personal',
+        icon: 'user',
+        children: [
+          { label: 'Resume.pdf', icon: 'file', leaf: true }
+        ]
+      }
+    ]
+  }
+];
+```
+
+### MagaryTreeSelectionValue
+
+Type for tree selection state.
+
+```typescript
+type MagaryTreeSelectionValue = 
+  | MagaryTreeNode 
+  | MagaryTreeNode[] 
+  | Record<string, boolean> 
+  | null;
+```
+
+### MagaryTreeNodeSelectionEvent
+
+Event emitted when a tree node is selected or unselected.
+
+<ParamField path="originalEvent" type="Event">
+  Original DOM event
+</ParamField>
+
+<ParamField path="node" type="MagaryTreeNode">
+  The selected/unselected node
+</ParamField>
+
+### MagaryTreeNodeDropEvent
+
+Event emitted when a node is dropped (drag and drop).
+
+<ParamField path="originalEvent" type="CdkDragDrop<MagaryTreeNode[]>">
+  Original CDK drag-drop event
+</ParamField>
+
+<ParamField path="parent" type="MagaryTreeNode | null">
+  The parent node where the drop occurred
+</ParamField>
+
+<ParamField path="dragNode" type="MagaryTreeNode">
+  The node that was dragged
+</ParamField>
+
+## Table Interfaces
+
+### MagaryTableColumn
+
+Interface for table column configuration.
+
+<ParamField path="field" type="string" required>
+  Field name to display (supports nested fields with dot notation)
+</ParamField>
+
+<ParamField path="header" type="string" required>
+  Column header text
+</ParamField>
+
+<ParamField path="type" type="'text' | 'avatar' | 'badge' | 'date' | 'currency'">
+  Column data type for rendering
+</ParamField>
+
+<ParamField path="sortable" type="boolean">
+  Whether the column is sortable
+</ParamField>
+
+<ParamField path="width" type="string">
+  Column width (CSS value)
+</ParamField>
+
+#### Example
+
+```typescript
+const columns: MagaryTableColumn[] = [
+  { field: 'id', header: 'ID', sortable: true, width: '100px' },
+  { field: 'name', header: 'Name', sortable: true },
+  { field: 'avatar', header: 'Avatar', type: 'avatar', width: '80px' },
+  { field: 'status', header: 'Status', type: 'badge' },
+  { field: 'createdAt', header: 'Created', type: 'date', sortable: true }
+];
+```
+
+### MagaryTableSortState
+
+Interface for table sort state.
+
+<ParamField path="field" type="string | null">
+  Field being sorted
+</ParamField>
+
+<ParamField path="order" type="-1 | 0 | 1">
+  Sort order: `-1` (descending), `0` (none), `1` (ascending)
+</ParamField>
+
+## Toast Interfaces
+
+### Toast
+
+Interface for toast notification configuration.
+
+<ParamField path="id" type="string">
+  Unique identifier (auto-generated if not provided)
+</ParamField>
+
+<ParamField path="type" type="'success' | 'info' | 'warning' | 'error'">
+  Toast severity type
+</ParamField>
+
+<ParamField path="title" type="string">
+  Toast title
+</ParamField>
+
+<ParamField path="message" type="string">
+  Toast message content
+</ParamField>
+
+<ParamField path="icon" type="string">
+  Custom icon name (overrides default type icon)
+</ParamField>
+
+<ParamField path="duration" type="number">
+  Duration in milliseconds before auto-dismiss
+</ParamField>
+
+<ParamField path="life" type="number">
+  Alias for `duration`
+</ParamField>
+
+<ParamField path="sticky" type="boolean">
+  If true, toast will not auto-dismiss
+</ParamField>
+
+<ParamField path="data" type="unknown">
+  Custom data payload
+</ParamField>
+
+#### Example
+
+```typescript
+this.toastService.add({
+  type: 'success',
+  title: 'Success!',
+  message: 'Your changes have been saved.',
+  duration: 3000
+});
+
+this.toastService.add({
+  type: 'error',
+  title: 'Error',
+  message: 'Failed to save changes.',
+  sticky: true
+});
+```
+
+## Paginator Interfaces
+
+### PaginatorState
+
+Interface for paginator state and events.
+
+<ParamField path="first" type="number">
+  Index of the first row
+</ParamField>
+
+<ParamField path="rows" type="number">
+  Number of rows per page
+</ParamField>
+
+<ParamField path="page" type="number">
+  Current page number (0-indexed)
+</ParamField>
+
+<ParamField path="pageCount" type="number">
+  Total number of pages
+</ParamField>
+
+## Type Definitions
+
+### Theme
+
+Supported theme names for `MagaryThemeService`.
+
+```typescript
+type Theme = 'light' | 'dark' | 'purple' | 'green' | 'neo' | 'midnight' | 'cyberpunk' | 'cotton' | 'liquid';
+```
+
+### MenuBadgeSeverity
+
+Badge severity levels for menu items.
+
+```typescript
+type MenuBadgeSeverity = 'success' | 'info' | 'warning' | 'danger' | 'contrast';
+```
+
+## See Also
+
+- [Exports](/api/exports) - Complete list of all exported components and services
+- [Components](/components) - Detailed component documentation

@@ -1,0 +1,440 @@
+---
+title: 'Textarea'
+description: 'Multi-line text input component with auto-resize and character counter'
+icon: 'align-left'
+---
+
+## Overview
+
+The Textarea component provides a multi-line text input field with support for auto-resize, character counting, and Angular Forms integration via ControlValueAccessor.
+
+## Import
+
+```typescript
+import { MagaryTextArea } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryTextArea } from 'ng-magary';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagaryTextArea, FormsModule],
+  template: `
+    <magary-textarea
+      placeholder="Enter your comments..."
+      [(ngModel)]="comments"
+      [rows]="5"
+    />
+  `
+})
+export class DemoComponent {
+  comments = '';
+}
+```
+
+```html Template
+<magary-textarea
+  placeholder="Enter your comments..."
+  [(ngModel)]="comments"
+  [rows]="5"
+/>
+```
+</CodeGroup>
+
+## Properties
+
+### Inputs
+
+<ParamField path="rows" type="number" default="3">
+  Number of visible text rows (controls initial height)
+</ParamField>
+
+<ParamField path="cols" type="number" default="20">
+  Number of visible character columns (controls width)
+</ParamField>
+
+<ParamField path="placeholder" type="string" default="undefined">
+  Placeholder text displayed when textarea is empty
+</ParamField>
+
+<ParamField path="autoResize" type="boolean" default="false">
+  When true, textarea automatically grows/shrinks to fit content
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, textarea is disabled and cannot be edited
+</ParamField>
+
+<ParamField path="maxlength" type="number | null" default="null">
+  Maximum number of characters allowed
+</ParamField>
+
+<ParamField path="showCounter" type="boolean" default="false">
+  When true, displays character count below the textarea
+</ParamField>
+
+## Examples
+
+### Basic Textarea
+
+```html
+<magary-textarea
+  placeholder="Write something..."
+  [(ngModel)]="text"
+/>
+```
+
+### Custom Rows and Columns
+
+```html
+<magary-textarea
+  placeholder="Description"
+  [(ngModel)]="description"
+  [rows]="10"
+  [cols]="50"
+/>
+```
+
+### Auto-Resize
+
+```html
+<magary-textarea
+  placeholder="This textarea grows with content"
+  [(ngModel)]="content"
+  [autoResize]="true"
+/>
+```
+
+### Character Counter
+
+```html
+<magary-textarea
+  placeholder="Enter your bio (max 500 characters)"
+  [(ngModel)]="bio"
+  [maxlength]="500"
+  [showCounter]="true"
+  [rows]="4"
+/>
+```
+
+### Disabled State
+
+```html
+<magary-textarea
+  placeholder="Read-only content"
+  [(ngModel)]="readOnlyText"
+  [disabled]="true"
+  [rows]="5"
+/>
+```
+
+### Reactive Forms
+
+```typescript
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MagaryTextArea } from 'ng-magary';
+
+@Component({
+  selector: 'app-feedback',
+  standalone: true,
+  imports: [ReactiveFormsModule, MagaryTextArea],
+  template: `
+    <form [formGroup]="feedbackForm" (ngSubmit)="onSubmit()">
+      <magary-textarea
+        placeholder="Please share your feedback"
+        formControlName="feedback"
+        [rows]="6"
+        [maxlength]="1000"
+        [showCounter]="true"
+        [autoResize]="true"
+      />
+      
+      <button type="submit" [disabled]="!feedbackForm.valid">
+        Submit Feedback
+      </button>
+    </form>
+  `
+})
+export class FeedbackComponent {
+  feedbackForm: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.feedbackForm = this.fb.group({
+      feedback: ['', [Validators.required, Validators.minLength(10)]]
+    });
+  }
+
+  onSubmit() {
+    console.log('Feedback:', this.feedbackForm.value);
+  }
+}
+```
+
+### Comment Section
+
+```typescript
+@Component({
+  template: `
+    <div class="comment-section">
+      <h3>Leave a Comment</h3>
+      <magary-textarea
+        placeholder="Share your thoughts..."
+        [(ngModel)]="comment"
+        [rows]="4"
+        [autoResize]="true"
+        [maxlength]="500"
+        [showCounter]="true"
+      />
+      
+      <button (click)="postComment()" [disabled]="!comment.trim()">
+        Post Comment
+      </button>
+    </div>
+  `
+})
+export class CommentComponent {
+  comment = '';
+
+  postComment() {
+    if (this.comment.trim()) {
+      console.log('Posting comment:', this.comment);
+      // API call to post comment
+      this.comment = ''; // Clear after posting
+    }
+  }
+}
+```
+
+### Multi-Field Form
+
+```typescript
+@Component({
+  template: `
+    <form [formGroup]="articleForm">
+      <div class="form-field">
+        <label>Title</label>
+        <input type="text" formControlName="title" />
+      </div>
+      
+      <div class="form-field">
+        <label>Summary (max 200 chars)</label>
+        <magary-textarea
+          formControlName="summary"
+          [rows]="3"
+          [maxlength]="200"
+          [showCounter]="true"
+          placeholder="Brief summary of the article"
+        />
+      </div>
+      
+      <div class="form-field">
+        <label>Content</label>
+        <magary-textarea
+          formControlName="content"
+          [rows]="15"
+          [autoResize]="true"
+          placeholder="Full article content"
+        />
+      </div>
+      
+      <button (click)="saveArticle()">Save Article</button>
+    </form>
+  `
+})
+export class ArticleEditorComponent {
+  articleForm: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.articleForm = this.fb.group({
+      title: ['', Validators.required],
+      summary: ['', [Validators.required, Validators.maxLength(200)]],
+      content: ['', Validators.required]
+    });
+  }
+
+  saveArticle() {
+    if (this.articleForm.valid) {
+      console.log('Saving article:', this.articleForm.value);
+    }
+  }
+}
+```
+
+### Auto-Resize with Min/Max Height
+
+```typescript
+@Component({
+  template: `
+    <magary-textarea
+      placeholder="This textarea grows between min and max height"
+      [(ngModel)]="text"
+      [autoResize]="true"
+      [rows]="3"
+      style="min-height: 80px; max-height: 300px;"
+    />
+  `,
+  styles: [`
+    magary-textarea {
+      display: block;
+    }
+  `]
+})
+export class AutoResizeComponent {
+  text = '';
+}
+```
+
+### With Validation
+
+```typescript
+@Component({
+  template: `
+    <form [formGroup]="form">
+      <magary-textarea
+        formControlName="message"
+        placeholder="Message (minimum 20 characters)"
+        [rows]="5"
+        [showCounter]="true"
+        [maxlength]="500"
+      />
+      
+      @if (form.get('message')?.invalid && form.get('message')?.touched) {
+        <div class="error-message">
+          @if (form.get('message')?.errors?.['required']) {
+            <span>Message is required</span>
+          }
+          @if (form.get('message')?.errors?.['minlength']) {
+            <span>Message must be at least 20 characters</span>
+          }
+        </div>
+      }
+    </form>
+  `
+})
+export class ValidationComponent {
+  form: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.form = this.fb.group({
+      message: ['', [
+        Validators.required,
+        Validators.minLength(20),
+        Validators.maxLength(500)
+      ]]
+    });
+  }
+}
+```
+
+## Auto-Resize Behavior
+
+When `autoResize` is enabled:
+
+- Textarea height automatically adjusts to fit content
+- Grows as user types more lines
+- Shrinks when content is deleted
+- Respects min-height and max-height CSS properties
+- Updates on programmatic value changes
+
+```html
+<magary-textarea
+  [(ngModel)]="content"
+  [autoResize]="true"
+  [rows]="3"
+  style="min-height: 60px; max-height: 400px;"
+/>
+```
+
+## Character Counter
+
+When `showCounter` is enabled:
+
+- Displays current character count
+- Shows "X / Y" format when maxlength is set
+- Shows just "X" when no maxlength
+- Updates in real-time as user types
+
+```html
+<magary-textarea
+  [(ngModel)]="bio"
+  [maxlength]="160"
+  [showCounter]="true"
+/>
+<!-- Shows: "45 / 160" -->
+```
+
+## ControlValueAccessor
+
+The Textarea component implements Angular's ControlValueAccessor interface:
+
+```typescript
+// Works with ngModel
+<magary-textarea [(ngModel)]="value" />
+
+// Works with FormControl
+<magary-textarea [formControl]="control" />
+
+// Works with FormControlName
+<form [formGroup]="form">
+  <magary-textarea formControlName="field" />
+</form>
+```
+
+### Disabled State
+
+The component respects disabled state from both:
+- The `disabled` input property
+- FormControl's disabled state
+
+```typescript
+// Via input
+<magary-textarea [disabled]="true" />
+
+// Via FormControl
+this.form.get('field')?.disable();
+```
+
+## Accessibility
+
+The Textarea component includes accessibility features:
+
+- **Keyboard Support**: Standard textarea keyboard interactions
+- **Focus Indicators**: Visual focus states
+- **Semantic HTML**: Uses native textarea element
+- **Label Association**: Can be associated with external labels
+
+### Keyboard Support
+
+- **Tab**: Move focus to/from textarea
+- **Enter**: Insert new line
+- **Standard editing keys**: Cut, copy, paste, select all
+
+## Component Details
+
+- **Selector**: `magary-textarea`
+- **Source**: `/home/daytona/workspace/source/projects/ng-magary/src/lib/Form/textarea/textarea.ts`
+- **Standalone**: Yes
+- **Change Detection**: OnPush
+- **Implements**: ControlValueAccessor, AfterViewInit
+
+## State Management
+
+The textarea maintains its state using Angular signals:
+
+```typescript
+// Internal state signals
+value = signal<string>('');        // Current text value
+length = computed(() => this.value().length); // Character count
+formDisabled = signal(false);      // Form-level disabled state
+
+// Computed disabled state
+isDisabled = computed(() => this.disabled() || this.formDisabled());
+```

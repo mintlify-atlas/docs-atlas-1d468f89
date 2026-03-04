@@ -1,0 +1,283 @@
+---
+title: 'Toast'
+description: 'Display toast notifications'
+---
+
+## Overview
+
+Toast component displays temporary notification messages. Works with `MagaryToastService` to show notifications from anywhere in your application.
+
+## Import
+
+```typescript
+import { MagaryToast, MagaryToastService } from 'ng-magary';
+```
+
+## Setup
+
+Add the toast component to your app root template:
+
+```html
+<!-- app.component.html -->
+<magary-toast></magary-toast>
+<router-outlet></router-outlet>
+```
+
+## Basic Usage
+
+<CodeGroup>
+```html Component
+<button (click)="showSuccess()">Show Success</button>
+<button (click)="showInfo()">Show Info</button>
+<button (click)="showWarn()">Show Warning</button>
+<button (click)="showError()">Show Error</button>
+```
+
+```typescript TypeScript
+import { Component, inject } from '@angular/core';
+import { MagaryToast, MagaryToastService } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryToast],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  private toastService = inject(MagaryToastService);
+  
+  showSuccess() {
+    this.toastService.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Operation completed successfully'
+    });
+  }
+  
+  showInfo() {
+    this.toastService.add({
+      severity: 'info',
+      summary: 'Info',
+      detail: 'Here is some information'
+    });
+  }
+  
+  showWarn() {
+    this.toastService.add({
+      severity: 'warn',
+      summary: 'Warning',
+      detail: 'Please be careful'
+    });
+  }
+  
+  showError() {
+    this.toastService.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Something went wrong'
+    });
+  }
+}
+```
+</CodeGroup>
+
+## Position Options
+
+<CodeGroup>
+```html Top Right (Default)
+<magary-toast [position]="'top-right'"></magary-toast>
+```
+
+```html Top Left
+<magary-toast [position]="'top-left'"></magary-toast>
+```
+
+```html Bottom Right
+<magary-toast [position]="'bottom-right'"></magary-toast>
+```
+
+```html Top Center
+<magary-toast [position]="'top-center'"></magary-toast>
+```
+
+```html Center
+<magary-toast [position]="'center'"></magary-toast>
+```
+</CodeGroup>
+
+## Auto-Dismiss
+
+```typescript
+this.toastService.add({
+  severity: 'info',
+  summary: 'Auto Close',
+  detail: 'This will close in 3 seconds',
+  life: 3000 // milliseconds
+});
+```
+
+## Sticky Toast
+
+```typescript
+this.toastService.add({
+  severity: 'info',
+  summary: 'Sticky',
+  detail: 'This will not auto-close',
+  sticky: true
+});
+```
+
+## With Custom Content
+
+```typescript
+this.toastService.add({
+  severity: 'success',
+  summary: 'File Uploaded',
+  detail: 'document.pdf has been uploaded successfully',
+  icon: 'upload',
+  closable: true
+});
+```
+
+## Multiple Toasts
+
+```typescript
+showMultiple() {
+  this.toastService.add({
+    severity: 'info',
+    summary: 'Message 1',
+    detail: 'First message'
+  });
+  
+  this.toastService.add({
+    severity: 'success',
+    summary: 'Message 2',
+    detail: 'Second message'
+  });
+  
+  this.toastService.add({
+    severity: 'warn',
+    summary: 'Message 3',
+    detail: 'Third message'
+  });
+}
+```
+
+## Clear Toasts
+
+```typescript
+// Clear all toasts
+this.toastService.clear();
+
+// Clear specific toast by key
+this.toastService.clear('myKey');
+```
+
+## Input Properties
+
+<ParamField path="position" type="'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'top-center' | 'bottom-center' | 'center'" default="'top-right'">
+  Position of toast container
+</ParamField>
+
+<ParamField path="baseZIndex" type="number" default="1100">
+  Base z-index value
+</ParamField>
+
+<ParamField path="offsetX" type="string" default="'1rem'">
+  Horizontal offset from edge
+</ParamField>
+
+<ParamField path="offsetY" type="string" default="'1rem'">
+  Vertical offset from edge
+</ParamField>
+
+## Toast Message Interface
+
+```typescript
+interface ToastMessage {
+  severity?: 'success' | 'info' | 'warn' | 'error';
+  summary?: string;
+  detail?: string;
+  life?: number; // milliseconds
+  sticky?: boolean;
+  closable?: boolean;
+  icon?: string;
+  key?: string;
+  data?: any;
+}
+```
+
+## Service Methods
+
+<ParamField path="add(message: ToastMessage)" type="void">
+  Add a toast message
+</ParamField>
+
+<ParamField path="clear(key?: string)" type="void">
+  Clear toasts (all or by key)
+</ParamField>
+
+<ParamField path="remove(id: string)" type="void">
+  Remove specific toast by ID
+</ParamField>
+
+## Features
+
+- **Multiple positions**: 7 position options
+- **Auto-dismiss**: Configurable timeout
+- **Sticky mode**: Toasts that don't auto-close
+- **Animations**: Smooth enter/exit transitions
+- **Multiple severities**: Success, info, warning, error
+- **Custom icons**: Use Lucide icons
+- **Closable**: Optional close button
+- **Service-based**: Show from anywhere in app
+
+## Complete Example
+
+```typescript
+import { Component, inject } from '@angular/core';
+import { MagaryToast, MagaryToastService } from 'ng-magary';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [MagaryToast],
+  template: `
+    <magary-toast [position]="'top-right'"></magary-toast>
+    <router-outlet></router-outlet>
+  `
+})
+export class AppComponent {}
+
+// Use in any component
+@Component({...})
+export class AnyComponent {
+  private toastService = inject(MagaryToastService);
+  
+  saveData() {
+    // Your save logic
+    this.toastService.add({
+      severity: 'success',
+      summary: 'Saved',
+      detail: 'Data saved successfully',
+      life: 3000
+    });
+  }
+  
+  handleError(error: any) {
+    this.toastService.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: error.message,
+      sticky: true
+    });
+  }
+}
+```
+
+## Accessibility
+
+- ARIA live region for announcements
+- Keyboard accessible (Tab, Enter to close)
+- Screen reader support
+- Focus management

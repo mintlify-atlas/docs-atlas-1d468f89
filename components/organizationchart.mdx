@@ -1,0 +1,348 @@
+---
+title: 'Organization Chart'
+description: 'Visualize hierarchical organizational structures with expandable nodes.'
+---
+
+## Overview
+
+The Organization Chart component displays hierarchical data in a tree structure optimized for organizational hierarchies. It supports node selection, collapsible nodes, and custom templates for node content.
+
+## Import
+
+```typescript
+import { MagaryOrganizationChart, MagaryTreeNode } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryOrganizationChart, MagaryTreeNode } from 'ng-magary';
+
+@Component({
+  selector: 'app-org-chart-demo',
+  standalone: true,
+  imports: [MagaryOrganizationChart],
+  template: `
+    <magary-organization-chart
+      [value]="orgData"
+      [collapsible]="true"
+      (onNodeSelect)="onNodeSelect($event)">
+    </magary-organization-chart>
+  `
+})
+export class OrgChartDemoComponent {
+  orgData: MagaryTreeNode[] = [
+    {
+      label: 'CEO',
+      expanded: true,
+      data: { name: 'John Smith', title: 'Chief Executive Officer' },
+      children: [
+        {
+          label: 'CTO',
+          expanded: true,
+          data: { name: 'Sarah Johnson', title: 'Chief Technology Officer' },
+          children: [
+            { label: 'Dev Manager', data: { name: 'Mike Brown' } },
+            { label: 'QA Manager', data: { name: 'Lisa White' } }
+          ]
+        },
+        {
+          label: 'CFO',
+          data: { name: 'David Lee', title: 'Chief Financial Officer' },
+          children: [
+            { label: 'Accountant', data: { name: 'Emma Wilson' } }
+          ]
+        }
+      ]
+    }
+  ];
+
+  onNodeSelect(event: any) {
+    console.log('Selected:', event.node.data);
+  }
+}
+```
+
+```html Template
+<magary-organization-chart
+  [value]="orgData"
+  [collapsible]="true"
+  (onNodeSelect)="onNodeSelect($event)">
+</magary-organization-chart>
+```
+</CodeGroup>
+
+## With Custom Template
+
+```html
+<magary-organization-chart [value]="orgData" [collapsible]="true">
+  <ng-template #template let-node>
+    <div class="org-node">
+      <img [src]="node.data.avatar" alt="Avatar" class="avatar" />
+      <div class="node-content">
+        <h4>{{ node.data.name }}</h4>
+        <p class="text-sm text-gray-600">{{ node.data.title }}</p>
+        <span class="badge">{{ node.data.department }}</span>
+      </div>
+    </div>
+  </ng-template>
+</magary-organization-chart>
+```
+
+## With Selection
+
+```typescript
+@Component({
+  template: `
+    <magary-organization-chart
+      [value]="orgData"
+      selectionMode="single"
+      [(selection)]="selectedNode"
+      (onNodeSelect)="onNodeSelect($event)">
+    </magary-organization-chart>
+    
+    @if (selectedNode) {
+      <div class="selected-info">
+        <h3>Selected: {{ selectedNode.data.name }}</h3>
+        <p>{{ selectedNode.data.title }}</p>
+      </div>
+    }
+  `
+})
+export class OrgChartSelectionComponent {
+  orgData: MagaryTreeNode[] = [...];
+  selectedNode: MagaryTreeNode | null = null;
+
+  onNodeSelect(event: any) {
+    console.log('Selected node:', event.node);
+  }
+}
+```
+
+## Properties
+
+<ParamField path="value" type="MagaryTreeNode[]" default="[]">
+  Array of tree nodes representing the organizational hierarchy. Typically contains one root node.
+</ParamField>
+
+<ParamField path="selectionMode" type="'single' | 'multiple' | null" default="null">
+  Node selection mode. When null, selection is disabled.
+</ParamField>
+
+<ParamField path="selection" type="MagaryTreeSelectionValue" default="null">
+  Currently selected node(s). Single node or array depending on selectionMode.
+</ParamField>
+
+<ParamField path="collapsible" type="boolean" default="false">
+  When enabled, nodes can be collapsed/expanded to hide/show their children.
+</ParamField>
+
+<ParamField path="chartAriaLabel" type="string" default="'Organization chart'">
+  ARIA label for the organization chart element.
+</ParamField>
+
+## Events
+
+<ParamField path="onNodeSelect" type="EventEmitter<MagaryTreeNodeSelectionEvent>">
+  Emitted when a node is selected.
+</ParamField>
+
+<ParamField path="onNodeUnselect" type="EventEmitter<MagaryTreeNodeSelectionEvent>">
+  Emitted when a node is unselected.
+</ParamField>
+
+<ParamField path="onNodeExpand" type="EventEmitter<MagaryTreeNode>">
+  Emitted when a collapsible node is expanded.
+</ParamField>
+
+<ParamField path="onNodeCollapse" type="EventEmitter<MagaryTreeNode>">
+  Emitted when a collapsible node is collapsed.
+</ParamField>
+
+## Template
+
+Customize node rendering with a content template:
+
+```html
+<magary-organization-chart [value]="data">
+  <ng-template #template let-node>
+    <!-- node is of type MagaryTreeNode -->
+    <div class="custom-node">
+      <h4>{{ node.label }}</h4>
+      <p>{{ node.data?.description }}</p>
+    </div>
+  </ng-template>
+</magary-organization-chart>
+```
+
+The template receives the `MagaryTreeNode` as context.
+
+## Node Structure
+
+Organization chart uses the `MagaryTreeNode` interface:
+
+```typescript
+interface MagaryTreeNode {
+  label?: string;              // Node display label
+  data?: any;                  // Custom node data (employee info, etc.)
+  icon?: string;               // Optional icon
+  children?: MagaryTreeNode[]; // Child nodes
+  expanded?: boolean;          // Expansion state
+  type?: string;               // Node type
+  styleClass?: string;         // Custom CSS class
+  selectable?: boolean;        // Can be selected
+  key?: string;                // Unique identifier
+}
+```
+
+## Data Examples
+
+### Simple Organization
+
+```typescript
+orgData: MagaryTreeNode[] = [
+  {
+    label: 'CEO',
+    expanded: true,
+    children: [
+      { label: 'VP Engineering' },
+      { label: 'VP Sales' },
+      { label: 'VP Marketing' }
+    ]
+  }
+];
+```
+
+### Detailed Organization with Data
+
+```typescript
+orgData: MagaryTreeNode[] = [
+  {
+    label: 'Executive Team',
+    expanded: true,
+    data: {
+      name: 'Jane Doe',
+      title: 'Chief Executive Officer',
+      email: 'jane.doe@company.com',
+      department: 'Executive',
+      avatar: '/avatars/jane.jpg'
+    },
+    children: [
+      {
+        label: 'Technology',
+        expanded: true,
+        data: {
+          name: 'John Smith',
+          title: 'CTO',
+          email: 'john.smith@company.com',
+          department: 'Technology',
+          avatar: '/avatars/john.jpg'
+        },
+        children: [
+          {
+            label: 'Engineering',
+            data: {
+              name: 'Mike Johnson',
+              title: 'Engineering Manager',
+              email: 'mike.j@company.com',
+              department: 'Engineering',
+              avatar: '/avatars/mike.jpg'
+            }
+          }
+        ]
+      }
+    ]
+  }
+];
+```
+
+## Styling
+
+The organization chart uses these CSS classes:
+
+- `magary-organization-chart` - Main container
+- `magary-organization-chart-node` - Individual node
+- `magary-organization-chart-node-content` - Node content wrapper
+- `magary-organization-chart-lines` - Connector lines
+- `magary-organization-chart-line-down` - Vertical connector
+- `magary-organization-chart-line-left` - Left horizontal connector
+- `magary-organization-chart-line-right` - Right horizontal connector
+
+## Custom Styling Example
+
+```css
+.org-node {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+}
+
+.org-node .avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.org-node .node-content h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.org-node .badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+}
+```
+
+## Use Cases
+
+- **Company Hierarchy**: Display organizational structure
+- **Team Structure**: Show team composition and reporting lines
+- **Department Organization**: Visualize department hierarchies
+- **Project Teams**: Display project team structure
+
+## Accessibility
+
+- Uses semantic HTML structure
+- ARIA labels for chart identification
+- Keyboard navigation support
+- Focus management for interactive nodes
+- Screen reader support for hierarchy announcements
+
+## Differences from Tree Component
+
+While both use `MagaryTreeNode`, the Organization Chart:
+
+- Optimized for hierarchical organizational data
+- Horizontal layout showing parent-child relationships
+- Visual connector lines between nodes
+- Better suited for smaller, more focused hierarchies
+- No drag-and-drop or filtering features
+
+Use **Tree** for:
+- File/folder structures
+- Navigation menus
+- Large hierarchical datasets
+- Drag-and-drop reordering
+
+Use **Organization Chart** for:
+- Company/team structures
+- Reporting hierarchies
+- Visual org representations
+
+## Source
+
+View source: `projects/ng-magary/src/lib/Data/organizationchart/organizationchart.ts:28`

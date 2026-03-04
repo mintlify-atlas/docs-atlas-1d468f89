@@ -1,0 +1,362 @@
+---
+title: 'PickList'
+description: 'Transfer items between two lists with drag-and-drop and button controls.'
+---
+
+## Overview
+
+The PickList component provides dual list boxes for transferring items between source and target lists. It supports drag-and-drop, button controls for moving items, and custom item templates.
+
+## Import
+
+```typescript
+import { MagaryPickList } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component, signal } from '@angular/core';
+import { MagaryPickList } from 'ng-magary';
+
+@Component({
+  selector: 'app-picklist-demo',
+  standalone: true,
+  imports: [MagaryPickList],
+  template: `
+    <magary-picklist
+      [(source)]="sourceProducts"
+      [(target)]="targetProducts"
+      sourceHeader="Available"
+      targetHeader="Selected"
+      [dragDrop]="true"
+      (onMoveToTarget)="onMoveToTarget($event)"
+      (onMoveToSource)="onMoveToSource($event)">
+    </magary-picklist>
+  `
+})
+export class PickListDemoComponent {
+  sourceProducts = signal([
+    { id: 1, label: 'Product 1', category: 'Electronics' },
+    { id: 2, label: 'Product 2', category: 'Clothing' },
+    { id: 3, label: 'Product 3', category: 'Books' }
+  ]);
+
+  targetProducts = signal([]);
+
+  onMoveToTarget(event: any) {
+    console.log('Moved to target:', event.items);
+  }
+
+  onMoveToSource(event: any) {
+    console.log('Moved to source:', event.items);
+  }
+}
+```
+
+```html Template
+<magary-picklist
+  [(source)]="sourceProducts"
+  [(target)]="targetProducts"
+  sourceHeader="Available"
+  targetHeader="Selected"
+  [dragDrop]="true">
+</magary-picklist>
+```
+</CodeGroup>
+
+## With Custom Item Template
+
+```html
+<magary-picklist
+  [(source)]="sourceItems"
+  [(target)]="targetItems"
+  sourceHeader="Available Products"
+  targetHeader="Selected Products"
+  [dragDrop]="true">
+  <ng-template #itemTemplate let-item>
+    <div class="flex items-center gap-3 p-2">
+      <img [src]="item.image" class="w-12 h-12 rounded" />
+      <div class="flex-1">
+        <h4 class="font-semibold">{{ item.label }}</h4>
+        <p class="text-sm text-gray-600">{{ item.category }}</p>
+      </div>
+      <span class="text-lg font-bold">${{ item.price }}</span>
+    </div>
+  </ng-template>
+</magary-picklist>
+```
+
+## With Drag and Drop
+
+```typescript
+@Component({
+  template: `
+    <magary-picklist
+      [(source)]="available"
+      [(target)]="selected"
+      [dragDrop]="true"
+      [showSourceControls]="true"
+      [showTargetControls]="true"
+      (onMoveToTarget)="onMoveToTarget($event)">
+      <ng-template #itemTemplate let-item>
+        <div class="picklist-item">
+          {{ item.label }}
+        </div>
+      </ng-template>
+    </magary-picklist>
+  `
+})
+export class PickListDragDropComponent {
+  available = signal([...]);
+  selected = signal([]);
+
+  onMoveToTarget(event: { items: any[] }) {
+    console.log('Moved items:', event.items);
+  }
+}
+```
+
+## Custom Styling
+
+```html
+<magary-picklist
+  [(source)]="sourceItems"
+  [(target)]="targetItems"
+  [sourceStyle]="{ height: '400px', background: '#f8f9fa' }"
+  [targetStyle]="{ height: '400px', background: '#e9ecef' }"
+  [dragDrop]="true">
+</magary-picklist>
+```
+
+## Properties
+
+<ParamField path="source" type="any[]" default="[]">
+  Array of items in the source list. This is a model property supporting two-way binding.
+</ParamField>
+
+<ParamField path="target" type="any[]" default="[]">
+  Array of items in the target list. This is a model property supporting two-way binding.
+</ParamField>
+
+<ParamField path="sourceHeader" type="string" default="'Source'">
+  Header text for the source list.
+</ParamField>
+
+<ParamField path="targetHeader" type="string" default="'Target'">
+  Header text for the target list.
+</ParamField>
+
+<ParamField path="sourceStyle" type="Record<string, string | number> | null" default="null">
+  Inline styles for the source list container.
+</ParamField>
+
+<ParamField path="targetStyle" type="Record<string, string | number> | null" default="null">
+  Inline styles for the target list container.
+</ParamField>
+
+<ParamField path="showSourceControls" type="boolean" default="true">
+  Whether to show move buttons for the source list.
+</ParamField>
+
+<ParamField path="showTargetControls" type="boolean" default="true">
+  Whether to show move buttons for the target list.
+</ParamField>
+
+<ParamField path="dragDrop" type="boolean" default="false">
+  Enables drag-and-drop functionality for moving items between lists.
+</ParamField>
+
+## Events
+
+<ParamField path="onMoveToTarget" type="EventEmitter<{ items: any[] }>">
+  Emitted when items are moved from source to target.
+</ParamField>
+
+<ParamField path="onMoveToSource" type="EventEmitter<{ items: any[] }>">
+  Emitted when items are moved from target to source.
+</ParamField>
+
+<ParamField path="onMoveAllToTarget" type="EventEmitter<{ items: any[] }>">
+  Emitted when all items are moved from source to target.
+</ParamField>
+
+<ParamField path="onMoveAllToSource" type="EventEmitter<{ items: any[] }>">
+  Emitted when all items are moved from target to source.
+</ParamField>
+
+## Item Template
+
+Customize item rendering with the `itemTemplate`:
+
+```html
+<magary-picklist [(source)]="source" [(target)]="target">
+  <ng-template #itemTemplate let-item>
+    <div class="custom-item">
+      <span class="item-icon">{{ item.icon }}</span>
+      <span class="item-label">{{ item.label }}</span>
+    </div>
+  </ng-template>
+</magary-picklist>
+```
+
+## Selection
+
+Items can be selected by:
+- **Click**: Single selection
+- **Ctrl/Cmd + Click**: Multiple selection (toggle)
+- **Drag**: Select and drag multiple items
+
+## Button Controls
+
+When controls are visible, four buttons are available:
+
+- **Move Right**: Move selected items to target
+- **Move All Right**: Move all items to target
+- **Move Left**: Move selected items to source
+- **Move All Left**: Move all items to source
+
+## Drag and Drop
+
+When `dragDrop` is enabled:
+
+- Drag items within the same list to reorder
+- Drag items between lists to transfer
+- Drop on list container to append to end
+- Drop on specific item to insert at position
+- Visual feedback during drag operations
+
+## Advanced Example
+
+```typescript
+import { Component, signal } from '@angular/core';
+
+interface Product {
+  id: number;
+  label: string;
+  category: string;
+  price: number;
+  image: string;
+  inStock: boolean;
+}
+
+@Component({
+  template: `
+    <div class="picklist-container">
+      <h2>Product Selection</h2>
+      
+      <magary-picklist
+        [(source)]="availableProducts"
+        [(target)]="selectedProducts"
+        sourceHeader="Available Products ({{ availableProducts().length }})"
+        targetHeader="Selected Products ({{ selectedProducts().length }})"
+        [sourceStyle]="{ height: '500px' }"
+        [targetStyle]="{ height: '500px' }"
+        [dragDrop]="true"
+        [showSourceControls]="true"
+        [showTargetControls]="true"
+        (onMoveToTarget)="onProductsSelected($event)"
+        (onMoveToSource)="onProductsDeselected($event)">
+        <ng-template #itemTemplate let-product>
+          <div class="product-item">
+            <img [src]="product.image" class="product-image" />
+            <div class="product-info">
+              <h4>{{ product.label }}</h4>
+              <p class="category">{{ product.category }}</p>
+              <div class="product-meta">
+                <span class="price">${{ product.price }}</span>
+                <span class="stock" [class.out-of-stock]="!product.inStock">
+                  {{ product.inStock ? 'In Stock' : 'Out of Stock' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </magary-picklist>
+      
+      <div class="selection-summary">
+        <h3>Total Selected: {{ selectedProducts().length }}</h3>
+        <p>Total Value: ${{ calculateTotal() }}</p>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .product-item {
+      display: flex;
+      gap: 1rem;
+      padding: 0.75rem;
+      align-items: center;
+    }
+    .product-image {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 0.25rem;
+    }
+    .out-of-stock {
+      color: #ef4444;
+    }
+  `]
+})
+export class ProductPickListComponent {
+  availableProducts = signal<Product[]>([...]);
+  selectedProducts = signal<Product[]>([]);
+
+  onProductsSelected(event: { items: Product[] }) {
+    console.log('Selected:', event.items.length, 'products');
+    this.trackSelection('add', event.items);
+  }
+
+  onProductsDeselected(event: { items: Product[] }) {
+    console.log('Deselected:', event.items.length, 'products');
+    this.trackSelection('remove', event.items);
+  }
+
+  calculateTotal(): number {
+    return this.selectedProducts().reduce((sum, p) => sum + p.price, 0);
+  }
+
+  trackSelection(action: string, items: Product[]) {
+    // Analytics or backend update
+  }
+}
+```
+
+## Styling
+
+Key CSS classes:
+
+- `magary-pick-list` - Main container
+- `picklist-source` - Source list container
+- `picklist-target` - Target list container
+- `picklist-list` - List element
+- `picklist-item` - Individual item
+- `picklist-item-selected` - Selected item
+- `picklist-item-dragging` - Item being dragged
+- `picklist-item-over` - Drop target indicator
+- `picklist-controls` - Button controls container
+
+## Use Cases
+
+- **User Permissions**: Assign permissions to roles
+- **Product Selection**: Select products for orders or bundles
+- **Team Assignment**: Assign users to teams or projects
+- **Feature Activation**: Enable/disable features
+- **Category Management**: Assign items to categories
+
+## Accessibility
+
+- Keyboard navigation with Tab and Arrow keys
+- Ctrl/Cmd + Click for multiple selection
+- ARIA labels for lists and controls
+- Focus management during drag operations
+- Screen reader announcements for transfers
+
+## Performance
+
+The component uses Angular signals and OnPush change detection for optimal performance. Large lists are efficiently rendered with trackBy functions.
+
+## Source
+
+View source: `projects/ng-magary/src/lib/Data/picklist/picklist.ts:49`

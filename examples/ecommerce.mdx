@@ -1,0 +1,892 @@
+---
+title: "E-commerce Example"
+description: "Build a complete product discovery and shopping cart flow with Magary components"
+---
+
+## Overview
+
+This example demonstrates how to build a full e-commerce experience including product browsing, filtering, cart management, and checkout confirmation. It showcases best practices for integrating multiple Magary components into a cohesive shopping flow.
+
+<Info>
+  **Time to integrate**: Less than 1 day
+  
+  Create a production-ready e-commerce interface with product carousel, filters, cart, and dialogs.
+</Info>
+
+## Key Features
+
+- Featured products carousel
+- Product grid with filtering and search
+- Product detail dialogs
+- Shopping cart with inline quantity editing
+- Stock status indicators
+- Add-to-cart confirmation toasts
+- Responsive layout
+
+## Components Used
+
+<CardGroup cols={2}>
+  <Card title="MagaryCarousel" icon="images">
+    Showcase featured products
+  </Card>
+  <Card title="MagaryInput" icon="keyboard">
+    Search and quantity fields
+  </Card>
+  <Card title="MagarySelect" icon="filter">
+    Category and sort filters
+  </Card>
+  <Card title="MagaryTable" icon="cart-shopping">
+    Shopping cart display
+  </Card>
+  <Card title="MagaryDialog" icon="window-maximize">
+    Product detail modals
+  </Card>
+  <Card title="MagaryButton" icon="hand-pointer">
+    Action triggers
+  </Card>
+  <Card title="MagaryTag" icon="tag">
+    Stock status badges
+  </Card>
+  <Card title="MagaryToast" icon="bell">
+    User feedback notifications
+  </Card>
+</CardGroup>
+
+## Project Structure
+
+Organize your e-commerce feature with this structure:
+
+```txt
+src/app/ecommerce/
+  ecommerce.page.ts
+  ecommerce.page.html
+  ecommerce.page.scss
+  ecommerce.models.ts
+  ecommerce.service.ts
+```
+
+## Data Models
+
+Define your product and cart models:
+
+```typescript ecommerce.models.ts
+export interface Product {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  stock: 'INSTOCK' | 'LOWSTOCK' | 'OUTOFSTOCK';
+  image: string;
+  description?: string;
+  rating?: number;
+}
+
+export interface CartLine {
+  productId: string;
+  name: string;
+  quantity: number;
+  price: number;
+  image: string;
+}
+
+export interface Category {
+  label: string;
+  value: string;
+}
+```
+
+## Component Implementation
+
+<CodeGroup>
+
+```typescript ecommerce.page.ts
+import { ChangeDetectionStrategy, Component, signal, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import {
+  MagaryButton,
+  MagaryCarousel,
+  MagaryDialog,
+  MagaryInput,
+  MagarySelect,
+  MagaryTable,
+  MagaryTag,
+  MagaryToast,
+  MessageService,
+} from 'ng-magary';
+import { Product, CartLine, Category } from './ecommerce.models';
+
+@Component({
+  selector: 'app-ecommerce-page',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MagaryCarousel,
+    MagarySelect,
+    MagaryInput,
+    MagaryTable,
+    MagaryDialog,
+    MagaryButton,
+    MagaryTag,
+    MagaryToast,
+  ],
+  providers: [MessageService],
+  templateUrl: './ecommerce.page.html',
+  styleUrls: ['./ecommerce.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class EcommercePage {
+  constructor(private messageService: MessageService) {}
+
+  // Search and filters
+  readonly search = signal('');
+  readonly selectedCategory = signal<string | null>(null);
+  readonly selectedSort = signal('name');
+
+  // Product data
+  readonly allProducts = signal<Product[]>([
+    {
+      id: '1',
+      name: 'Wireless Headphones',
+      category: 'electronics',
+      price: 99.99,
+      stock: 'INSTOCK',
+      image: 'assets/products/headphones.jpg',
+      description: 'Premium noise-cancelling wireless headphones with 30-hour battery life.',
+      rating: 4.5,
+    },
+    {
+      id: '2',
+      name: 'Smart Watch',
+      category: 'electronics',
+      price: 299.99,
+      stock: 'LOWSTOCK',
+      image: 'assets/products/smartwatch.jpg',
+      description: 'Advanced fitness tracking with heart rate monitor and GPS.',
+      rating: 4.8,
+    },
+    {
+      id: '3',
+      name: 'Laptop Backpack',
+      category: 'accessories',
+      price: 49.99,
+      stock: 'INSTOCK',
+      image: 'assets/products/backpack.jpg',
+      description: 'Durable laptop backpack with USB charging port and water-resistant material.',
+      rating: 4.2,
+    },
+    {
+      id: '4',
+      name: 'Mechanical Keyboard',
+      category: 'electronics',
+      price: 129.99,
+      stock: 'OUTOFSTOCK',
+      image: 'assets/products/keyboard.jpg',
+      description: 'RGB mechanical gaming keyboard with hot-swappable switches.',
+      rating: 4.6,
+    },
+    {
+      id: '5',
+      name: 'Desk Lamp',
+      category: 'home',
+      price: 39.99,
+      stock: 'INSTOCK',
+      image: 'assets/products/lamp.jpg',
+      description: 'LED desk lamp with adjustable brightness and color temperature.',
+      rating: 4.3,
+    },
+  ]);
+
+  // Featured products for carousel
+  readonly featuredProducts = computed(() => 
+    this.allProducts().filter(p => p.rating && p.rating >= 4.5)
+  );
+
+  // Filtered products based on search and category
+  readonly filteredProducts = computed(() => {
+    let products = this.allProducts();
+    
+    const searchTerm = this.search().toLowerCase();
+    if (searchTerm) {
+      products = products.filter(p => 
+        p.name.toLowerCase().includes(searchTerm) ||
+        p.description?.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    const category = this.selectedCategory();
+    if (category) {
+      products = products.filter(p => p.category === category);
+    }
+
+    // Apply sorting
+    const sort = this.selectedSort();
+    products = [...products].sort((a, b) => {
+      if (sort === 'name') return a.name.localeCompare(b.name);
+      if (sort === 'price-asc') return a.price - b.price;
+      if (sort === 'price-desc') return b.price - a.price;
+      if (sort === 'rating') return (b.rating || 0) - (a.rating || 0);
+      return 0;
+    });
+
+    return products;
+  });
+
+  // Shopping cart
+  readonly cartItems = signal<CartLine[]>([]);
+  readonly cartTotal = computed(() => 
+    this.cartItems().reduce((sum, item) => sum + (item.price * item.quantity), 0)
+  );
+
+  // Dialog state
+  readonly productDialogVisible = signal(false);
+  readonly selectedProduct = signal<Product | null>(null);
+  readonly cartDialogVisible = signal(false);
+
+  // Filter options
+  readonly categories: Category[] = [
+    { label: 'All Categories', value: '' },
+    { label: 'Electronics', value: 'electronics' },
+    { label: 'Accessories', value: 'accessories' },
+    { label: 'Home', value: 'home' },
+  ];
+
+  readonly sortOptions = [
+    { label: 'Name', value: 'name' },
+    { label: 'Price: Low to High', value: 'price-asc' },
+    { label: 'Price: High to Low', value: 'price-desc' },
+    { label: 'Rating', value: 'rating' },
+  ];
+
+  showProductDetail(product: Product): void {
+    this.selectedProduct.set(product);
+    this.productDialogVisible.set(true);
+  }
+
+  addToCart(product: Product, quantity: number = 1): void {
+    const cart = this.cartItems();
+    const existingItem = cart.find(item => item.productId === product.id);
+
+    if (existingItem) {
+      existingItem.quantity += quantity;
+      this.cartItems.set([...cart]);
+    } else {
+      this.cartItems.set([
+        ...cart,
+        {
+          productId: product.id,
+          name: product.name,
+          quantity,
+          price: product.price,
+          image: product.image,
+        },
+      ]);
+    }
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Added to Cart',
+      detail: `${product.name} has been added to your cart.`,
+    });
+
+    this.productDialogVisible.set(false);
+  }
+
+  updateCartQuantity(cartLine: CartLine, quantity: number): void {
+    if (quantity <= 0) {
+      this.removeFromCart(cartLine);
+      return;
+    }
+
+    const cart = this.cartItems();
+    const item = cart.find(i => i.productId === cartLine.productId);
+    if (item) {
+      item.quantity = quantity;
+      this.cartItems.set([...cart]);
+    }
+  }
+
+  removeFromCart(cartLine: CartLine): void {
+    this.cartItems.set(
+      this.cartItems().filter(item => item.productId !== cartLine.productId)
+    );
+
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Removed from Cart',
+      detail: `${cartLine.name} has been removed from your cart.`,
+    });
+  }
+
+  getStockSeverity(stock: Product['stock']): string {
+    switch (stock) {
+      case 'INSTOCK': return 'success';
+      case 'LOWSTOCK': return 'warning';
+      case 'OUTOFSTOCK': return 'danger';
+    }
+  }
+
+  getStockLabel(stock: Product['stock']): string {
+    switch (stock) {
+      case 'INSTOCK': return 'In Stock';
+      case 'LOWSTOCK': return 'Low Stock';
+      case 'OUTOFSTOCK': return 'Out of Stock';
+    }
+  }
+}
+```
+
+```html ecommerce.page.html
+<div class="ecommerce-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>Our Products</h1>
+    <magary-button
+      label="Cart"
+      icon="pi pi-shopping-cart"
+      [badge]="cartItems().length.toString()"
+      badgeClass="p-badge-danger"
+      (onClick)="cartDialogVisible.set(true)"
+    />
+  </div>
+
+  <!-- Featured Products Carousel -->
+  <div class="featured-section">
+    <h2>Featured Products</h2>
+    <magary-carousel
+      [value]="featuredProducts()"
+      [numVisible]="3"
+      [numScroll]="1"
+      [circular]="true"
+      [autoplayInterval]="5000"
+      [responsiveOptions]="[
+        { breakpoint: '1024px', numVisible: 2, numScroll: 1 },
+        { breakpoint: '768px', numVisible: 1, numScroll: 1 }
+      ]"
+    >
+      <ng-template #item let-product>
+        <div class="carousel-item" (click)="showProductDetail(product)">
+          <img [src]="product.image" [alt]="product.name" />
+          <div class="carousel-content">
+            <h3>{{ product.name }}</h3>
+            <p class="price">${{ product.price | number:'1.2-2' }}</p>
+            <div class="rating">
+              @for (star of [1,2,3,4,5]; track star) {
+                <i class="pi" [class.pi-star-fill]="star <= (product.rating || 0)" [class.pi-star]="star > (product.rating || 0)"></i>
+              }
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </magary-carousel>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <magary-input
+      [(ngModel)]="search"
+      placeholder="Search products..."
+      icon="pi pi-search"
+      styleClass="search-input"
+    />
+    <magary-select
+      [options]="categories"
+      [(ngModel)]="selectedCategory"
+      placeholder="Category"
+      optionLabel="label"
+      optionValue="value"
+    />
+    <magary-select
+      [options]="sortOptions"
+      [(ngModel)]="selectedSort"
+      placeholder="Sort by"
+      optionLabel="label"
+      optionValue="value"
+    />
+  </div>
+
+  <!-- Product Grid -->
+  <div class="product-grid">
+    @for (product of filteredProducts(); track product.id) {
+      <div class="product-card" (click)="showProductDetail(product)">
+        <img [src]="product.image" [alt]="product.name" class="product-image" />
+        <div class="product-info">
+          <h3>{{ product.name }}</h3>
+          <p class="product-description">{{ product.description }}</p>
+          <div class="product-footer">
+            <span class="price">${{ product.price | number:'1.2-2' }}</span>
+            <magary-tag
+              [value]="getStockLabel(product.stock)"
+              [severity]="getStockSeverity(product.stock)"
+            />
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-state">
+        <i class="pi pi-inbox" style="font-size: 3rem;"></i>
+        <p>No products found</p>
+      </div>
+    }
+  </div>
+
+  <!-- Product Detail Dialog -->
+  <magary-dialog
+    [(visible)]="productDialogVisible"
+    [modal]="true"
+    [closable]="true"
+    [style]="{ width: '600px' }"
+    header="Product Details"
+  >
+    @if (selectedProduct(); as product) {
+      <div class="product-detail">
+        <img [src]="product.image" [alt]="product.name" class="detail-image" />
+        <h2>{{ product.name }}</h2>
+        <p class="detail-description">{{ product.description }}</p>
+        <div class="detail-meta">
+          <span class="detail-price">${{ product.price | number:'1.2-2' }}</span>
+          <magary-tag
+            [value]="getStockLabel(product.stock)"
+            [severity]="getStockSeverity(product.stock)"
+          />
+        </div>
+        @if (product.rating) {
+          <div class="detail-rating">
+            @for (star of [1,2,3,4,5]; track star) {
+              <i class="pi" [class.pi-star-fill]="star <= product.rating" [class.pi-star]="star > product.rating"></i>
+            }
+            <span>({{ product.rating }}/5)</span>
+          </div>
+        }
+      </div>
+      <ng-template #footer>
+        <magary-button
+          label="Add to Cart"
+          icon="pi pi-shopping-cart"
+          [disabled]="product.stock === 'OUTOFSTOCK'"
+          (onClick)="addToCart(product)"
+        />
+      </ng-template>
+    }
+  </magary-dialog>
+
+  <!-- Shopping Cart Dialog -->
+  <magary-dialog
+    [(visible)]="cartDialogVisible"
+    [modal]="true"
+    [closable]="true"
+    [style]="{ width: '800px' }"
+    header="Shopping Cart"
+  >
+    @if (cartItems().length > 0) {
+      <magary-table [value]="cartItems()">
+        <ng-template #header>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-item>
+          <tr>
+            <td>
+              <div class="cart-product">
+                <img [src]="item.image" [alt]="item.name" class="cart-thumb" />
+                <span>{{ item.name }}</span>
+              </div>
+            </td>
+            <td>${{ item.price | number:'1.2-2' }}</td>
+            <td>
+              <magary-input
+                type="number"
+                [ngModel]="item.quantity"
+                (ngModelChange)="updateCartQuantity(item, $event)"
+                [min]="1"
+                [style]="{ width: '80px' }"
+              />
+            </td>
+            <td>${{ (item.price * item.quantity) | number:'1.2-2' }}</td>
+            <td>
+              <magary-button
+                icon="pi pi-trash"
+                styleClass="p-button-danger p-button-text"
+                (onClick)="removeFromCart(item)"
+              />
+            </td>
+          </tr>
+        </ng-template>
+      </magary-table>
+      <div class="cart-total">
+        <h3>Total: ${{ cartTotal() | number:'1.2-2' }}</h3>
+      </div>
+    } @else {
+      <div class="empty-cart">
+        <i class="pi pi-shopping-cart" style="font-size: 3rem;"></i>
+        <p>Your cart is empty</p>
+      </div>
+    }
+    <ng-template #footer>
+      <magary-button
+        label="Continue Shopping"
+        styleClass="p-button-text"
+        (onClick)="cartDialogVisible.set(false)"
+      />
+      <magary-button
+        label="Checkout"
+        icon="pi pi-credit-card"
+        [disabled]="cartItems().length === 0"
+      />
+    </ng-template>
+  </magary-dialog>
+
+  <!-- Toast Notifications -->
+  <magary-toast position="top-right" />
+</div>
+```
+
+```scss ecommerce.page.scss
+.ecommerce-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    margin: 0;
+    font-size: 2rem;
+  }
+}
+
+.featured-section {
+  margin-bottom: 3rem;
+
+  h2 {
+    margin-bottom: 1rem;
+  }
+}
+
+.carousel-item {
+  padding: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+}
+
+.carousel-content {
+  text-align: center;
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.125rem;
+  }
+
+  .price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0.5rem 0;
+  }
+
+  .rating {
+    color: var(--yellow-500);
+  }
+}
+
+.filters-bar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+
+  .search-input {
+    flex: 1;
+    min-width: 250px;
+  }
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.product-card {
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+  }
+}
+
+.product-image {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.product-info {
+  padding: 1.5rem;
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+  }
+
+  .product-description {
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    min-height: 40px;
+  }
+}
+
+.product-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+  }
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-color-secondary);
+
+  p {
+    margin-top: 1rem;
+    font-size: 1.125rem;
+  }
+}
+
+.product-detail {
+  .detail-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  h2 {
+    margin: 0 0 1rem 0;
+  }
+
+  .detail-description {
+    color: var(--text-color-secondary);
+    margin-bottom: 1.5rem;
+  }
+
+  .detail-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .detail-price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+  }
+
+  .detail-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--yellow-500);
+    font-size: 1.25rem;
+
+    span {
+      color: var(--text-color-secondary);
+      font-size: 1rem;
+    }
+  }
+}
+
+.cart-product {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cart-thumb {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.cart-total {
+  text-align: right;
+  padding: 1rem;
+  border-top: 2px solid var(--surface-border);
+  margin-top: 1rem;
+
+  h3 {
+    margin: 0;
+    color: var(--primary-color);
+  }
+}
+
+.empty-cart {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--text-color-secondary);
+
+  p {
+    margin-top: 1rem;
+    font-size: 1.125rem;
+  }
+}
+```
+
+</CodeGroup>
+
+## Layout Diagram
+
+```
+┌─────────────────────────────────────────────────────┐
+│ Our Products                          🛒 Cart (3)   │
+├─────────────────────────────────────────────────────┤
+│ Featured Products                                   │
+│ [←] ┌──────────┐ ┌──────────┐ ┌──────────┐ [→]    │
+│     │ Product  │ │ Product  │ │ Product  │        │
+│     │  Image   │ │  Image   │ │  Image   │        │
+│     │  $99.99  │ │ $299.99  │ │ $129.99  │        │
+│     │  ★★★★★   │ │  ★★★★★   │ │  ★★★★☆   │        │
+│     └──────────┘ └──────────┘ └──────────┘        │
+├─────────────────────────────────────────────────────┤
+│ [🔍 Search...] [Category ▼] [Sort by ▼]           │
+├─────────────────────────────────────────────────────┤
+│ ┌────────────┐ ┌────────────┐ ┌────────────┐      │
+│ │   Product  │ │   Product  │ │   Product  │      │
+│ │    Image   │ │    Image   │ │    Image   │      │
+│ │            │ │            │ │            │      │
+│ │  Product 1 │ │  Product 2 │ │  Product 3 │      │
+│ │ Description│ │ Description│ │ Description│      │
+│ │  $99.99    │ │  $49.99    │ │  $39.99    │      │
+│ │ [In Stock] │ │ [Low Stock]│ │ [In Stock] │      │
+│ └────────────┘ └────────────┘ └────────────┘      │
+└─────────────────────────────────────────────────────┘
+```
+
+## User Flow
+
+<Steps>
+  <Step title="Browse Products">
+    Users land on the page and see featured products in a carousel at the top
+  </Step>
+  <Step title="Search and Filter">
+    Users can search by keyword, filter by category, and sort results
+  </Step>
+  <Step title="View Details">
+    Clicking a product opens a dialog with full details, images, and ratings
+  </Step>
+  <Step title="Add to Cart">
+    Users add products to cart and receive a confirmation toast notification
+  </Step>
+  <Step title="Review Cart">
+    Users can open the cart dialog to review items, adjust quantities, or remove products
+  </Step>
+  <Step title="Checkout">
+    Users proceed to checkout with a summary of their cart total
+  </Step>
+</Steps>
+
+## Accessibility Checklist
+
+<AccordionGroup>
+  <Accordion title="Keyboard Navigation">
+    - Product cards are keyboard accessible with Tab/Shift+Tab
+    - Enter or Space opens product detail dialog
+    - Escape closes dialogs and returns focus
+    - Carousel navigation works with arrow keys
+  </Accordion>
+
+  <Accordion title="Form Controls">
+    - All inputs have associated labels
+    - Search input provides placeholder text
+    - Quantity spinners work with keyboard up/down arrows
+    - Select dropdowns announce options to screen readers
+  </Accordion>
+
+  <Accordion title="Semantic HTML">
+    - Product images have descriptive alt text
+    - Price changes are announced to screen readers
+    - Stock status uses semantic color coding plus text labels
+    - Toast notifications are announced automatically
+  </Accordion>
+
+  <Accordion title="Visual Feedback">
+    - Focus indicators visible on all interactive elements
+    - Hover states provide visual affordance
+    - Disabled states clearly communicated (out of stock)
+    - Loading states prevent multiple submissions
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+  **State Management**: Use signals with computed values to automatically update filtered products when search or category changes.
+</Tip>
+
+<Warning>
+  **Stock Validation**: Always validate stock availability before allowing add-to-cart actions. Disable buttons for out-of-stock items.
+</Warning>
+
+<Note>
+  **Responsive Design**: The product grid uses CSS Grid's `auto-fill` to automatically adjust columns based on available space.
+</Note>
+
+<Tip>
+  **User Feedback**: Use toast notifications for all cart actions to provide immediate confirmation to users.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Payment Integration" icon="credit-card">
+    Add Stripe or PayPal checkout integration
+  </Card>
+  <Card title="Wishlist Feature" icon="heart">
+    Allow users to save products for later
+  </Card>
+  <Card title="Product Reviews" icon="star">
+    Enable customer reviews and ratings
+  </Card>
+  <Card title="Inventory Sync" icon="arrows-rotate">
+    Connect to real-time inventory system
+  </Card>
+</CardGroup>

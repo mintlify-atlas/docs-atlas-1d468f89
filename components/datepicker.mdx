@@ -1,0 +1,231 @@
+---
+title: DatePicker
+description: A flexible date picker component with support for single date and date range selection
+---
+
+## Overview
+
+The DatePicker component provides a comprehensive calendar interface for selecting dates. It supports both single date selection and date range selection modes, with keyboard navigation and accessibility features.
+
+## Component Selector
+
+```html
+<magary-datepicker />
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryDatePicker } from 'ng-magary';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagaryDatePicker, FormsModule],
+  template: `
+    <magary-datepicker
+      [(ngModel)]="selectedDate"
+      placeholder="Select a date"
+    />
+  `
+})
+export class DemoComponent {
+  selectedDate: Date | null = null;
+}
+```
+
+```html Template
+<magary-datepicker
+  [(ngModel)]="selectedDate"
+  placeholder="Select a date"
+/>
+```
+</CodeGroup>
+
+## Date Range Selection
+
+```html
+<magary-datepicker
+  [(ngModel)]="dateRange"
+  [selectionMode]="'range'"
+  placeholder="Select date range"
+/>
+```
+
+```typescript
+dateRange: Date[] = [];
+```
+
+## With Min/Max Dates
+
+```html
+<magary-datepicker
+  [(ngModel)]="selectedDate"
+  [minDate]="minDate"
+  [maxDate]="maxDate"
+  placeholder="Select a date"
+/>
+```
+
+```typescript
+minDate = new Date(2024, 0, 1); // January 1, 2024
+maxDate = new Date(2024, 11, 31); // December 31, 2024
+selectedDate: Date | null = null;
+```
+
+## Properties
+
+<ParamField path="placeholder" type="string">
+  Placeholder text displayed when no date is selected
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, prevents user interaction with the date picker
+</ParamField>
+
+<ParamField path="minDate" type="Date">
+  Minimum selectable date. Dates before this will be disabled
+</ParamField>
+
+<ParamField path="maxDate" type="Date">
+  Maximum selectable date. Dates after this will be disabled
+</ParamField>
+
+<ParamField path="selectionMode" type="'single' | 'range'" default="'single'">
+  Selection mode:
+  - `single`: Select a single date
+  - `range`: Select a date range (start and end dates)
+</ParamField>
+
+## Events
+
+<ParamField path="onSelect" type="output<Date | Date[]>">
+  Emitted when a date or date range is selected. Returns a single `Date` in single mode or `Date[]` in range mode
+</ParamField>
+
+## Form Integration
+
+<Note>
+  The DatePicker component implements `ControlValueAccessor` and works seamlessly with Angular forms.
+</Note>
+
+### Reactive Forms
+
+```typescript
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+
+date = new FormControl<Date | null>(null);
+```
+
+```html
+<magary-datepicker [formControl]="date" />
+```
+
+### Template-Driven Forms
+
+```html
+<magary-datepicker
+  [(ngModel)]="selectedDate"
+  name="date"
+/>
+```
+
+## Keyboard Navigation
+
+The DatePicker supports comprehensive keyboard navigation:
+
+| Key | Action |
+|-----|--------|
+| `Enter` / `Space` | Open/close the calendar, or select the active date |
+| `Escape` | Close the calendar |
+| `Arrow Keys` | Navigate between dates in the calendar |
+| `Home` | Move to the start of the week |
+| `End` | Move to the end of the week |
+| `Page Up` | Move to the previous month |
+| `Page Down` | Move to the next month |
+| `Arrow Down` (when closed) | Open the calendar |
+
+## Accessibility Features
+
+- Full ARIA support with proper roles and labels
+- Keyboard navigation for date selection
+- Screen reader announcements for date navigation
+- Focus management between trigger and calendar
+- Disabled state handling
+
+## Value Format
+
+The component accepts and returns:
+
+- **Single mode**: `Date` object or `null`
+- **Range mode**: `Date[]` array with 1-2 elements, or `null`
+  - One element: Start date selected, end date pending
+  - Two elements: Complete date range `[startDate, endDate]`
+
+## Styling
+
+The DatePicker uses the selector `magary-datepicker` and includes the following CSS classes:
+
+- `.magary-datepicker`: Main container
+- `.magary-datepicker-trigger`: The input trigger button
+- `.magary-datepicker-panel`: The calendar dropdown panel
+- `.magary-datepicker-calendar`: Calendar grid container
+- `.magary-datepicker-day`: Individual day cells
+- `.selected`: Applied to selected dates
+- `.today`: Applied to today's date
+- `.disabled`: Applied to disabled dates
+
+## Complete Example
+
+```typescript
+import { Component } from '@angular/core';
+import { MagaryDatePicker } from 'ng-magary';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-datepicker-demo',
+  standalone: true,
+  imports: [MagaryDatePicker, FormsModule],
+  template: `
+    <div class="demo-container">
+      <h3>Single Date Selection</h3>
+      <magary-datepicker
+        [(ngModel)]="singleDate"
+        [minDate]="minDate"
+        [maxDate]="maxDate"
+        placeholder="Select a date"
+        (onSelect)="onDateSelect($event)"
+      />
+      <p *ngIf="singleDate">Selected: {{ singleDate | date }}</p>
+
+      <h3>Date Range Selection</h3>
+      <magary-datepicker
+        [(ngModel)]="dateRange"
+        [selectionMode]="'range'"
+        placeholder="Select date range"
+        (onSelect)="onRangeSelect($event)"
+      />
+      <p *ngIf="dateRange?.length === 2">
+        Range: {{ dateRange[0] | date }} - {{ dateRange[1] | date }}
+      </p>
+    </div>
+  `
+})
+export class DatePickerDemoComponent {
+  singleDate: Date | null = null;
+  dateRange: Date[] = [];
+  minDate = new Date(2024, 0, 1);
+  maxDate = new Date(2024, 11, 31);
+
+  onDateSelect(date: Date) {
+    console.log('Date selected:', date);
+  }
+
+  onRangeSelect(range: Date[]) {
+    console.log('Range selected:', range);
+  }
+}
+```

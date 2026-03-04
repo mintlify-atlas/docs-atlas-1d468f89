@@ -1,0 +1,282 @@
+---
+title: Slider
+description: An interactive slider component for selecting numeric values or ranges
+---
+
+## Overview
+
+The Slider component provides an intuitive interface for selecting numeric values within a defined range. It supports both single value selection and range selection with dual handles.
+
+## Component Selector
+
+```html
+<magary-slider />
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagarySlider } from 'ng-magary';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagarySlider, FormsModule],
+  template: `
+    <magary-slider
+      [(ngModel)]="value"
+      [min]="0"
+      [max]="100"
+    />
+  `
+})
+export class DemoComponent {
+  value = 50;
+}
+```
+
+```html Template
+<magary-slider
+  [(ngModel)]="value"
+  [min]="0"
+  [max]="100"
+/>
+```
+</CodeGroup>
+
+## Range Slider
+
+```html
+<magary-slider
+  [(ngModel)]="range"
+  [range]="true"
+  [min]="0"
+  [max]="100"
+/>
+```
+
+```typescript
+range = [25, 75];
+```
+
+## Vertical Orientation
+
+```html
+<magary-slider
+  [(ngModel)]="value"
+  [orientation]="'vertical'"
+  [min]="0"
+  [max]="100"
+  [style]="{ height: '300px' }"
+/>
+```
+
+## With Step
+
+```html
+<magary-slider
+  [(ngModel)]="value"
+  [min]="0"
+  [max]="100"
+  [step]="5"
+/>
+```
+
+## Properties
+
+<ParamField path="value" type="number | number[] | null">
+  The current value(s). Single number for normal mode, array of two numbers `[start, end]` for range mode
+</ParamField>
+
+<ParamField path="min" type="number" default="0">
+  Minimum value of the slider
+</ParamField>
+
+<ParamField path="max" type="number" default="100">
+  Maximum value of the slider
+</ParamField>
+
+<ParamField path="step" type="number" default="1">
+  Step increment for value changes. Values will snap to multiples of this step
+</ParamField>
+
+<ParamField path="range" type="boolean" default="false">
+  When true, enables range selection mode with two handles for start and end values
+</ParamField>
+
+<ParamField path="orientation" type="'horizontal' | 'vertical'" default="'horizontal'">
+  Orientation of the slider:
+  - `horizontal`: Slider bar runs left to right
+  - `vertical`: Slider bar runs bottom to top
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, prevents user interaction with the slider
+</ParamField>
+
+<ParamField path="style" type="Record<string, unknown> | null">
+  Inline styles for the slider container
+</ParamField>
+
+<ParamField path="styleClass" type="string" default="''">
+  CSS class for the slider container
+</ParamField>
+
+## Events
+
+<ParamField path="onChange" type="output<{ originalEvent?: Event; value: number | number[] }>">
+  Emitted when the slider value changes during dragging
+</ParamField>
+
+<ParamField path="onSlideEnd" type="output<{ originalEvent?: Event; value: number | number[] | null }>">
+  Emitted when the user finishes dragging the slider handle
+</ParamField>
+
+## Form Integration
+
+<Note>
+  The Slider component implements `ControlValueAccessor` and works with Angular forms.
+</Note>
+
+### Reactive Forms
+
+```typescript
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+
+volume = new FormControl<number>(50);
+```
+
+```html
+<magary-slider
+  [formControl]="volume"
+  [min]="0"
+  [max]="100"
+/>
+```
+
+### Range with Forms
+
+```typescript
+priceRange = new FormControl<number[]>([20, 80]);
+```
+
+```html
+<magary-slider
+  [formControl]="priceRange"
+  [range]="true"
+  [min]="0"
+  [max]="100"
+/>
+```
+
+## Keyboard Navigation
+
+When a slider handle has focus:
+
+| Key | Action |
+|-----|--------|
+| `Arrow Right` / `Arrow Up` | Increase value by step |
+| `Arrow Left` / `Arrow Down` | Decrease value by step |
+| `Page Up` | Increase value by step × 10 |
+| `Page Down` | Decrease value by step × 10 |
+| `Home` | Set to minimum value |
+| `End` | Set to maximum value |
+
+## Touch Support
+
+The Slider component fully supports touch interactions:
+- Touch and drag to adjust values
+- Tap on the slider bar to jump to a value
+- Multi-touch support for range sliders
+
+## Accessibility Features
+
+- ARIA slider role with proper attributes
+- Keyboard navigation support
+- Focus management
+- Screen reader announcements for value changes
+- Disabled state handling
+
+## Styling
+
+The Slider uses the following CSS classes:
+
+- `.magary-slider`: Main container
+- `.magary-slider-horizontal`: Applied in horizontal orientation
+- `.magary-slider-vertical`: Applied in vertical orientation
+- `.magary-slider-rail`: The slider track background
+- `.magary-slider-range`: The filled range indicator
+- `.magary-slider-handle`: Draggable handle(s)
+- `.magary-disabled`: Applied when disabled
+
+## Complete Example
+
+```typescript
+import { Component } from '@angular/core';
+import { MagarySlider } from 'ng-magary';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-slider-demo',
+  standalone: true,
+  imports: [MagarySlider, ReactiveFormsModule],
+  template: `
+    <div class="demo-container">
+      <h3>Volume Control</h3>
+      <magary-slider
+        [formControl]="volume"
+        [min]="0"
+        [max]="100"
+        (onChange)="onVolumeChange($event)"
+      />
+      <p>Volume: {{ volume.value }}%</p>
+
+      <h3>Price Range</h3>
+      <magary-slider
+        [formControl]="priceRange"
+        [range]="true"
+        [min]="0"
+        [max]="1000"
+        [step]="10"
+      />
+      <p *ngIf="priceRange.value">
+        Range: ${{ priceRange.value[0] }} - ${{ priceRange.value[1] }}
+      </p>
+
+      <h3>Temperature (Vertical)</h3>
+      <div style="height: 300px;">
+        <magary-slider
+          [formControl]="temperature"
+          [orientation]="'vertical'"
+          [min]="-10"
+          [max]="40"
+          [step]="0.5"
+        />
+      </div>
+      <p>Temperature: {{ temperature.value }}°C</p>
+
+      <h3>Rating (Step of 0.5)</h3>
+      <magary-slider
+        [formControl]="rating"
+        [min]="0"
+        [max]="5"
+        [step]="0.5"
+      />
+      <p>Rating: {{ rating.value }} / 5</p>
+    </div>
+  `
+})
+export class SliderDemoComponent {
+  volume = new FormControl<number>(50);
+  priceRange = new FormControl<number[]>([200, 800]);
+  temperature = new FormControl<number>(20);
+  rating = new FormControl<number>(3.5);
+
+  onVolumeChange(event: { value: number }) {
+    console.log('Volume changed to:', event.value);
+  }
+}
+```

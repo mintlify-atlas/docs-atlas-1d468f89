@@ -1,0 +1,440 @@
+---
+title: 'Select'
+description: 'Dropdown selection component with filtering and keyboard navigation'
+icon: 'list'
+---
+
+## Overview
+
+The Select component provides a dropdown selection interface with support for filtering, keyboard navigation, custom option rendering, and full accessibility. It implements ControlValueAccessor for seamless Angular Forms integration.
+
+## Import
+
+```typescript
+import { MagarySelect } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagarySelect } from 'ng-magary';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagarySelect],
+  template: `
+    <magary-select
+      [options]="countries"
+      [(ngModel)]="selectedCountry"
+      placeholder="Select a country"
+    />
+  `
+})
+export class DemoComponent {
+  countries = ['USA', 'Canada', 'Mexico', 'Brazil', 'Argentina'];
+  selectedCountry = null;
+}
+```
+
+```html Template
+<magary-select
+  [options]="countries"
+  [(ngModel)]="selectedCountry"
+  placeholder="Select a country"
+/>
+```
+</CodeGroup>
+
+## Properties
+
+### Inputs
+
+<ParamField path="options" type="MagarySelectOption[]" default="[]">
+  Array of options to display. Can be primitives (string, number, boolean) or objects.
+</ParamField>
+
+<ParamField path="optionLabel" type="string" default="undefined">
+  Property name to use as the display label for object options (e.g., 'name')
+</ParamField>
+
+<ParamField path="optionValue" type="string" default="undefined">
+  Property name to use as the value for object options (e.g., 'id')
+</ParamField>
+
+<ParamField path="placeholder" type="string" default="'Select an option'">
+  Placeholder text displayed when no option is selected
+</ParamField>
+
+<ParamField path="ariaLabel" type="string" default="''">
+  Custom ARIA label for accessibility. Falls back to placeholder.
+</ParamField>
+
+<ParamField path="size" type="SelectSize" default="'normal'">
+  Size of the select component
+  
+  Options: `'small'` | `'normal'` | `'large'`
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, select is disabled and cannot be opened
+</ParamField>
+
+<ParamField path="loading" type="boolean" default="false">
+  When true, displays loading state and prevents interaction
+</ParamField>
+
+<ParamField path="invalid" type="boolean" default="false">
+  When true, displays error state styling
+</ParamField>
+
+<ParamField path="error" type="string" default="''">
+  Error message to display below the select
+</ParamField>
+
+<ParamField path="helpText" type="string" default="''">
+  Helper text displayed below the select
+</ParamField>
+
+<ParamField path="filter" type="boolean" default="false">
+  When true, enables search/filter functionality
+</ParamField>
+
+<ParamField path="showClear" type="boolean" default="false">
+  When true, displays a clear button to reset the selection
+</ParamField>
+
+## Examples
+
+### Primitive Options
+
+```typescript
+@Component({
+  template: `
+    <magary-select
+      [options]="colors"
+      [(ngModel)]="selectedColor"
+      placeholder="Choose a color"
+    />
+  `
+})
+export class ColorPickerComponent {
+  colors = ['Red', 'Green', 'Blue', 'Yellow', 'Purple'];
+  selectedColor: string | null = null;
+}
+```
+
+### Object Options
+
+```typescript
+@Component({
+  template: `
+    <magary-select
+      [options]="users"
+      optionLabel="name"
+      optionValue="id"
+      [(ngModel)]="selectedUserId"
+      placeholder="Select a user"
+    />
+  `
+})
+export class UserSelectComponent {
+  users = [
+    { id: 1, name: 'John Doe', email: 'john@example.com' },
+    { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
+    { id: 3, name: 'Bob Johnson', email: 'bob@example.com' }
+  ];
+  selectedUserId: number | null = null;
+}
+```
+
+### With Filtering
+
+```html
+<magary-select
+  [options]="countries"
+  [(ngModel)]="selectedCountry"
+  placeholder="Search countries..."
+  [filter]="true"
+/>
+```
+
+### With Clear Button
+
+```html
+<magary-select
+  [options]="categories"
+  [(ngModel)]="selectedCategory"
+  placeholder="Select category"
+  [showClear]="true"
+/>
+```
+
+### Sizes
+
+<CodeGroup>
+```html Small
+<magary-select
+  [options]="options"
+  [(ngModel)]="value"
+  size="small"
+/>
+```
+
+```html Normal
+<magary-select
+  [options]="options"
+  [(ngModel)]="value"
+  size="normal"
+/>
+```
+
+```html Large
+<magary-select
+  [options]="options"
+  [(ngModel)]="value"
+  size="large"
+/>
+```
+</CodeGroup>
+
+### Loading State
+
+```typescript
+@Component({
+  template: `
+    <magary-select
+      [options]="users"
+      [(ngModel)]="selectedUser"
+      [loading]="isLoading"
+      placeholder="Loading users..."
+    />
+  `
+})
+export class AsyncSelectComponent {
+  users: any[] = [];
+  selectedUser = null;
+  isLoading = true;
+
+  ngOnInit() {
+    this.loadUsers();
+  }
+
+  async loadUsers() {
+    this.isLoading = true;
+    this.users = await this.userService.getUsers();
+    this.isLoading = false;
+  }
+}
+```
+
+### With Error State
+
+```html
+<magary-select
+  [options]="options"
+  [(ngModel)]="selectedOption"
+  [invalid]="isInvalid"
+  error="Please select an option"
+/>
+```
+
+### With Help Text
+
+```html
+<magary-select
+  [options]="priorities"
+  [(ngModel)]="selectedPriority"
+  placeholder="Select priority"
+  helpText="Choose the task priority level"
+/>
+```
+
+### Disabled State
+
+```html
+<magary-select
+  [options]="options"
+  [(ngModel)]="value"
+  [disabled]="true"
+  placeholder="Disabled select"
+/>
+```
+
+### Reactive Forms
+
+```typescript
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MagarySelect } from 'ng-magary';
+
+@Component({
+  selector: 'app-form',
+  standalone: true,
+  imports: [ReactiveFormsModule, MagarySelect],
+  template: `
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <magary-select
+        [options]="departments"
+        formControlName="department"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Select department"
+      />
+      
+      <button type="submit">Submit</button>
+    </form>
+  `
+})
+export class FormComponent {
+  form: FormGroup;
+  departments = [
+    { id: 1, name: 'Engineering' },
+    { id: 2, name: 'Sales' },
+    { id: 3, name: 'Marketing' }
+  ];
+
+  constructor(private fb: FormBuilder) {
+    this.form = this.fb.group({
+      department: [null]
+    });
+  }
+
+  onSubmit() {
+    console.log(this.form.value);
+  }
+}
+```
+
+### Complex Object with Custom Display
+
+```typescript
+@Component({
+  template: `
+    <magary-select
+      [options]="products"
+      optionLabel="displayName"
+      optionValue="sku"
+      [(ngModel)]="selectedSku"
+      placeholder="Select product"
+      [filter]="true"
+    />
+  `
+})
+export class ProductSelectComponent {
+  products = [
+    { sku: 'PROD-001', displayName: 'Laptop - $999', category: 'Electronics' },
+    { sku: 'PROD-002', displayName: 'Mouse - $29', category: 'Accessories' },
+    { sku: 'PROD-003', displayName: 'Keyboard - $79', category: 'Accessories' }
+  ];
+  selectedSku: string | null = null;
+}
+```
+
+## Accessibility
+
+The Select component includes comprehensive accessibility features:
+
+- **ARIA Attributes**: Proper roles, labels, and states
+- **Keyboard Navigation**: Full keyboard support
+- **Focus Management**: Smart focus handling
+- **Screen Reader Support**: Announces options and states
+- **Active Descendant**: Communicates active option to assistive technologies
+
+### Keyboard Support
+
+#### Trigger (Closed State)
+- **ArrowDown/ArrowUp**: Open menu
+- **Enter/Space**: Open menu
+- **Home**: Open menu and focus first option
+- **End**: Open menu and focus last option
+
+#### Menu (Open State)
+- **ArrowDown**: Focus next option
+- **ArrowUp**: Focus previous option
+- **Home**: Focus first option
+- **End**: Focus last option
+- **Enter/Space**: Select focused option and close
+- **Escape**: Close menu
+- **Tab**: Close menu and move focus
+
+#### Filter Input (When Filtering)
+- **ArrowDown/ArrowUp**: Navigate filtered options
+- **Enter**: Select active option
+- **Escape**: Close menu
+
+## Filtering
+
+When `filter` is enabled:
+
+```html
+<magary-select
+  [options]="countries"
+  [(ngModel)]="selectedCountry"
+  [filter]="true"
+  placeholder="Search countries..."
+/>
+```
+
+- Input field appears at the top of the dropdown
+- Options are filtered as you type (case-insensitive)
+- Uses the display label for filtering
+- Arrow keys navigate through filtered results
+- Auto-focuses filter input when menu opens
+
+## ControlValueAccessor
+
+The Select component implements Angular's ControlValueAccessor interface:
+
+```typescript
+// Works with ngModel
+<magary-select [(ngModel)]="value" [options]="options" />
+
+// Works with FormControl
+<magary-select [formControl]="control" [options]="options" />
+
+// Works with FormControlName
+<form [formGroup]="form">
+  <magary-select formControlName="field" [options]="options" />
+</form>
+```
+
+### Form Validation
+
+```typescript
+import { Validators } from '@angular/forms';
+
+form = this.fb.group({
+  country: [null, Validators.required]
+});
+```
+
+```html
+<magary-select
+  formControlName="country"
+  [options]="countries"
+  [invalid]="form.get('country')?.invalid && form.get('country')?.touched"
+  error="Country is required"
+/>
+```
+
+## Component Details
+
+- **Selector**: `magary-select`
+- **Source**: `/home/daytona/workspace/source/projects/ng-magary/src/lib/Form/select/select.ts`
+- **Standalone**: Yes
+- **Change Detection**: OnPush
+- **Implements**: ControlValueAccessor
+
+## Type Definitions
+
+```typescript
+type SelectObjectOption = Record<string, unknown>;
+type SelectPrimitiveOption = string | number | boolean;
+type SelectSize = 'small' | 'normal' | 'large';
+
+export type MagarySelectOption = SelectPrimitiveOption | SelectObjectOption;
+export type MagarySelectValue = SelectPrimitiveOption | SelectObjectOption | null;
+```

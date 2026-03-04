@@ -1,0 +1,161 @@
+---
+title: 'Divider'
+description: 'Visual separator between content sections'
+---
+
+## Overview
+
+Divider component provides a visual separator between content sections.
+
+## Import
+
+```typescript
+import { MagaryDivider } from 'ng-magary';
+```
+
+## Basic Usage
+
+```html
+<div>Section 1</div>
+<magary-divider></magary-divider>
+<div>Section 2</div>
+```
+
+## Horizontal Divider (Default)
+
+```html
+<p>Above divider</p>
+<magary-divider [layout]="'horizontal'"></magary-divider>
+<p>Below divider</p>
+```
+
+## Vertical Divider
+
+```html
+<div class="flex">
+  <span>Left</span>
+  <magary-divider [layout]="'vertical'"></magary-divider>
+  <span>Right</span>
+</div>
+```
+
+## With Content
+
+<CodeGroup>
+```html Center Aligned (Default)
+<magary-divider [align]="'center'">
+  <span>OR</span>
+</magary-divider>
+```
+
+```html Left Aligned
+<magary-divider [align]="'left'">
+  <span>Section</span>
+</magary-divider>
+```
+
+```html Right Aligned
+<magary-divider [align]="'right'">
+  <span>End</span>
+</magary-divider>
+```
+</CodeGroup>
+
+## Line Types
+
+<CodeGroup>
+```html Solid (Default)
+<magary-divider [type]="'solid'"></magary-divider>
+```
+
+```html Dashed
+<magary-divider [type]="'dashed'"></magary-divider>
+```
+
+```html Dotted
+<magary-divider [type]="'dotted'"></magary-divider>
+```
+</CodeGroup>
+
+## Input Properties
+
+<ParamField path="layout" type="'horizontal' | 'vertical'" default="'horizontal'">
+  Orientation of the divider
+</ParamField>
+
+<ParamField path="align" type="'left' | 'center' | 'right' | 'top' | 'bottom'" default="'center'">
+  Alignment of content within divider
+</ParamField>
+
+<ParamField path="type" type="'solid' | 'dashed' | 'dotted'" default="'solid'">
+  Line style of the divider
+</ParamField>
+
+## Usage Examples
+
+### Login Form Divider
+
+```html
+<form>
+  <input type="email" placeholder="Email">
+  <input type="password" placeholder="Password">
+  <button type="submit">Login</button>
+</form>
+
+<magary-divider [align]="'center'">
+  <span class="text-muted">OR</span>
+</magary-divider>
+
+<button class="btn-social">Login with Google</button>
+```
+
+### Section Separator
+
+```html
+<section>
+  <h2>About Us</h2>
+  <p>Company information...</p>
+</section>
+
+<magary-divider [type]="'dashed'"></magary-divider>
+
+<section>
+  <h2>Our Services</h2>
+  <p>Service information...</p>
+</section>
+```
+
+### Vertical Navigation
+
+```html
+<nav class="flex items-center gap-2">
+  <a href="/home">Home</a>
+  <magary-divider [layout]="'vertical'"></magary-divider>
+  <a href="/about">About</a>
+  <magary-divider [layout]="'vertical'"></magary-divider>
+  <a href="/contact">Contact</a>
+</nav>
+```
+
+### With Icon
+
+```html
+<magary-divider [align]="'center'">
+  <lucide-icon name="chevron-down"></lucide-icon>
+</magary-divider>
+```
+
+## Features
+
+- **Horizontal/Vertical**: Support for both orientations
+- **Content support**: Text or icons in divider
+- **Alignment**: Left, center, right, top, bottom
+- **Line styles**: Solid, dashed, dotted
+- **Semantic HTML**: Uses proper separator role
+- **Lightweight**: Minimal styling
+
+## Accessibility
+
+- Uses `role="separator"` for screen readers
+- `aria-orientation` attribute
+- Semantic HTML structure

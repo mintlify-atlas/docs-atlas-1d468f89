@@ -1,0 +1,274 @@
+---
+title: 'Timeline'
+description: 'Display events in chronological order with customizable markers and layouts.'
+---
+
+## Overview
+
+The Timeline component visualizes events in chronological order. It supports horizontal and vertical layouts, custom markers, and flexible content templates for displaying event details.
+
+## Import
+
+```typescript
+import { MagaryTimeline } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryTimeline } from 'ng-magary';
+
+@Component({
+  selector: 'app-timeline-demo',
+  standalone: true,
+  imports: [MagaryTimeline],
+  template: `
+    <magary-timeline [value]="events" layout="vertical" align="left">
+      <ng-template #content let-event>
+        <div class="timeline-content">
+          <h4>{{ event.title }}</h4>
+          <p>{{ event.description }}</p>
+          <small>{{ event.date }}</small>
+        </div>
+      </ng-template>
+    </magary-timeline>
+  `
+})
+export class TimelineDemoComponent {
+  events = [
+    { title: 'Order Placed', description: 'Your order has been placed', date: '2024-01-15' },
+    { title: 'Order Shipped', description: 'Your order has been shipped', date: '2024-01-16' },
+    { title: 'Order Delivered', description: 'Your order has been delivered', date: '2024-01-18' }
+  ];
+}
+```
+
+```html Template
+<magary-timeline [value]="events" layout="vertical" align="left">
+  <ng-template #content let-event>
+    <div class="timeline-content">
+      <h4>{{ event.title }}</h4>
+      <p>{{ event.description }}</p>
+      <small>{{ event.date }}</small>
+    </div>
+  </ng-template>
+</magary-timeline>
+```
+</CodeGroup>
+
+## Horizontal Layout
+
+```html
+<magary-timeline [value]="events" layout="horizontal" align="top">
+  <ng-template #content let-event>
+    <div class="event-card">
+      <h4>{{ event.title }}</h4>
+      <p>{{ event.date }}</p>
+    </div>
+  </ng-template>
+</magary-timeline>
+```
+
+## Alternate Alignment
+
+```html
+<magary-timeline [value]="events" layout="vertical" align="alternate">
+  <ng-template #content let-event>
+    <div class="timeline-content">
+      <h4>{{ event.title }}</h4>
+      <p>{{ event.description }}</p>
+    </div>
+  </ng-template>
+  
+  <ng-template #opposite let-event>
+    <small class="text-muted">{{ event.date }}</small>
+  </ng-template>
+</magary-timeline>
+```
+
+## Custom Markers
+
+```html
+<magary-timeline [value]="events" layout="vertical">
+  <ng-template #content let-event>
+    <div class="timeline-content">
+      <h4>{{ event.title }}</h4>
+      <p>{{ event.description }}</p>
+    </div>
+  </ng-template>
+  
+  <ng-template #marker let-event>
+    <div class="custom-marker" [class.completed]="event.completed">
+      <i [class]="event.icon"></i>
+    </div>
+  </ng-template>
+</magary-timeline>
+```
+
+## Properties
+
+<ParamField path="value" type="any[]" default="[]">
+  Array of events to display in the timeline.
+</ParamField>
+
+<ParamField path="layout" type="'vertical' | 'horizontal'" default="'vertical'">
+  Timeline orientation.
+</ParamField>
+
+<ParamField path="align" type="'left' | 'right' | 'top' | 'bottom' | 'alternate'" default="'left'">
+  Content alignment. For vertical: left, right, or alternate. For horizontal: top, bottom, or alternate.
+</ParamField>
+
+## Templates
+
+The Timeline supports three content templates:
+
+### content
+
+Main content for each timeline event (required).
+
+```html
+<ng-template #content let-event>
+  <div>{{ event.title }}</div>
+</ng-template>
+```
+
+### opposite
+
+Content displayed on the opposite side (optional, useful with alternate alignment).
+
+```html
+<ng-template #opposite let-event>
+  <small>{{ event.date }}</small>
+</ng-template>
+```
+
+### marker
+
+Custom marker content (optional, defaults to a styled dot).
+
+```html
+<ng-template #marker let-event>
+  <div class="custom-marker">
+    <i class="icon-{{ event.type }}"></i>
+  </div>
+</ng-template>
+```
+
+## Layout Examples
+
+### Vertical Left-Aligned
+
+```html
+<magary-timeline [value]="events" layout="vertical" align="left">
+  <ng-template #content let-event>
+    <div class="p-3 bg-white rounded shadow">
+      <h5 class="font-semibold">{{ event.title }}</h5>
+      <p class="text-sm text-gray-600">{{ event.description }}</p>
+      <time class="text-xs text-gray-400">{{ event.date }}</time>
+    </div>
+  </ng-template>
+</magary-timeline>
+```
+
+### Vertical Alternate
+
+```html
+<magary-timeline [value]="events" layout="vertical" align="alternate">
+  <ng-template #content let-event>
+    <div class="event-card">
+      <h5>{{ event.title }}</h5>
+      <p>{{ event.description }}</p>
+    </div>
+  </ng-template>
+  
+  <ng-template #opposite let-event>
+    <time>{{ event.date }}</time>
+  </ng-template>
+  
+  <ng-template #marker let-event>
+    <div class="marker" [style.background-color]="event.color">
+      {{ event.index }}
+    </div>
+  </ng-template>
+</magary-timeline>
+```
+
+### Horizontal Timeline
+
+```html
+<magary-timeline [value]="events" layout="horizontal" align="top">
+  <ng-template #content let-event>
+    <div class="step">
+      <h6>{{ event.title }}</h6>
+      <p>{{ event.date }}</p>
+    </div>
+  </ng-template>
+  
+  <ng-template #marker let-event>
+    <div class="step-number">{{ event.step }}</div>
+  </ng-template>
+</magary-timeline>
+```
+
+## Use Cases
+
+- **Order Tracking**: Display order status updates
+- **Project Milestones**: Show project progress timeline
+- **Activity Feed**: Display user activity history
+- **Process Steps**: Visualize multi-step processes
+- **Historical Events**: Show chronological events
+
+## Styling
+
+The timeline uses these CSS classes:
+
+- `magary-timeline` - Main container
+- `magary-timeline-vertical` - Vertical layout
+- `magary-timeline-horizontal` - Horizontal layout
+- `magary-timeline-left` - Left alignment
+- `magary-timeline-right` - Right alignment
+- `magary-timeline-alternate` - Alternate alignment
+- `magary-timeline-event` - Individual event
+- `magary-timeline-event-content` - Event content
+- `magary-timeline-event-opposite` - Opposite content
+- `magary-timeline-event-separator` - Marker separator
+- `magary-timeline-event-marker` - Event marker
+- `magary-timeline-event-connector` - Line connector
+
+## Custom Styling Example
+
+```css
+.magary-timeline-event-marker {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--primary-color);
+  border: 2px solid var(--surface-card);
+}
+
+.magary-timeline-event-connector {
+  background: var(--surface-border);
+  width: 2px;
+}
+
+.magary-timeline-event-content {
+  padding: 1rem;
+  background: var(--surface-card);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+```
+
+## Accessibility
+
+- The timeline uses a semantic structure
+- Content is presented in a logical reading order
+- Markers have appropriate visual indicators
+- Text content is accessible to screen readers
+
+## Source
+
+View source: `projects/ng-magary/src/lib/Data/timeline/timeline.ts:69`

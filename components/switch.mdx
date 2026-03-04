@@ -1,0 +1,417 @@
+---
+title: 'Switch'
+description: 'Toggle switch component for binary on/off states'
+icon: 'toggle-left'
+---
+
+## Overview
+
+The Switch component provides a toggle control for binary states. It's similar to a checkbox but with a distinct sliding toggle interface, commonly used for settings and preferences.
+
+## Import
+
+```typescript
+import { MagarySwitch } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagarySwitch } from 'ng-magary';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagarySwitch],
+  template: `
+    <magary-switch
+      label="Enable notifications"
+      [(checked)]="notificationsEnabled"
+      (change)="onToggle($event)"
+    />
+  `
+})
+export class DemoComponent {
+  notificationsEnabled = false;
+
+  onToggle(checked: boolean) {
+    console.log('Notifications:', checked ? 'ON' : 'OFF');
+  }
+}
+```
+
+```html Template
+<magary-switch
+  label="Enable notifications"
+  [(checked)]="notificationsEnabled"
+/>
+```
+</CodeGroup>
+
+## Properties
+
+### Inputs
+
+<ParamField path="checked" type="boolean" default="false" model>
+  Two-way bindable checked state using signal-based model()
+</ParamField>
+
+<ParamField path="label" type="string" default="''">
+  Label text displayed next to the switch
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, switch is disabled and cannot be toggled
+</ParamField>
+
+<ParamField path="color" type="Color" default="'primary'">
+  Color variant of the switch when checked
+  
+  Options: `'primary'` | `'success'` | `'danger'` | `'warning'` | `'info'`
+</ParamField>
+
+### Outputs
+
+<ParamField path="change" type="EventEmitter<boolean>">
+  Emitted when the checked state changes. Passes the new checked value.
+</ParamField>
+
+## Examples
+
+### Basic Switch
+
+```html
+<magary-switch
+  label="Dark mode"
+  [(checked)]="darkMode"
+/>
+```
+
+### Without Label
+
+```html
+<magary-switch [(checked)]="isEnabled" />
+```
+
+### Color Variants
+
+<CodeGroup>
+```html Primary
+<magary-switch
+  label="Primary"
+  color="primary"
+  [(checked)]="switch1"
+/>
+```
+
+```html Success
+<magary-switch
+  label="Success"
+  color="success"
+  [(checked)]="switch2"
+/>
+```
+
+```html Danger
+<magary-switch
+  label="Danger"
+  color="danger"
+  [(checked)]="switch3"
+/>
+```
+
+```html Warning
+<magary-switch
+  label="Warning"
+  color="warning"
+  [(checked)]="switch4"
+/>
+```
+
+```html Info
+<magary-switch
+  label="Info"
+  color="info"
+  [(checked)]="switch5"
+/>
+```
+</CodeGroup>
+
+### Disabled State
+
+<CodeGroup>
+```html Disabled Off
+<magary-switch
+  label="Disabled (off)"
+  [checked]="false"
+  [disabled]="true"
+/>
+```
+
+```html Disabled On
+<magary-switch
+  label="Disabled (on)"
+  [checked]="true"
+  [disabled]="true"
+/>
+```
+</CodeGroup>
+
+### With Change Handler
+
+```typescript
+@Component({
+  template: `
+    <magary-switch
+      label="Notifications"
+      [(checked)]="notificationsEnabled"
+      (change)="onNotificationChange($event)"
+      color="success"
+    />
+  `
+})
+export class SettingsComponent {
+  notificationsEnabled = true;
+
+  onNotificationChange(enabled: boolean) {
+    console.log('Notifications', enabled ? 'enabled' : 'disabled');
+    this.saveSettings({ notifications: enabled });
+  }
+
+  saveSettings(settings: any) {
+    // API call or local storage
+  }
+}
+```
+
+### Settings Panel
+
+```typescript
+@Component({
+  template: `
+    <div class="settings-panel">
+      <h3>Privacy Settings</h3>
+      
+      <magary-switch
+        label="Share analytics data"
+        [(checked)]="settings.analytics"
+        (change)="updateSettings()"
+        color="primary"
+      />
+      
+      <magary-switch
+        label="Email notifications"
+        [(checked)]="settings.emailNotifications"
+        (change)="updateSettings()"
+        color="info"
+      />
+      
+      <magary-switch
+        label="Two-factor authentication"
+        [(checked)]="settings.twoFactor"
+        (change)="updateSettings()"
+        color="success"
+      />
+      
+      <magary-switch
+        label="Public profile"
+        [(checked)]="settings.publicProfile"
+        (change)="updateSettings()"
+        color="warning"
+      />
+    </div>
+  `
+})
+export class PrivacySettingsComponent {
+  settings = {
+    analytics: false,
+    emailNotifications: true,
+    twoFactor: false,
+    publicProfile: false
+  };
+
+  updateSettings() {
+    console.log('Settings updated:', this.settings);
+    // Save to backend or local storage
+  }
+}
+```
+
+### Conditional Features
+
+```typescript
+@Component({
+  template: `
+    <magary-switch
+      label="Advanced mode"
+      [(checked)]="advancedMode"
+      color="danger"
+    />
+    
+    <div class="advanced-options" *ngIf="advancedMode">
+      <magary-switch
+        label="Developer tools"
+        [(checked)]="devTools"
+      />
+      
+      <magary-switch
+        label="Debug mode"
+        [(checked)]="debugMode"
+      />
+    </div>
+  `
+})
+export class AdvancedComponent {
+  advancedMode = false;
+  devTools = false;
+  debugMode = false;
+}
+```
+
+### Theme Toggle
+
+```typescript
+@Component({
+  template: `
+    <magary-switch
+      [label]="darkMode ? 'Dark mode' : 'Light mode'"
+      [(checked)]="darkMode"
+      (change)="toggleTheme($event)"
+      color="primary"
+    />
+  `
+})
+export class ThemeToggleComponent {
+  darkMode = false;
+
+  toggleTheme(isDark: boolean) {
+    document.body.classList.toggle('dark-theme', isDark);
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  }
+
+  ngOnInit() {
+    // Load saved preference
+    const savedTheme = localStorage.getItem('theme');
+    this.darkMode = savedTheme === 'dark';
+    if (this.darkMode) {
+      document.body.classList.add('dark-theme');
+    }
+  }
+}
+```
+
+### Permission Controls
+
+```typescript
+@Component({
+  template: `
+    <div class="permissions">
+      <h3>App Permissions</h3>
+      
+      <magary-switch
+        label="Camera access"
+        [(checked)]="permissions.camera"
+        [disabled]="!permissions.granted"
+        color="success"
+      />
+      
+      <magary-switch
+        label="Location access"
+        [(checked)]="permissions.location"
+        [disabled]="!permissions.granted"
+        color="info"
+      />
+      
+      <magary-switch
+        label="Microphone access"
+        [(checked)]="permissions.microphone"
+        [disabled]="!permissions.granted"
+        color="warning"
+      />
+    </div>
+  `
+})
+export class PermissionsComponent {
+  permissions = {
+    granted: true,
+    camera: false,
+    location: true,
+    microphone: false
+  };
+}
+```
+
+## Accessibility
+
+The Switch component includes comprehensive accessibility features:
+
+- **Keyboard Support**: Space key to toggle
+- **Focus Indicators**: Clear visual focus states
+- **Label Association**: Proper label/input connection
+- **ARIA Attributes**: Role, checked state, and disabled state
+- **Semantic HTML**: Uses checkbox input with switch role
+
+### Keyboard Support
+
+- **Space**: Toggle checked state
+- **Tab**: Move focus to/from switch
+
+### Focus Management
+
+The component tracks and displays focus state:
+- Visual focus ring when focused
+- Focus state maintained during keyboard navigation
+- Disabled switches cannot receive focus
+
+## State Management
+
+The switch maintains its state using Angular signals:
+
+```typescript
+// Internal state signals
+checked = model<boolean>(false);  // Two-way bindable
+focused = signal(false);          // Focus state
+disabled = input<boolean>(false); // Disabled state
+```
+
+### Computed Classes
+
+The component automatically applies CSS classes based on state:
+
+```typescript
+containerClasses = computed(() => {
+  const classes = ['magary-switch-container'];
+  if (this.disabled()) classes.push('switch-disabled');
+  if (this.checked()) classes.push('switch-checked');
+  if (this.focused()) classes.push('switch-focused');
+  classes.push(`switch-${this.color()}`);
+  return classes.join(' ');
+});
+```
+
+## Switch vs Checkbox
+
+Use a **Switch** when:
+- Representing on/off states or settings
+- Changes take effect immediately
+- Used in settings panels or configuration screens
+
+Use a **Checkbox** when:
+- Selecting multiple items from a list
+- Requiring explicit submission (forms)
+- Binary choices in forms or surveys
+
+## Component Details
+
+- **Selector**: `magary-switch`
+- **Source**: `/home/daytona/workspace/source/projects/ng-magary/src/lib/Form/switch/switch.ts`
+- **Standalone**: Yes (with CommonModule, FormsModule)
+- **Change Detection**: OnPush
+
+## Type Definitions
+
+```typescript
+type Color = 'primary' | 'success' | 'danger' | 'warning' | 'info';
+```

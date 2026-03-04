@@ -1,80 +1,602 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quick Start
+description: Build your first Magary application in minutes with this step-by-step guide
 ---
 
-## Get started in three steps
+# Quick Start Guide
 
-Get your documentation site running locally and make your first customization.
-
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+Get up and running with **ng-magary** in just a few minutes. This guide will walk you through creating a simple but beautiful Angular application using Magary components.
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  **Before You Begin**: Make sure you've completed the [Installation](/installation) steps. You should have ng-magary and all peer dependencies installed.
 </Note>
+
+## What We'll Build
+
+We'll create a simple user profile card with:
+- A glassmorphism card container
+- User avatar
+- Action buttons with icons
+- A toast notification system
+
+<Tip>
+  This tutorial covers the essentials. Once completed, you'll understand the Magary workflow and can explore more advanced components.
+</Tip>
+
+## Prerequisites Checklist
+
+Before starting, verify you have:
+
+- ✅ Angular CLI installed (`ng version` should work)
+- ✅ Node.js 18+ installed
+- ✅ ng-magary installed in your project
+- ✅ Animation provider configured
+- ✅ Lucide icons configured
+
+If any item is missing, visit the [Installation Guide](/installation).
+
+## Step-by-Step Tutorial
+
+<Steps>
+  <Step title="Create a New Component">
+    Generate a new standalone component:
+    
+    ```bash
+    ng generate component profile --standalone
+    ```
+    
+    Or create it manually at `src/app/profile/profile.component.ts`
+  </Step>
+
+  <Step title="Import Magary Components">
+    Open `profile.component.ts` and import the components we'll use:
+    
+    ```typescript profile.component.ts
+    import { Component } from '@angular/core';
+    import { 
+      MagaryCard, 
+      MagaryButton, 
+      MagaryAvatar,
+      MagaryTag,
+      MagaryDivider,
+      MagaryToast,
+      MagaryToastService 
+    } from 'ng-magary';
+    
+    @Component({
+      selector: 'app-profile',
+      standalone: true,
+      imports: [
+        MagaryCard,
+        MagaryButton,
+        MagaryAvatar,
+        MagaryTag,
+        MagaryDivider,
+        MagaryToast,
+      ],
+      templateUrl: './profile.component.html',
+      styleUrl: './profile.component.scss'
+    })
+    export class ProfileComponent {
+      constructor(private toastService: MagaryToastService) {}
+      
+      onFollowClick() {
+        this.toastService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'You are now following this user!',
+        });
+      }
+      
+      onMessageClick() {
+        this.toastService.add({
+          severity: 'info',
+          summary: 'Info',
+          detail: 'Message feature coming soon!',
+        });
+      }
+    }
+    ```
+  </Step>
+
+  <Step title="Create the Template">
+    Create the HTML template in `profile.component.html`:
+    
+    ```html profile.component.html
+    <div class="profile-container">
+      <!-- Toast notifications container -->
+      <magary-toast position="top-right" />
+      
+      <!-- Profile Card -->
+      <magary-card 
+        [width]="'400px'"
+        [shadow]="4"
+        [backgroundColor]="'var(--glass-bg)'"
+        [borderRadius]="'1.5rem'"
+        [padding]="'2rem'"
+      >
+        <!-- Avatar Section -->
+        <div class="profile-header">
+          <magary-avatar
+            [label]="'JD'"
+            [size]="'xlarge'"
+            [shape]="'circle'"
+            [style]="{
+              'background': 'var(--gradient-primary)',
+              'color': 'white',
+              'font-weight': '600'
+            }"
+          />
+          
+          <div class="profile-info">
+            <h2>Jane Doe</h2>
+            <p class="username">&#64;janedoe</p>
+          </div>
+        </div>
+        
+        <!-- Tags -->
+        <div class="tags">
+          <magary-tag value="Developer" severity="info" [rounded]="true" />
+          <magary-tag value="Designer" severity="success" [rounded]="true" />
+          <magary-tag value="Creator" severity="warning" [rounded]="true" />
+        </div>
+        
+        <magary-divider />
+        
+        <!-- Stats -->
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-value">1,234</span>
+            <span class="stat-label">Followers</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">567</span>
+            <span class="stat-label">Following</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">89</span>
+            <span class="stat-label">Posts</span>
+          </div>
+        </div>
+        
+        <magary-divider />
+        
+        <!-- Bio -->
+        <p class="bio">
+          Passionate about creating beautiful user interfaces and 
+          seamless user experiences. Building with Angular and Magary! ✨
+        </p>
+        
+        <!-- Action Buttons -->
+        <div class="actions">
+          <magary-button
+            label="Follow"
+            icon="user-plus"
+            severity="primary"
+            [width]="'100%'"
+            (onClick)="onFollowClick()"
+          />
+          
+          <magary-button
+            label="Message"
+            icon="message-circle"
+            variant="outlined"
+            severity="secondary"
+            [width]="'100%'"
+            (onClick)="onMessageClick()"
+          />
+        </div>
+      </magary-card>
+    </div>
+    ```
+  </Step>
+
+  <Step title="Add Styling">
+    Style your component in `profile.component.scss`:
+    
+    ```scss profile.component.scss
+    .profile-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .profile-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      
+      .profile-info {
+        text-align: center;
+        
+        h2 {
+          margin: 0;
+          font-size: 1.75rem;
+          font-weight: 700;
+          color: var(--text-primary);
+        }
+        
+        .username {
+          margin: 0.25rem 0 0;
+          color: var(--text-secondary);
+          font-size: 1rem;
+        }
+      }
+    }
+    
+    .tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      text-align: center;
+      
+      .stat {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        
+        .stat-value {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--text-primary);
+        }
+        
+        .stat-label {
+          font-size: 0.875rem;
+          color: var(--text-secondary);
+        }
+      }
+    }
+    
+    .bio {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      text-align: center;
+      margin: 0;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    
+    // Responsive design
+    @media (max-width: 768px) {
+      .profile-container {
+        padding: 1rem;
+      }
+      
+      .stats {
+        gap: 1rem;
+      }
+    }
+    ```
+  </Step>
+
+  <Step title="Import Global Tooltip Styles">
+    If you haven't already, add tooltip styles to `src/styles.scss`:
+    
+    ```scss styles.scss
+    @use 'ng-magary/styles/tooltip.scss';
+    ```
+  </Step>
+
+  <Step title="Add Component to App">
+    Import and use the profile component in your `app.component.ts`:
+    
+    ```typescript app.component.ts
+    import { Component } from '@angular/core';
+    import { ProfileComponent } from './profile/profile.component';
+    
+    @Component({
+      selector: 'app-root',
+      standalone: true,
+      imports: [ProfileComponent],
+      template: '<app-profile />',
+    })
+    export class AppComponent {}
+    ```
+  </Step>
+
+  <Step title="Run Your Application">
+    Start the development server:
+    
+    ```bash
+    ng serve
+    ```
+    
+    Open your browser to `http://localhost:4200` and see your beautiful profile card!
+  </Step>
+</Steps>
+
+## Understanding the Code
+
+Let's break down what we built:
+
+### Component Imports
+
+```typescript
+import { 
+  MagaryCard,      // Container with glassmorphism
+  MagaryButton,    // Action buttons with icons
+  MagaryAvatar,    // User avatar display
+  MagaryTag,       // Badge labels
+  MagaryDivider,   // Content separator
+  MagaryToast,     // Notification component
+  MagaryToastService // Service to trigger notifications
+} from 'ng-magary';
+```
+
+Each component is standalone and imported directly.
+
+### MagaryCard Component
+
+```html
+<magary-card 
+  [width]="'400px'"
+  [shadow]="4"
+  [backgroundColor]="'var(--glass-bg)'"
+  [borderRadius]="'1.5rem'"
+  [padding]="'2rem'"
+>
+```
+
+<Accordion title="MagaryCard Properties">
+  - `width`: Card width (supports any CSS unit)
+  - `shadow`: Shadow depth level (0-5)
+  - `backgroundColor`: Background color (supports CSS variables)
+  - `borderRadius`: Corner rounding
+  - `padding`: Internal spacing
+</Accordion>
+
+### MagaryButton Component
+
+```html
+<magary-button
+  label="Follow"
+  icon="user-plus"
+  severity="primary"
+  [width]="'100%'"
+  (onClick)="onFollowClick()"
+/>
+```
+
+<Accordion title="MagaryButton Properties">
+  - `label`: Button text
+  - `icon`: Lucide icon name
+  - `severity`: Color theme (`primary`, `secondary`, `success`, `info`, `warning`, `danger`, `help`)
+  - `variant`: Style variant (`solid`, `outlined`, `text`)
+  - `width`: Button width
+  - `onClick`: Click event handler
+</Accordion>
+
+### Toast Notifications
+
+```typescript
+this.toastService.add({
+  severity: 'success',
+  summary: 'Success',
+  detail: 'You are now following this user!',
+});
+```
+
+<Accordion title="Toast Service Methods">
+  - `add(message)`: Show a toast notification
+  - `clear()`: Clear all toasts
+  - `remove(id)`: Remove specific toast by ID
+  
+  **Message Properties**:
+  - `severity`: Toast type (`success`, `info`, `warning`, `danger`)
+  - `summary`: Toast title
+  - `detail`: Toast message
+  - `life`: Duration in ms (default: 3000)
+</Accordion>
+
+## Customization Examples
+
+### Change Theme Colors
+
+Modify button severities to match your brand:
+
+```html
+<!-- Use different severities -->
+<magary-button severity="success" label="Approve" />
+<magary-button severity="danger" label="Delete" />
+<magary-button severity="warning" label="Warning" />
+<magary-button severity="premium" label="Upgrade" />
+```
+
+### Add Loading States
+
+```html
+<magary-button
+  label="Loading..."
+  [loading]="true"
+  [disabled]="true"
+/>
+```
+
+### Different Card Variants
+
+```html
+<!-- Elevated card (default) -->
+<magary-card variant="elevated" [shadow]="3">
+  Content here
+</magary-card>
+
+<!-- Outlined card -->
+<magary-card variant="outlined" [border]="'2px solid var(--primary-500)'">
+  Content here
+</magary-card>
+
+<!-- Filled card -->
+<magary-card variant="filled" [backgroundColor]="'var(--surface-100)'">
+  Content here
+</magary-card>
+```
+
+### Icon Positions
+
+```html
+<!-- Icon on left (default) -->
+<magary-button label="Next" icon="arrow-right" />
+
+<!-- Icon on right -->
+<magary-button label="Next" icon="arrow-right" iconPos="right" />
+
+<!-- Icon only -->
+<magary-button icon="heart" [rounded]="true" />
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Explore Theming" icon="palette" href="/theming">
+    Learn how to customize colors, create dark mode, and build custom themes
+  </Card>
+  
+  <Card title="Component Library" icon="grid" href="/components/overview">
+    Browse all 50+ components with interactive examples
+  </Card>
+  
+  <Card title="Form Components" icon="file-input" href="/components/input">
+    Build forms with inputs, selects, checkboxes, and validation
+  </Card>
+  
+  <Card title="Data Components" icon="table" href="/components/table">
+    Display data with tables, trees, timelines, and kanban boards
+  </Card>
+</CardGroup>
+
+## Common Patterns
+
+### Form with Validation
+
+```typescript
+import { Component } from '@angular/core';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MagaryInput, MagaryButton, MagaryCard } from 'ng-magary';
+
+@Component({
+  standalone: true,
+  imports: [ReactiveFormsModule, MagaryInput, MagaryButton, MagaryCard],
+  template: `
+    <magary-card>
+      <h2>Login</h2>
+      <form>
+        <magary-input
+          [formControl]="email"
+          placeholder="Email"
+          [invalid]="email.invalid && email.touched"
+        />
+        
+        <magary-input
+          [formControl]="password"
+          type="password"
+          placeholder="Password"
+          [invalid]="password.invalid && password.touched"
+        />
+        
+        <magary-button
+          label="Sign In"
+          [disabled]="!email.valid || !password.valid"
+        />
+      </form>
+    </magary-card>
+  `,
+})
+export class LoginComponent {
+  email = new FormControl('', [Validators.required, Validators.email]);
+  password = new FormControl('', [Validators.required, Validators.minLength(8)]);
+}
+```
+
+### Confirmation Dialog
+
+```typescript
+import { Component, inject } from '@angular/core';
+import { MagaryConfirmationService, MagaryConfirmDialog } from 'ng-magary';
+
+@Component({
+  standalone: true,
+  imports: [MagaryConfirmDialog],
+  template: '<magary-confirm-dialog />',
+})
+export class MyComponent {
+  private confirmService = inject(MagaryConfirmationService);
+  
+  deleteItem() {
+    this.confirmService.confirm({
+      message: 'Are you sure you want to delete this item?',
+      header: 'Confirm Deletion',
+      icon: 'alert-triangle',
+      acceptLabel: 'Delete',
+      rejectLabel: 'Cancel',
+      accept: () => {
+        // Handle deletion
+      }
+    });
+  }
+}
+```
+
+### Responsive Layout
+
+```html
+<div class="container">
+  <magary-card 
+    [width]="'100%'"
+    [responsive]="true"
+  >
+    <div class="grid">
+      <magary-button label="Button 1" />
+      <magary-button label="Button 2" />
+      <magary-button label="Button 3" />
+    </div>
+  </magary-card>
+</div>
+```
+
+```scss
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+```
+
+## Tips for Success
+
+<Tip>
+  **Use CSS Variables**: Leverage Magary's CSS variables for consistent theming. Examples: `var(--primary-500)`, `var(--surface-0)`, `var(--text-primary)`
+</Tip>
+
+<Tip>
+  **OnPush Strategy**: All Magary components use OnPush change detection. Use signals or immutable data patterns for best performance.
+</Tip>
+
+<Tip>
+  **Icon Explorer**: Browse all available Lucide icons at [lucide.dev/icons](https://lucide.dev/icons)
+</Tip>
+
+<Warning>
+  **Global Styles**: Some components like tooltips require global style imports. Check the component documentation for requirements.
+</Warning>
+
+---
+
+Congratulations! You've built your first Magary application. Explore more components and create beautiful Angular interfaces! 🚀

@@ -1,0 +1,958 @@
+---
+title: "Logistics Example"
+description: "Build a shipment tracking and operations management console with Magary components"
+---
+
+## Overview
+
+This example demonstrates how to build a logistics operations console for managing shipments, tracking status, and coordinating deliveries. It showcases advanced table interactions, sidebar navigation, and action-driven workflows.
+
+<Info>
+  **Time to integrate**: Less than 1 day
+  
+  Create a professional operations console with shipment tracking, status management, and detailed views.
+</Info>
+
+## Key Features
+
+- Left sidebar navigation for operation modules
+- Shipment table with filtering and sorting
+- Status indicators with color coding
+- Priority flags for urgent shipments
+- Sidebar detail panel for selected shipments
+- Action dialogs for status updates
+- Toast notifications for operation results
+- Real-time ETA tracking
+
+## Components Used
+
+<CardGroup cols={2}>
+  <Card title="MagarySidebar" icon="bars">
+    Module navigation and context
+  </Card>
+  <Card title="MagaryTable" icon="table-list">
+    Shipment data display
+  </Card>
+  <Card title="MagarySelect" icon="sliders">
+    Status and filter controls
+  </Card>
+  <Card title="MagaryOverlayPanel" icon="window-restore">
+    Quick action menus
+  </Card>
+  <Card title="MagaryDialog" icon="square-check">
+    Action confirmations
+  </Card>
+  <Card title="MagaryTag" icon="tags">
+    Status and priority badges
+  </Card>
+  <Card title="MagaryToast" icon="bell">
+    Operation feedback
+  </Card>
+  <Card title="MagaryButton" icon="hand-pointer">
+    Action triggers
+  </Card>
+</CardGroup>
+
+## Project Structure
+
+Organize your logistics module with this structure:
+
+```txt
+src/app/logistics/
+  logistics.page.ts
+  logistics.page.html
+  logistics.page.scss
+  logistics.models.ts
+  logistics.facade.ts
+```
+
+## Data Models
+
+Define your shipment and action models:
+
+```typescript logistics.models.ts
+export interface Shipment {
+  id: string;
+  trackingNumber: string;
+  origin: string;
+  destination: string;
+  status: 'PENDING' | 'IN_TRANSIT' | 'DELIVERED' | 'BLOCKED';
+  eta: string;
+  priority: 'LOW' | 'MEDIUM' | 'HIGH';
+  carrier: string;
+  weight: number;
+  customer: string;
+  notes?: string;
+}
+
+export interface ShipmentAction {
+  type: 'DISPATCH' | 'HOLD' | 'RELEASE' | 'MARK_DELIVERED';
+  shipmentId: string;
+  reason?: string;
+  timestamp: string;
+}
+
+export interface OperationModule {
+  id: string;
+  label: string;
+  icon: string;
+  route: string;
+}
+```
+
+## Component Implementation
+
+<CodeGroup>
+
+```typescript logistics.page.ts
+import { ChangeDetectionStrategy, Component, signal, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import {
+  MagarySidebar,
+  MagaryTable,
+  MagarySelect,
+  MagaryOverlayPanel,
+  MagaryDialog,
+  MagaryTag,
+  MagaryToast,
+  MagaryButton,
+  MessageService,
+} from 'ng-magary';
+import { Shipment, ShipmentAction, OperationModule } from './logistics.models';
+
+@Component({
+  selector: 'app-logistics-page',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MagarySidebar,
+    MagaryTable,
+    MagarySelect,
+    MagaryOverlayPanel,
+    MagaryDialog,
+    MagaryTag,
+    MagaryToast,
+    MagaryButton,
+  ],
+  providers: [MessageService],
+  templateUrl: './logistics.page.html',
+  styleUrls: ['./logistics.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class LogisticsPage {
+  constructor(private messageService: MessageService) {}
+
+  // Sidebar state
+  readonly sidebarVisible = signal(true);
+  readonly selectedModule = signal('shipments');
+
+  // Shipment data
+  readonly allShipments = signal<Shipment[]>([
+    {
+      id: 'SH-001',
+      trackingNumber: 'TRK-2026-001234',
+      origin: 'New York, NY',
+      destination: 'Los Angeles, CA',
+      status: 'IN_TRANSIT',
+      eta: '2026-03-06T14:00:00',
+      priority: 'HIGH',
+      carrier: 'FastShip Express',
+      weight: 125.5,
+      customer: 'Acme Corporation',
+      notes: 'Handle with care - fragile items',
+    },
+    {
+      id: 'SH-002',
+      trackingNumber: 'TRK-2026-001235',
+      origin: 'Chicago, IL',
+      destination: 'Miami, FL',
+      status: 'PENDING',
+      eta: '2026-03-08T10:00:00',
+      priority: 'MEDIUM',
+      carrier: 'Global Logistics',
+      weight: 85.2,
+      customer: 'TechStart Inc',
+    },
+    {
+      id: 'SH-003',
+      trackingNumber: 'TRK-2026-001236',
+      origin: 'Seattle, WA',
+      destination: 'Boston, MA',
+      status: 'BLOCKED',
+      eta: '2026-03-05T16:00:00',
+      priority: 'HIGH',
+      carrier: 'FastShip Express',
+      weight: 210.8,
+      customer: 'MegaMart',
+      notes: 'Weather delay - awaiting clearance',
+    },
+    {
+      id: 'SH-004',
+      trackingNumber: 'TRK-2026-001237',
+      origin: 'Houston, TX',
+      destination: 'Denver, CO',
+      status: 'DELIVERED',
+      eta: '2026-03-03T12:00:00',
+      priority: 'LOW',
+      carrier: 'Budget Freight',
+      weight: 45.0,
+      customer: 'Small Business LLC',
+    },
+    {
+      id: 'SH-005',
+      trackingNumber: 'TRK-2026-001238',
+      origin: 'Phoenix, AZ',
+      destination: 'Portland, OR',
+      status: 'IN_TRANSIT',
+      eta: '2026-03-07T09:00:00',
+      priority: 'MEDIUM',
+      carrier: 'Global Logistics',
+      weight: 152.3,
+      customer: 'Northwest Supplies',
+    },
+  ]);
+
+  // Filters
+  readonly statusFilter = signal<Shipment['status'] | null>(null);
+  readonly priorityFilter = signal<Shipment['priority'] | null>(null);
+
+  // Filtered shipments
+  readonly filteredShipments = computed(() => {
+    let shipments = this.allShipments();
+
+    const status = this.statusFilter();
+    if (status) {
+      shipments = shipments.filter(s => s.status === status);
+    }
+
+    const priority = this.priorityFilter();
+    if (priority) {
+      shipments = shipments.filter(s => s.priority === priority);
+    }
+
+    return shipments;
+  });
+
+  // Selected shipment
+  readonly selectedShipmentId = signal<string | null>(null);
+  readonly selectedShipment = computed(() => {
+    const id = this.selectedShipmentId();
+    return this.allShipments().find(s => s.id === id) || null;
+  });
+
+  // Dialog state
+  readonly actionDialogVisible = signal(false);
+  readonly pendingAction = signal<ShipmentAction | null>(null);
+
+  // Navigation modules
+  readonly modules: OperationModule[] = [
+    { id: 'shipments', label: 'Shipments', icon: 'pi pi-box', route: '/logistics/shipments' },
+    { id: 'tracking', label: 'Live Tracking', icon: 'pi pi-map-marker', route: '/logistics/tracking' },
+    { id: 'fleet', label: 'Fleet Management', icon: 'pi pi-car', route: '/logistics/fleet' },
+    { id: 'analytics', label: 'Analytics', icon: 'pi pi-chart-line', route: '/logistics/analytics' },
+    { id: 'settings', label: 'Settings', icon: 'pi pi-cog', route: '/logistics/settings' },
+  ];
+
+  // Filter options
+  readonly statusOptions = [
+    { label: 'All Statuses', value: null },
+    { label: 'Pending', value: 'PENDING' },
+    { label: 'In Transit', value: 'IN_TRANSIT' },
+    { label: 'Delivered', value: 'DELIVERED' },
+    { label: 'Blocked', value: 'BLOCKED' },
+  ];
+
+  readonly priorityOptions = [
+    { label: 'All Priorities', value: null },
+    { label: 'Low', value: 'LOW' },
+    { label: 'Medium', value: 'MEDIUM' },
+    { label: 'High', value: 'HIGH' },
+  ];
+
+  selectShipment(shipment: Shipment): void {
+    this.selectedShipmentId.set(shipment.id);
+  }
+
+  initiateAction(type: ShipmentAction['type'], shipment: Shipment): void {
+    this.pendingAction.set({
+      type,
+      shipmentId: shipment.id,
+      timestamp: new Date().toISOString(),
+    });
+    this.actionDialogVisible.set(true);
+  }
+
+  confirmAction(): void {
+    const action = this.pendingAction();
+    if (!action) return;
+
+    // Simulate API call
+    const shipments = this.allShipments();
+    const shipment = shipments.find(s => s.id === action.shipmentId);
+    
+    if (shipment) {
+      // Update shipment status based on action
+      switch (action.type) {
+        case 'DISPATCH':
+          shipment.status = 'IN_TRANSIT';
+          break;
+        case 'HOLD':
+          shipment.status = 'BLOCKED';
+          break;
+        case 'RELEASE':
+          shipment.status = 'IN_TRANSIT';
+          break;
+        case 'MARK_DELIVERED':
+          shipment.status = 'DELIVERED';
+          break;
+      }
+
+      this.allShipments.set([...shipments]);
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Action Completed',
+        detail: `${action.type.replace('_', ' ')} action completed for ${shipment.trackingNumber}`,
+      });
+    }
+
+    this.actionDialogVisible.set(false);
+    this.pendingAction.set(null);
+  }
+
+  getStatusSeverity(status: Shipment['status']): string {
+    switch (status) {
+      case 'PENDING': return 'info';
+      case 'IN_TRANSIT': return 'warning';
+      case 'DELIVERED': return 'success';
+      case 'BLOCKED': return 'danger';
+    }
+  }
+
+  getStatusLabel(status: Shipment['status']): string {
+    return status.replace('_', ' ');
+  }
+
+  getPrioritySeverity(priority: Shipment['priority']): string {
+    switch (priority) {
+      case 'LOW': return 'secondary';
+      case 'MEDIUM': return 'info';
+      case 'HIGH': return 'danger';
+    }
+  }
+
+  formatETA(eta: string): string {
+    const date = new Date(eta);
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  getAvailableActions(shipment: Shipment): ShipmentAction['type'][] {
+    switch (shipment.status) {
+      case 'PENDING': return ['DISPATCH', 'HOLD'];
+      case 'IN_TRANSIT': return ['MARK_DELIVERED', 'HOLD'];
+      case 'BLOCKED': return ['RELEASE'];
+      case 'DELIVERED': return [];
+      default: return [];
+    }
+  }
+}
+```
+
+```html logistics.page.html
+<div class="logistics-layout">
+  <!-- Sidebar Navigation -->
+  <magary-sidebar
+    [(visible)]="sidebarVisible"
+    [modal]="false"
+    position="left"
+    styleClass="logistics-sidebar"
+  >
+    <div class="sidebar-header">
+      <h2>Logistics Console</h2>
+    </div>
+    <div class="sidebar-modules">
+      @for (module of modules; track module.id) {
+        <div
+          class="module-item"
+          [class.active]="selectedModule() === module.id"
+          (click)="selectedModule.set(module.id)"
+        >
+          <i [class]="module.icon"></i>
+          <span>{{ module.label }}</span>
+        </div>
+      }
+    </div>
+  </magary-sidebar>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Header -->
+    <div class="content-header">
+      <div class="header-left">
+        <magary-button
+          icon="pi pi-bars"
+          styleClass="p-button-text"
+          (onClick)="sidebarVisible.set(!sidebarVisible())"
+        />
+        <h1>Shipment Management</h1>
+      </div>
+      <div class="header-stats">
+        <div class="stat">
+          <span class="stat-label">Active</span>
+          <span class="stat-value">{{ filteredShipments().length }}</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">In Transit</span>
+          <span class="stat-value">
+            {{ filteredShipments().filter(s => s.status === 'IN_TRANSIT').length }}
+          </span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Blocked</span>
+          <span class="stat-value critical">
+            {{ filteredShipments().filter(s => s.status === 'BLOCKED').length }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-bar">
+      <magary-select
+        [options]="statusOptions"
+        [(ngModel)]="statusFilter"
+        placeholder="Filter by status"
+        optionLabel="label"
+        optionValue="value"
+      />
+      <magary-select
+        [options]="priorityOptions"
+        [(ngModel)]="priorityFilter"
+        placeholder="Filter by priority"
+        optionLabel="label"
+        optionValue="value"
+      />
+    </div>
+
+    <!-- Shipments Table -->
+    <magary-table
+      [value]="filteredShipments()"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      responsiveLayout="scroll"
+      [selectionMode]="'single'"
+      (onRowSelect)="selectShipment($event.data)"
+      styleClass="shipments-table"
+    >
+      <ng-template #header>
+        <tr>
+          <th>Tracking #</th>
+          <th>Origin</th>
+          <th>Destination</th>
+          <th>Status</th>
+          <th>Priority</th>
+          <th>ETA</th>
+          <th>Carrier</th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-shipment>
+        <tr [class.selected]="selectedShipmentId() === shipment.id">
+          <td>
+            <div class="tracking-cell">
+              <strong>{{ shipment.trackingNumber }}</strong>
+              <small>{{ shipment.customer }}</small>
+            </div>
+          </td>
+          <td>{{ shipment.origin }}</td>
+          <td>{{ shipment.destination }}</td>
+          <td>
+            <magary-tag
+              [value]="getStatusLabel(shipment.status)"
+              [severity]="getStatusSeverity(shipment.status)"
+            />
+          </td>
+          <td>
+            <magary-tag
+              [value]="shipment.priority"
+              [severity]="getPrioritySeverity(shipment.priority)"
+            />
+          </td>
+          <td>{{ formatETA(shipment.eta) }}</td>
+          <td>{{ shipment.carrier }}</td>
+          <td>
+            <div class="action-buttons">
+              @for (action of getAvailableActions(shipment); track action) {
+                <magary-button
+                  [icon]="action === 'DISPATCH' ? 'pi pi-send' : action === 'HOLD' ? 'pi pi-pause' : action === 'RELEASE' ? 'pi pi-play' : 'pi pi-check'"
+                  styleClass="p-button-sm p-button-text"
+                  [pTooltip]="action.replace('_', ' ')"
+                  (onClick)="initiateAction(action, shipment)"
+                />
+              }
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </magary-table>
+
+    <!-- Shipment Detail Sidebar -->
+    @if (selectedShipment(); as shipment) {
+      <div class="detail-panel">
+        <div class="detail-header">
+          <h3>Shipment Details</h3>
+          <magary-button
+            icon="pi pi-times"
+            styleClass="p-button-text"
+            (onClick)="selectedShipmentId.set(null)"
+          />
+        </div>
+        <div class="detail-content">
+          <div class="detail-section">
+            <h4>Tracking Information</h4>
+            <div class="detail-row">
+              <span class="label">Tracking Number:</span>
+              <span class="value">{{ shipment.trackingNumber }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Status:</span>
+              <magary-tag
+                [value]="getStatusLabel(shipment.status)"
+                [severity]="getStatusSeverity(shipment.status)"
+              />
+            </div>
+            <div class="detail-row">
+              <span class="label">Priority:</span>
+              <magary-tag
+                [value]="shipment.priority"
+                [severity]="getPrioritySeverity(shipment.priority)"
+              />
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>Route Information</h4>
+            <div class="detail-row">
+              <span class="label">Origin:</span>
+              <span class="value">{{ shipment.origin }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Destination:</span>
+              <span class="value">{{ shipment.destination }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">ETA:</span>
+              <span class="value">{{ formatETA(shipment.eta) }}</span>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>Shipment Details</h4>
+            <div class="detail-row">
+              <span class="label">Customer:</span>
+              <span class="value">{{ shipment.customer }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Carrier:</span>
+              <span class="value">{{ shipment.carrier }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Weight:</span>
+              <span class="value">{{ shipment.weight }} lbs</span>
+            </div>
+            @if (shipment.notes) {
+              <div class="detail-row">
+                <span class="label">Notes:</span>
+                <span class="value">{{ shipment.notes }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Action Confirmation Dialog -->
+  <magary-dialog
+    [(visible)]="actionDialogVisible"
+    [modal]="true"
+    [closable]="true"
+    header="Confirm Action"
+    [style]="{ width: '450px' }"
+  >
+    @if (pendingAction(); as action) {
+      <p>Are you sure you want to perform this action?</p>
+      <div class="action-summary">
+        <strong>Action:</strong> {{ action.type.replace('_', ' ') }}<br>
+        <strong>Shipment:</strong> {{ action.shipmentId }}
+      </div>
+    }
+    <ng-template #footer>
+      <magary-button
+        label="Cancel"
+        styleClass="p-button-text"
+        (onClick)="actionDialogVisible.set(false)"
+      />
+      <magary-button
+        label="Confirm"
+        (onClick)="confirmAction()"
+      />
+    </ng-template>
+  </magary-dialog>
+
+  <!-- Toast Notifications -->
+  <magary-toast position="top-right" />
+</div>
+```
+
+```scss logistics.page.scss
+.logistics-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.logistics-sidebar {
+  width: 280px;
+  background: var(--surface-ground);
+  border-right: 1px solid var(--surface-border);
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--surface-border);
+
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+}
+
+.sidebar-modules {
+  padding: 1rem 0;
+}
+
+.module-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+
+  &.active {
+    background: var(--primary-color);
+    color: var(--primary-color-text);
+    font-weight: 600;
+  }
+
+  i {
+    font-size: 1.25rem;
+  }
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--surface-card);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  h1 {
+    margin: 0;
+    font-size: 1.75rem;
+  }
+}
+
+.header-stats {
+  display: flex;
+  gap: 2rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+
+    &.critical {
+      color: var(--red-500);
+    }
+  }
+}
+
+.filters-bar {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  background: var(--surface-section);
+}
+
+.shipments-table {
+  margin: 1rem 2rem;
+  flex: 1;
+  overflow: auto;
+}
+
+.tracking-cell {
+  display: flex;
+  flex-direction: column;
+
+  strong {
+    font-size: 0.875rem;
+  }
+
+  small {
+    color: var(--text-color-secondary);
+    font-size: 0.75rem;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.detail-panel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 400px;
+  background: var(--surface-card);
+  border-left: 1px solid var(--surface-border);
+  box-shadow: -4px 0 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--surface-border);
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.detail-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+.detail-section {
+  margin-bottom: 2rem;
+
+  h4 {
+    margin: 0 0 1rem 0;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    color: var(--text-color-secondary);
+  }
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--surface-border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .label {
+    font-weight: 600;
+    color: var(--text-color-secondary);
+  }
+
+  .value {
+    text-align: right;
+  }
+}
+
+.action-summary {
+  padding: 1rem;
+  background: var(--surface-ground);
+  border-radius: 4px;
+  margin-top: 1rem;
+  line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+  .logistics-sidebar {
+    position: absolute;
+    z-index: 1000;
+  }
+
+  .detail-panel {
+    width: 100%;
+  }
+
+  .header-stats {
+    display: none;
+  }
+}
+```
+
+</CodeGroup>
+
+## Layout Diagram
+
+```
+┌──────────┬──────────────────────────────────────────────┐
+│          │ ☰ Shipment Management    [12] [8] [2]       │
+│Logistics │                                              │
+│ Console  ├──────────────────────────────────────────────┤
+│          │ [Status ▼] [Priority ▼]                     │
+│          ├──────────────────────────────────────────────┤
+│📦Shipments│ Track# │Origin│Dest │Status│Pri│ETA│Actions │
+│📍Tracking│ ─────────────────────────────────────────── │
+│🚗Fleet   │TRK-001│NYC  │LA   │TRANS│H  │3/6│[▶][⏸]  │
+│📊Analytics│TRK-002│CHI  │MIA  │PEND │M  │3/8│[▶][⏸]  │
+│⚙Settings │TRK-003│SEA  │BOS  │BLOCK│H  │3/5│[▶]     │
+│          │TRK-004│HOU  │DEN  │DELIV│L  │3/3│        │
+│          │                                              │
+└──────────┴──────────────────────────────────────────────┘
+```
+
+## Workflow Patterns
+
+<Steps>
+  <Step title="View Shipments">
+    Users see all active shipments in the main table with status and priority indicators
+  </Step>
+  <Step title="Filter and Search">
+    Users can filter by status or priority to focus on specific shipments
+  </Step>
+  <Step title="Select Shipment">
+    Clicking a row shows detailed information in the sidebar panel
+  </Step>
+  <Step title="Initiate Action">
+    Action buttons appear based on current shipment status (dispatch, hold, release, etc.)
+  </Step>
+  <Step title="Confirm Action">
+    A dialog prompts for confirmation before applying the action
+  </Step>
+  <Step title="Receive Feedback">
+    Toast notification confirms the action and table updates automatically
+  </Step>
+</Steps>
+
+## Accessibility Checklist
+
+<AccordionGroup>
+  <Accordion title="Keyboard Navigation">
+    - Sidebar menu items are keyboard accessible
+    - Table rows can be selected with arrow keys
+    - Action buttons receive focus in logical order
+    - Escape key closes dialogs and detail panel
+  </Accordion>
+
+  <Accordion title="ARIA Labels">
+    - Table headers properly associated with cells
+    - Status tags have semantic roles
+    - Action buttons have descriptive tooltips
+    - Dialog announces purpose on open
+  </Accordion>
+
+  <Accordion title="Screen Reader Support">
+    - Shipment status changes are announced
+    - Table updates announce row count
+    - Action confirmations read full context
+    - Navigation landmarks identify regions
+  </Accordion>
+
+  <Accordion title="Mobile Behavior">
+    - Sidebar becomes modal overlay on small screens
+    - Table columns stack or scroll horizontally
+    - Detail panel slides over full width
+    - Touch targets meet minimum size requirements
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+  **Action Safety**: Always confirm destructive or status-changing actions with a dialog to prevent accidental operations.
+</Tip>
+
+<Warning>
+  **Real-time Updates**: In production, implement WebSocket connections or polling to keep shipment data current across all users.
+</Warning>
+
+<Note>
+  **Type Safety**: Use strict TypeScript enums for status and priority to ensure only valid values are used throughout the application.
+</Note>
+
+<Tip>
+  **Audit Trail**: Log all shipment actions with timestamps and user information for compliance and debugging.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Map Integration" icon="map">
+    Add real-time tracking maps with delivery routes
+  </Card>
+  <Card title="Notifications" icon="bell">
+    Implement push notifications for critical status changes
+  </Card>
+  <Card title="Bulk Actions" icon="layer-group">
+    Enable multi-select for batch operations
+  </Card>
+  <Card title="Reports" icon="file-pdf">
+    Generate PDF manifests and delivery reports
+  </Card>
+</CardGroup>

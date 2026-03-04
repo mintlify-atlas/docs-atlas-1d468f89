@@ -1,0 +1,342 @@
+---
+title: CascadeSelect
+description: A hierarchical dropdown component for selecting values from nested option groups
+---
+
+## Overview
+
+The CascadeSelect component provides a dropdown interface for selecting values from hierarchical data structures. It supports nested option groups, keyboard navigation, and extensive customization.
+
+## Component Selector
+
+```html
+<magary-cascade-select />
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryCascadeSelect } from 'ng-magary';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagaryCascadeSelect, FormsModule],
+  template: `
+    <magary-cascade-select
+      [(ngModel)]="selectedValue"
+      [options]="categories"
+    />
+  `
+})
+export class DemoComponent {
+  selectedValue: any = null;
+  
+  categories = [
+    {
+      label: 'Electronics',
+      children: [
+        { label: 'Computers', value: 'computers' },
+        { label: 'Phones', value: 'phones' }
+      ]
+    },
+    {
+      label: 'Clothing',
+      children: [
+        { label: 'Shirts', value: 'shirts' },
+        { label: 'Pants', value: 'pants' }
+      ]
+    }
+  ];
+}
+```
+
+```html Template
+<magary-cascade-select
+  [(ngModel)]="selectedValue"
+  [options]="categories"
+/>
+```
+</CodeGroup>
+
+## Custom Label and Value
+
+```html
+<magary-cascade-select
+  [(ngModel)]="selectedId"
+  [options]="locations"
+  [optionLabel]="'name'"
+  [optionValue]="'id'"
+  [optionGroupChildren]="['subdivisions']"
+/>
+```
+
+```typescript
+locations = [
+  {
+    name: 'United States',
+    subdivisions: [
+      { name: 'California', id: 'CA' },
+      { name: 'New York', id: 'NY' }
+    ]
+  }
+];
+```
+
+## Selectable Groups
+
+```html
+<magary-cascade-select
+  [(ngModel)]="selectedValue"
+  [options]="categories"
+  [optionGroupSelectable]="true"
+/>
+```
+
+## With Error State
+
+```html
+<magary-cascade-select
+  [(ngModel)]="selectedValue"
+  [options]="options"
+  [invalid]="true"
+  [error]="'Please select a category'"
+/>
+```
+
+## Properties
+
+### Data
+
+<ParamField path="options" type="Record<string, unknown>[]" default="[]">
+  Array of option objects representing the hierarchical data structure
+</ParamField>
+
+<ParamField path="optionLabel" type="string" default="'label'">
+  Property name to use as the display label for each option
+</ParamField>
+
+<ParamField path="optionValue" type="string | null" default="null">
+  Property name to use as the value. If null, the entire option object is used as the value
+</ParamField>
+
+<ParamField path="optionGroupLabel" type="string[] | string | null" default="null">
+  Property name(s) for group labels. If not specified, uses `optionLabel`
+</ParamField>
+
+<ParamField path="optionGroupChildren" type="string[]" default="['children']">
+  Array of property names to check for child options. First matching property is used
+</ParamField>
+
+<ParamField path="optionGroupSelectable" type="boolean" default="false">
+  When true, allows selecting parent groups in addition to leaf nodes
+</ParamField>
+
+### Display
+
+<ParamField path="placeholder" type="string" default="'Select an option'">
+  Placeholder text shown when no value is selected
+</ParamField>
+
+<ParamField path="size" type="'small' | 'normal' | 'large'" default="'normal'">
+  Size of the component
+</ParamField>
+
+<ParamField path="width" type="string" default="'100%'">
+  Width of the component
+</ParamField>
+
+### State
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, disables the component
+</ParamField>
+
+<ParamField path="loading" type="boolean" default="false">
+  When true, shows loading state
+</ParamField>
+
+<ParamField path="invalid" type="boolean" default="false">
+  When true, applies error styling
+</ParamField>
+
+### Validation & Help
+
+<ParamField path="error" type="string" default="''">
+  Error message to display below the component
+</ParamField>
+
+<ParamField path="helpText" type="string" default="''">
+  Help text to display below the component
+</ParamField>
+
+## Form Integration
+
+<Note>
+  The CascadeSelect component implements `ControlValueAccessor` and works with Angular forms.
+</Note>
+
+### Reactive Forms
+
+```typescript
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+
+category = new FormControl<string | null>(null);
+```
+
+```html
+<magary-cascade-select
+  [formControl]="category"
+  [options]="categories"
+/>
+```
+
+## Keyboard Navigation
+
+| Key | Action |
+|-----|--------|
+| `Enter` / `Space` | Open/close dropdown or select active option |
+| `Arrow Down` | Move to next option (opens if closed) |
+| `Arrow Up` | Move to previous option (opens if closed) |
+| `Arrow Right` | Expand active group |
+| `Arrow Left` | Collapse to parent group |
+| `Home` | Move to first option |
+| `End` | Move to last option |
+| `Escape` | Close dropdown |
+| `Tab` | Close dropdown and move focus |
+
+## Accessibility Features
+
+- ARIA combobox pattern with listbox popup
+- Keyboard navigation support
+- Screen reader announcements
+- Focus management
+- Disabled and loading state handling
+- Error and help text associations
+
+## Styling
+
+The CascadeSelect uses the following structure:
+
+- `.magary-cascade-select`: Main container
+- `.magary-cascade-select-trigger`: Trigger button
+- `.magary-cascade-select-panel`: Dropdown panel
+- `.magary-cascade-select-option`: Individual option
+- `.magary-cascade-select-group`: Group option
+- `.selected`: Applied to selected option
+- `.active`: Applied to keyboard-active option
+
+## Complete Example
+
+```typescript
+import { Component } from '@angular/core';
+import { MagaryCascadeSelect } from 'ng-magary';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
+interface Category {
+  label: string;
+  value?: string;
+  children?: Category[];
+}
+
+@Component({
+  selector: 'app-cascade-demo',
+  standalone: true,
+  imports: [MagaryCascadeSelect, ReactiveFormsModule, CommonModule],
+  template: `
+    <div class="demo-container">
+      <h3>Product Categories</h3>
+      <magary-cascade-select
+        [formControl]="category"
+        [options]="categories"
+        placeholder="Select a category"
+      />
+      <p *ngIf="category.value">
+        Selected: {{ category.value }}
+      </p>
+
+      <h3>Location Selector</h3>
+      <magary-cascade-select
+        [formControl]="location"
+        [options]="locations"
+        [optionLabel]="'name'"
+        [optionValue]="'code'"
+        [optionGroupChildren]="['states']"
+        placeholder="Select a location"
+      />
+
+      <h3>With Selectable Groups</h3>
+      <magary-cascade-select
+        [formControl]="department"
+        [options]="departments"
+        [optionGroupSelectable]="true"
+        placeholder="Select department or team"
+      />
+
+      <h3>With Error</h3>
+      <magary-cascade-select
+        [formControl]="required"
+        [options]="categories"
+        [invalid]="required.touched && !required.value"
+        [error]="'This field is required'"
+        placeholder="Required field"
+      />
+    </div>
+  `
+})
+export class CascadeSelectDemoComponent {
+  category = new FormControl<string | null>(null);
+  location = new FormControl<string | null>(null);
+  department = new FormControl<string | null>(null);
+  required = new FormControl<string | null>(null);
+
+  categories: Category[] = [
+    {
+      label: 'Electronics',
+      children: [
+        {
+          label: 'Computers',
+          children: [
+            { label: 'Laptops', value: 'laptops' },
+            { label: 'Desktops', value: 'desktops' }
+          ]
+        },
+        { label: 'Phones', value: 'phones' }
+      ]
+    },
+    {
+      label: 'Clothing',
+      children: [
+        { label: 'Men', value: 'men' },
+        { label: 'Women', value: 'women' }
+      ]
+    }
+  ];
+
+  locations = [
+    {
+      name: 'United States',
+      code: 'US',
+      states: [
+        { name: 'California', code: 'CA' },
+        { name: 'New York', code: 'NY' }
+      ]
+    }
+  ];
+
+  departments: Category[] = [
+    {
+      label: 'Engineering',
+      value: 'eng',
+      children: [
+        { label: 'Frontend', value: 'eng-fe' },
+        { label: 'Backend', value: 'eng-be' }
+      ]
+    }
+  ];
+}
+```

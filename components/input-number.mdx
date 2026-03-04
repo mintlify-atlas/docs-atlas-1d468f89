@@ -1,0 +1,355 @@
+---
+title: InputNumber
+description: A specialized numeric input component with formatting, validation, and spinner controls
+---
+
+## Overview
+
+The InputNumber component provides a sophisticated input field specifically designed for numeric values. It includes locale-aware formatting, min/max validation, step controls, and optional spinner buttons.
+
+## Component Selector
+
+```html
+<magary-input-number />
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryInputNumber } from 'ng-magary';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagaryInputNumber, FormsModule],
+  template: `
+    <magary-input-number
+      [(ngModel)]="value"
+      placeholder="Enter a number"
+    />
+  `
+})
+export class DemoComponent {
+  value: number | null = null;
+}
+```
+
+```html Template
+<magary-input-number
+  [(ngModel)]="value"
+  placeholder="Enter a number"
+/>
+```
+</CodeGroup>
+
+## With Spinner Buttons
+
+```html
+<magary-input-number
+  [(ngModel)]="value"
+  [showButtons]="true"
+  [step]="1"
+  [min]="0"
+  [max]="100"
+/>
+```
+
+## Currency Format
+
+```html
+<magary-input-number
+  [(ngModel)]="price"
+  [mode]="'currency'"
+  [currency]="'USD'"
+  [currencyDisplay]="'symbol'"
+  [minFractionDigits]="2"
+  [maxFractionDigits]="2"
+/>
+```
+
+## Percentage Format
+
+```html
+<magary-input-number
+  [(ngModel)]="percentage"
+  [mode]="'percent'"
+  [minFractionDigits]="2"
+/>
+```
+
+## Properties
+
+### Value & Model
+
+<ParamField path="value" type="number | null">
+  The numeric value (supports two-way binding with `[(value)]`)
+</ParamField>
+
+### Formatting Options
+
+<ParamField path="format" type="boolean" default="true">
+  Whether to format the number according to locale and mode settings
+</ParamField>
+
+<ParamField path="mode" type="'decimal' | 'currency' | 'percent'" default="'decimal'">
+  The formatting mode for the number:
+  - `decimal`: Standard number formatting
+  - `currency`: Currency formatting with symbol
+  - `percent`: Percentage formatting
+</ParamField>
+
+<ParamField path="locale" type="string" default="'en-US'">
+  The locale to use for number formatting (e.g., 'en-US', 'de-DE', 'fr-FR')
+</ParamField>
+
+<ParamField path="localeMatcher" type="'lookup' | 'best fit'" default="'best fit'">
+  The locale matching algorithm to use
+</ParamField>
+
+<ParamField path="useGrouping" type="boolean" default="true">
+  Whether to use grouping separators (e.g., thousands separators)
+</ParamField>
+
+<ParamField path="minFractionDigits" type="number">
+  Minimum number of fraction digits to display
+</ParamField>
+
+<ParamField path="maxFractionDigits" type="number">
+  Maximum number of fraction digits to display
+</ParamField>
+
+### Currency Options
+
+<ParamField path="currency" type="string" default="'USD'">
+  The currency code to use when mode is 'currency' (e.g., 'USD', 'EUR', 'GBP')
+</ParamField>
+
+<ParamField path="currencyDisplay" type="'symbol' | 'narrowSymbol' | 'code' | 'name'" default="'symbol'">
+  How to display the currency:
+  - `symbol`: Use currency symbol ($, €)
+  - `narrowSymbol`: Use narrow symbol
+  - `code`: Use currency code (USD, EUR)
+  - `name`: Use currency name (US Dollar)
+</ParamField>
+
+### Prefix & Suffix
+
+<ParamField path="prefix" type="string" default="''">
+  Text to prepend before the formatted value
+</ParamField>
+
+<ParamField path="suffix" type="string" default="''">
+  Text to append after the formatted value
+</ParamField>
+
+### Validation
+
+<ParamField path="min" type="number | null" default="null">
+  Minimum allowed value. Values are clamped to this on blur
+</ParamField>
+
+<ParamField path="max" type="number | null" default="null">
+  Maximum allowed value. Values are clamped to this on blur
+</ParamField>
+
+<ParamField path="step" type="number" default="1">
+  The step increment/decrement value for spinner buttons and arrow keys
+</ParamField>
+
+<ParamField path="allowEmpty" type="boolean" default="true">
+  Whether to allow empty/null values
+</ParamField>
+
+### Spinner Buttons
+
+<ParamField path="showButtons" type="boolean" default="false">
+  Whether to display increment/decrement spinner buttons
+</ParamField>
+
+<ParamField path="buttonLayout" type="'stacked' | 'horizontal' | 'vertical'" default="'stacked'">
+  Layout of spinner buttons:
+  - `stacked`: Buttons stacked vertically on the right
+  - `horizontal`: Buttons placed horizontally on both sides
+  - `vertical`: Buttons stacked vertically
+</ParamField>
+
+<ParamField path="incrementButtonClass" type="string" default="''">
+  CSS class for the increment button
+</ParamField>
+
+<ParamField path="decrementButtonClass" type="string" default="''">
+  CSS class for the decrement button
+</ParamField>
+
+<ParamField path="incrementButtonIcon" type="string" default="'chevron-up'">
+  Icon name for the increment button (Lucide icon)
+</ParamField>
+
+<ParamField path="decrementButtonIcon" type="string" default="'chevron-down'">
+  Icon name for the decrement button (Lucide icon)
+</ParamField>
+
+### Input Configuration
+
+<ParamField path="placeholder" type="string" default="''">
+  Placeholder text for the input field
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  Whether the input is disabled
+</ParamField>
+
+<ParamField path="readonly" type="boolean" default="false">
+  Whether the input is read-only
+</ParamField>
+
+<ParamField path="size" type="number | null">
+  The size attribute of the input element
+</ParamField>
+
+<ParamField path="maxlength" type="number | null">
+  Maximum length of the input
+</ParamField>
+
+<ParamField path="tabindex" type="number | null">
+  Tab index of the input element
+</ParamField>
+
+<ParamField path="name" type="string" default="''">
+  Name attribute for the input element
+</ParamField>
+
+<ParamField path="inputId" type="string" default="''">
+  ID attribute for the input element
+</ParamField>
+
+### Styling
+
+<ParamField path="inputStyle" type="Record<string, unknown> | null">
+  Inline styles for the input element
+</ParamField>
+
+<ParamField path="inputStyleClass" type="string" default="''">
+  CSS class for the input element
+</ParamField>
+
+<ParamField path="style" type="Record<string, unknown> | null">
+  Inline styles for the wrapper element
+</ParamField>
+
+<ParamField path="styleClass" type="string" default="''">
+  CSS class for the wrapper element
+</ParamField>
+
+## Events
+
+<ParamField path="onInput" type="output<Event>">
+  Emitted when the input value changes
+</ParamField>
+
+<ParamField path="onFocus" type="output<FocusEvent>">
+  Emitted when the input receives focus
+</ParamField>
+
+<ParamField path="onBlur" type="output<FocusEvent>">
+  Emitted when the input loses focus. Value is formatted and validated on blur
+</ParamField>
+
+<ParamField path="onKeyDown" type="output<KeyboardEvent>">
+  Emitted on key down events
+</ParamField>
+
+## Form Integration
+
+<Note>
+  The InputNumber component implements `ControlValueAccessor` and integrates with Angular forms.
+</Note>
+
+### Reactive Forms
+
+```typescript
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+
+quantity = new FormControl<number | null>(0);
+```
+
+```html
+<magary-input-number
+  [formControl]="quantity"
+  [min]="0"
+  [max]="100"
+/>
+```
+
+## Keyboard Support
+
+| Key | Action |
+|-----|--------|
+| `Arrow Up` | Increment value by step |
+| `Arrow Down` | Decrement value by step |
+| `Backspace` / `Delete` | Delete characters |
+| `Tab` | Move focus to next element |
+
+## Complete Example
+
+```typescript
+import { Component } from '@angular/core';
+import { MagaryInputNumber } from 'ng-magary';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-input-number-demo',
+  standalone: true,
+  imports: [MagaryInputNumber, ReactiveFormsModule],
+  template: `
+    <div class="demo-container">
+      <h3>Basic Number</h3>
+      <magary-input-number
+        [formControl]="quantity"
+        [min]="0"
+        [max]="100"
+        [showButtons]="true"
+        placeholder="Enter quantity"
+      />
+
+      <h3>Currency</h3>
+      <magary-input-number
+        [formControl]="price"
+        [mode]="'currency'"
+        [currency]="'USD'"
+        [minFractionDigits]="2"
+        [maxFractionDigits]="2"
+        placeholder="0.00"
+      />
+
+      <h3>Percentage</h3>
+      <magary-input-number
+        [formControl]="discount"
+        [mode]="'percent'"
+        [min]="0"
+        [max]="1"
+        [step]="0.01"
+        [minFractionDigits]="2"
+      />
+
+      <h3>With Prefix/Suffix</h3>
+      <magary-input-number
+        [formControl]="weight"
+        [prefix]="'Weight: '"
+        [suffix]="' kg'"
+        [showButtons]="true"
+        [step]="0.1"
+      />
+    </div>
+  `
+})
+export class InputNumberDemoComponent {
+  quantity = new FormControl<number | null>(0);
+  price = new FormControl<number | null>(null);
+  discount = new FormControl<number | null>(0.15);
+  weight = new FormControl<number | null>(0);
+}
+```

@@ -1,0 +1,394 @@
+---
+title: Card
+description: A versatile container component for displaying content in a structured card layout
+---
+
+## Overview
+
+The Card component provides a flexible container for displaying content with optional images, headers, and actions. It supports multiple variants, shadow levels, and interactive states.
+
+## Component Selector
+
+```html
+<magary-card />
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryCard } from 'ng-magary';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagaryCard],
+  template: `
+    <magary-card>
+      <h3>Card Title</h3>
+      <p>Card content goes here.</p>
+    </magary-card>
+  `
+})
+export class DemoComponent {}
+```
+
+```html Template
+<magary-card>
+  <h3>Card Title</h3>
+  <p>Card content goes here.</p>
+</magary-card>
+```
+</CodeGroup>
+
+## With Image
+
+```html
+<magary-card
+  [img]="'https://example.com/image.jpg'"
+  [altText]="'Card image'"
+>
+  <h3>Card with Image</h3>
+  <p>Content below the image.</p>
+</magary-card>
+```
+
+## Image Positions
+
+```html
+<!-- Top (default) -->
+<magary-card
+  [img]="imageUrl"
+  [positionImage]="'top'"
+>
+  <p>Content</p>
+</magary-card>
+
+<!-- Bottom -->
+<magary-card
+  [img]="imageUrl"
+  [positionImage]="'bottom'"
+>
+  <p>Content</p>
+</magary-card>
+
+<!-- Left -->
+<magary-card
+  [img]="imageUrl"
+  [positionImage]="'left'"
+>
+  <p>Content</p>
+</magary-card>
+
+<!-- Right -->
+<magary-card
+  [img]="imageUrl"
+  [positionImage]="'right'"
+>
+  <p>Content</p>
+</magary-card>
+```
+
+## Card Variants
+
+```html
+<!-- Elevated (default) -->
+<magary-card [variant]="'elevated'">
+  <p>Elevated card with shadow</p>
+</magary-card>
+
+<!-- Outlined -->
+<magary-card [variant]="'outlined'">
+  <p>Card with border</p>
+</magary-card>
+
+<!-- Filled -->
+<magary-card [variant]="'filled'">
+  <p>Card with background color</p>
+</magary-card>
+```
+
+## Shadow Levels
+
+```html
+<magary-card [shadow]="0">
+  <p>No shadow</p>
+</magary-card>
+
+<magary-card [shadow]="1">
+  <p>Light shadow</p>
+</magary-card>
+
+<magary-card [shadow]="3">
+  <p>Medium shadow</p>
+</magary-card>
+
+<magary-card [shadow]="5">
+  <p>Heavy shadow</p>
+</magary-card>
+```
+
+## Clickable Card
+
+```html
+<magary-card
+  [clickable]="true"
+  (cardClick)="onCardClick($event)"
+>
+  <h3>Clickable Card</h3>
+  <p>Click anywhere on this card</p>
+</magary-card>
+```
+
+```typescript
+onCardClick(event: CustomEvent) {
+  console.log('Card clicked!', event);
+}
+```
+
+## With Badge
+
+```html
+<magary-card
+  [badge]="'New'"
+  [badgeColor]="'#10b981'"
+>
+  <h3>New Feature</h3>
+  <p>Check out this new feature!</p>
+</magary-card>
+```
+
+## Properties
+
+### Image
+
+<ParamField path="img" type="string">
+  URL of the image to display in the card
+</ParamField>
+
+<ParamField path="positionImage" type="'left' | 'right' | 'top' | 'bottom'" default="'top'">
+  Position of the image relative to the content
+</ParamField>
+
+<ParamField path="imageSize" type="string" default="'200px'">
+  Size of the image (width for left/right, height for top/bottom)
+</ParamField>
+
+<ParamField path="imageFit" type="'cover' | 'contain' | 'fill' | 'scale-down' | 'none'" default="'cover'">
+  How the image should be resized to fit its container (CSS object-fit)
+</ParamField>
+
+<ParamField path="altText" type="string" default="'Card image'">
+  Alternative text for the image
+</ParamField>
+
+### Appearance
+
+<ParamField path="variant" type="'elevated' | 'outlined' | 'filled'" default="'elevated'">
+  Visual style variant:
+  - `elevated`: Card with shadow
+  - `outlined`: Card with border
+  - `filled`: Card with background color
+</ParamField>
+
+<ParamField path="shadow" type="0 | 1 | 2 | 3 | 4 | 5" default="1">
+  Shadow elevation level (0 = no shadow, 5 = maximum shadow)
+</ParamField>
+
+<ParamField path="backgroundColor" type="string">
+  Custom background color for the card
+</ParamField>
+
+<ParamField path="border" type="string">
+  Custom border style (CSS border shorthand)
+</ParamField>
+
+### Dimensions
+
+<ParamField path="width" type="string" default="'100%'">
+  Width of the card
+</ParamField>
+
+<ParamField path="height" type="string" default="'auto'">
+  Height of the card
+</ParamField>
+
+<ParamField path="padding" type="string" default="'1rem'">
+  Internal padding for card content
+</ParamField>
+
+<ParamField path="gap" type="string" default="'1rem'">
+  Gap between card sections (image and content)
+</ParamField>
+
+<ParamField path="borderRadius" type="string" default="'0.75rem'">
+  Border radius of the card
+</ParamField>
+
+### Behavior
+
+<ParamField path="clickable" type="boolean" default="false">
+  When true, makes the entire card clickable and adds hover effects
+</ParamField>
+
+<ParamField path="hoverEffect" type="boolean" default="true">
+  When true, applies hover effects to the card
+</ParamField>
+
+<ParamField path="responsive" type="boolean" default="true">
+  When true, card layout adapts to different screen sizes
+</ParamField>
+
+### State
+
+<ParamField path="loading" type="boolean" default="false">
+  When true, displays a loading overlay
+</ParamField>
+
+<ParamField path="loadingText" type="string" default="'Cargando...'">
+  Text to display in the loading overlay
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, disables the card and reduces opacity
+</ParamField>
+
+### Badge
+
+<ParamField path="badge" type="string">
+  Text to display in a badge overlay (typically in the top-right corner)
+</ParamField>
+
+<ParamField path="badgeColor" type="string" default="'var(--primary-500, #0066cc)'">
+  Background color for the badge
+</ParamField>
+
+## Events
+
+<ParamField path="cardClick" type="CustomEvent">
+  Emitted when the card is clicked (only when `clickable` is true). Event detail contains the original DOM event
+</ParamField>
+
+## Accessibility Features
+
+- Semantic HTML structure
+- Keyboard support for clickable cards
+- ARIA attributes for interactive states
+- Alt text support for images
+- Loading state announcements
+
+## Styling
+
+The Card component uses the following CSS classes:
+
+- `.card`: Main container
+- `.shadow-{0-5}`: Shadow level classes
+- `.layout-{top|bottom|left|right}`: Image position classes
+- `.variant-{elevated|outlined|filled}`: Variant classes
+- `.clickable`: Applied when clickable is true
+- `.loading`: Applied during loading state
+- `.disabled`: Applied when disabled
+- `.responsive`: Applied when responsive mode is enabled
+- `.no-hover`: Applied when hover effects are disabled
+
+## Complete Example
+
+```typescript
+import { Component } from '@angular/core';
+import { MagaryCard } from 'ng-magary';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-card-demo',
+  standalone: true,
+  imports: [MagaryCard, CommonModule],
+  template: `
+    <div class="demo-container" style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+      <!-- Basic Card -->
+      <magary-card>
+        <h3>Basic Card</h3>
+        <p>Simple card with default settings.</p>
+      </magary-card>
+
+      <!-- Card with Image -->
+      <magary-card
+        [img]="'https://picsum.photos/400/300'"
+        [altText]="'Random image'"
+        [badge]="'Featured'"
+      >
+        <h3>Image Card</h3>
+        <p>Card with an image and badge.</p>
+      </magary-card>
+
+      <!-- Clickable Card -->
+      <magary-card
+        [clickable]="true"
+        [shadow]="2"
+        (cardClick)="handleCardClick('Product')"
+      >
+        <h3>Product Card</h3>
+        <p>Click me to see details!</p>
+        <button (click)="$event.stopPropagation()">
+          Action Button
+        </button>
+      </magary-card>
+
+      <!-- Outlined Variant -->
+      <magary-card
+        [variant]="'outlined'"
+        [border]="'2px solid #e5e7eb'"
+      >
+        <h3>Outlined Card</h3>
+        <p>Card with custom border.</p>
+      </magary-card>
+
+      <!-- Horizontal Layout -->
+      <magary-card
+        [img]="'https://picsum.photos/300/400'"
+        [positionImage]="'left'"
+        [imageSize]="'150px'"
+      >
+        <h3>Horizontal Card</h3>
+        <p>Image on the left side.</p>
+      </magary-card>
+
+      <!-- Loading State -->
+      <magary-card
+        [loading]="isLoading"
+        [loadingText]="'Loading content...'"
+      >
+        <h3>Loading Card</h3>
+        <p>Demonstrates loading state.</p>
+      </magary-card>
+
+      <!-- Custom Styling -->
+      <magary-card
+        [backgroundColor]="'#f0f9ff'"
+        [borderRadius]="'1rem'"
+        [padding]="'2rem'"
+        [shadow]="3"
+      >
+        <h3>Custom Styled</h3>
+        <p>Card with custom colors and spacing.</p>
+      </magary-card>
+
+      <!-- Disabled Card -->
+      <magary-card
+        [disabled]="true"
+        [clickable]="true"
+      >
+        <h3>Disabled Card</h3>
+        <p>This card is disabled.</p>
+      </magary-card>
+    </div>
+  `
+})
+export class CardDemoComponent {
+  isLoading = false;
+
+  handleCardClick(name: string) {
+    console.log(`${name} card clicked!`);
+  }
+}
+```

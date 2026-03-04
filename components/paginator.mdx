@@ -1,0 +1,274 @@
+---
+title: 'Paginator'
+description: 'Navigation component for paginating through large datasets.'
+---
+
+## Overview
+
+The Paginator component provides navigation controls for breaking large datasets into pages. It displays page links, first/last/next/previous buttons, and optionally a rows-per-page selector.
+
+## Import
+
+```typescript
+import { MagaryPaginator, PaginatorState } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component, signal } from '@angular/core';
+import { MagaryPaginator, PaginatorState } from 'ng-magary';
+
+@Component({
+  selector: 'app-paginator-demo',
+  standalone: true,
+  imports: [MagaryPaginator],
+  template: `
+    <magary-paginator
+      [totalRecords]="totalRecords()"
+      [rows]="rows()"
+      [first]="first()"
+      (onPageChange)="onPageChange($event)">
+    </magary-paginator>
+  `
+})
+export class PaginatorDemoComponent {
+  totalRecords = signal(120);
+  rows = signal(10);
+  first = signal(0);
+
+  onPageChange(event: PaginatorState) {
+    this.first.set(event.first);
+    this.rows.set(event.rows);
+    console.log('Page:', event.page, 'First:', event.first);
+  }
+}
+```
+
+```html Template
+<magary-paginator
+  [totalRecords]="120"
+  [rows]="10"
+  [first]="0"
+  (onPageChange)="onPageChange($event)">
+</magary-paginator>
+```
+</CodeGroup>
+
+## With Rows Per Page Options
+
+```typescript
+@Component({
+  template: `
+    <magary-paginator
+      [totalRecords]="100"
+      [rows]="rows()"
+      [first]="0"
+      [rowsPerPageOptions]="[10, 25, 50, 100]"
+      (onPageChange)="onPageChange($event)">
+    </magary-paginator>
+  `
+})
+export class PaginatorWithOptionsComponent {
+  rows = signal(10);
+
+  onPageChange(event: PaginatorState) {
+    this.rows.set(event.rows);
+  }
+}
+```
+
+## Custom Page Links
+
+```html
+<magary-paginator
+  [totalRecords]="200"
+  [rows]="10"
+  [showPageLinks]="true"
+  [pageLinkSize]="7"
+  (onPageChange)="onPageChange($event)">
+</magary-paginator>
+```
+
+## Properties
+
+<ParamField path="totalRecords" type="number" required>
+  Total number of records in the dataset.
+</ParamField>
+
+<ParamField path="rows" type="number" default="10">
+  Number of rows to display per page.
+</ParamField>
+
+<ParamField path="first" type="number" default="0">
+  Index of the first record to display (0-based).
+</ParamField>
+
+<ParamField path="rowsPerPageOptions" type="number[]" default="[]">
+  Array of integers representing available options for rows per page. When provided, displays a dropdown selector.
+</ParamField>
+
+<ParamField path="showPageLinks" type="boolean" default="true">
+  Whether to show page number links.
+</ParamField>
+
+<ParamField path="pageLinkSize" type="number" default="5">
+  Maximum number of page links to display at once.
+</ParamField>
+
+## Events
+
+<ParamField path="onPageChange" type="EventEmitter<PaginatorState>">
+  Emitted when the page changes. The event object contains:
+  - `page`: Current page number (0-based)
+  - `first`: Index of first record
+  - `rows`: Number of rows per page
+  - `pageCount`: Total number of pages
+</ParamField>
+
+## PaginatorState Interface
+
+```typescript
+interface PaginatorState {
+  page: number;        // Current page (0-based)
+  first: number;       // Index of first record
+  rows: number;        // Rows per page
+  pageCount: number;   // Total pages
+}
+```
+
+## Computed Properties
+
+The paginator exposes several computed values:
+
+```typescript
+getPage()       // Current page index (0-based)
+getPageCount()  // Total number of pages
+isFirstPage()   // Whether on first page
+isLastPage()    // Whether on last page
+getPageLinks()  // Array of page numbers to display
+```
+
+## Manual Page Navigation
+
+The paginator provides methods for programmatic navigation:
+
+```typescript
+changePage(pageNumber: number)          // Navigate to specific page
+changePageToFirst(event: Event)         // Go to first page
+changePageToPrev(event: Event)          // Go to previous page
+changePageToNext(event: Event)          // Go to next page
+changePageToLast(event: Event)          // Go to last page
+```
+
+## Usage with Data Sources
+
+### Client-Side Pagination
+
+```typescript
+import { Component, signal, computed } from '@angular/core';
+
+@Component({
+  template: `
+    <div class="data-items">
+      @for (item of paginatedData(); track item.id) {
+        <div>{{ item.name }}</div>
+      }
+    </div>
+    
+    <magary-paginator
+      [totalRecords]="allData().length"
+      [rows]="rows()"
+      [first]="first()"
+      (onPageChange)="onPageChange($event)">
+    </magary-paginator>
+  `
+})
+export class ClientSidePaginationComponent {
+  allData = signal([...]);
+  first = signal(0);
+  rows = signal(10);
+
+  paginatedData = computed(() => {
+    const start = this.first();
+    const end = start + this.rows();
+    return this.allData().slice(start, end);
+  });
+
+  onPageChange(event: PaginatorState) {
+    this.first.set(event.first);
+    this.rows.set(event.rows);
+  }
+}
+```
+
+### Server-Side Pagination
+
+```typescript
+import { Component, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+@Component({
+  template: `
+    <div class="data-items">
+      @for (item of data(); track item.id) {
+        <div>{{ item.name }}</div>
+      }
+    </div>
+    
+    <magary-paginator
+      [totalRecords]="totalRecords()"
+      [rows]="rows()"
+      [first]="first()"
+      (onPageChange)="onPageChange($event)">
+    </magary-paginator>
+  `
+})
+export class ServerSidePaginationComponent {
+  data = signal([]);
+  totalRecords = signal(0);
+  first = signal(0);
+  rows = signal(10);
+
+  constructor(private http: HttpClient) {
+    this.loadData();
+  }
+
+  onPageChange(event: PaginatorState) {
+    this.first.set(event.first);
+    this.rows.set(event.rows);
+    this.loadData();
+  }
+
+  loadData() {
+    this.http.get(`/api/data?first=${this.first()}&rows=${this.rows()}`)
+      .subscribe((response: any) => {
+        this.data.set(response.data);
+        this.totalRecords.set(response.total);
+      });
+  }
+}
+```
+
+## Accessibility
+
+- Uses semantic `<nav>` element with `role="navigation"`
+- Buttons have descriptive ARIA labels
+- Current page is indicated with `aria-current="page"`
+- Disabled states properly communicated to screen readers
+
+## Styling
+
+The paginator uses these CSS classes:
+- `magary-paginator` - Main container
+- `magary-paginator-first` - First page button
+- `magary-paginator-prev` - Previous page button
+- `magary-paginator-next` - Next page button
+- `magary-paginator-last` - Last page button
+- `magary-paginator-pages` - Page links container
+- `magary-paginator-page` - Individual page link
+
+## Source
+
+View source: `projects/ng-magary/src/lib/Data/paginator/paginator.ts:36`

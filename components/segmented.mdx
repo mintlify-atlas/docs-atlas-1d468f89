@@ -1,0 +1,317 @@
+---
+title: Segmented
+description: A segmented control component for selecting from a set of mutually exclusive options
+---
+
+## Overview
+
+The Segmented component provides a tab-like interface for selecting a single option from a set of choices. It features a smooth animated indicator and supports both primitive and object options.
+
+## Component Selector
+
+```html
+<magary-segmented />
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagarySegmented } from 'ng-magary';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagarySegmented, FormsModule],
+  template: `
+    <magary-segmented
+      [(ngModel)]="selected"
+      [options]="['Daily', 'Weekly', 'Monthly']"
+    />
+  `
+})
+export class DemoComponent {
+  selected = 'Daily';
+}
+```
+
+```html Template
+<magary-segmented
+  [(ngModel)]="selected"
+  [options]="['Daily', 'Weekly', 'Monthly']"
+/>
+```
+</CodeGroup>
+
+## Object Options
+
+```html
+<magary-segmented
+  [(ngModel)]="selectedView"
+  [options]="viewOptions"
+  [optionLabel]="'label'"
+  [optionValue]="'value'"
+/>
+```
+
+```typescript
+viewOptions = [
+  { label: 'List View', value: 'list' },
+  { label: 'Grid View', value: 'grid' },
+  { label: 'Table View', value: 'table' }
+];
+selectedView = 'list';
+```
+
+## Full Width
+
+```html
+<magary-segmented
+  [(ngModel)]="selected"
+  [options]="options"
+  [fullWidth]="true"
+/>
+```
+
+## Different Sizes
+
+```html
+<!-- Small -->
+<magary-segmented
+  [(ngModel)]="selected"
+  [options]="options"
+  [size]="'small'"
+/>
+
+<!-- Normal (default) -->
+<magary-segmented
+  [(ngModel)]="selected"
+  [options]="options"
+/>
+
+<!-- Large -->
+<magary-segmented
+  [(ngModel)]="selected"
+  [options]="options"
+  [size]="'large'"
+/>
+```
+
+## Properties
+
+### Data
+
+<ParamField path="options" type="MagarySegmentedOption[]" default="[]">
+  Array of options. Can be primitive values (string, number, boolean) or objects
+</ParamField>
+
+<ParamField path="value" type="string | number | boolean | object | null">
+  The currently selected value. Supports two-way binding with `[(value)]`
+</ParamField>
+
+<ParamField path="optionLabel" type="string">
+  Property name to use as the display label when options are objects
+</ParamField>
+
+<ParamField path="optionValue" type="string">
+  Property name to use as the value when options are objects. If not specified, the entire object is used
+</ParamField>
+
+### Appearance
+
+<ParamField path="size" type="'small' | 'normal' | 'large'" default="'normal'">
+  Size of the segmented control
+</ParamField>
+
+<ParamField path="fullWidth" type="boolean" default="false">
+  When true, options stretch to fill the full width of the container
+</ParamField>
+
+### Accessibility
+
+<ParamField path="ariaLabel" type="string" default="'Segmented control'">
+  ARIA label for the segmented control group
+</ParamField>
+
+### State
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, disables the entire segmented control
+</ParamField>
+
+## Events
+
+<ParamField path="change" type="output<MagarySegmentedValue>">
+  Emitted when the selected option changes. Returns the selected value
+</ParamField>
+
+## Form Integration
+
+<Note>
+  The Segmented component implements `ControlValueAccessor` and works with Angular forms.
+</Note>
+
+### Reactive Forms
+
+```typescript
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+
+viewMode = new FormControl<string>('list');
+```
+
+```html
+<magary-segmented
+  [formControl]="viewMode"
+  [options]="['list', 'grid', 'table']"
+/>
+```
+
+### Template-Driven Forms
+
+```html
+<magary-segmented
+  [(ngModel)]="selected"
+  name="viewMode"
+  [options]="options"
+/>
+```
+
+## Keyboard Navigation
+
+| Key | Action |
+|-----|--------|
+| `Arrow Right` / `Arrow Down` | Move to next option |
+| `Arrow Left` / `Arrow Up` | Move to previous option |
+| `Home` | Move to first option |
+| `End` | Move to last option |
+| `Space` / `Enter` | Select the focused option |
+| `Tab` | Move focus out of the component |
+
+## Accessibility Features
+
+- ARIA radio group pattern
+- Roving tab index for keyboard navigation
+- Keyboard selection support
+- Focus management
+- Disabled state handling
+- Screen reader announcements
+
+## Animated Indicator
+
+The component features a smooth animated indicator that transitions between selected options, providing visual feedback for selection changes.
+
+## Styling
+
+The Segmented component uses the following CSS classes:
+
+- `.magary-segmented`: Main container
+- `.magary-segmented-group`: Options container
+- `.magary-segmented-option`: Individual option button
+- `.magary-segmented-indicator`: Animated selection indicator
+- `.active`: Applied to the selected option
+- `.magary-segmented-small`: Applied when size is 'small'
+- `.magary-segmented-large`: Applied when size is 'large'
+- `.magary-segmented-full-width`: Applied when fullWidth is true
+
+## Complete Example
+
+```typescript
+import { Component } from '@angular/core';
+import { MagarySegmented } from 'ng-magary';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
+interface ViewOption {
+  label: string;
+  value: string;
+  icon?: string;
+}
+
+@Component({
+  selector: 'app-segmented-demo',
+  standalone: true,
+  imports: [MagarySegmented, ReactiveFormsModule, CommonModule],
+  template: `
+    <div class="demo-container">
+      <h3>Simple Options</h3>
+      <magary-segmented
+        [formControl]="period"
+        [options]="['Daily', 'Weekly', 'Monthly', 'Yearly']"
+        (change)="onPeriodChange($event)"
+      />
+      <p>Selected: {{ period.value }}</p>
+
+      <h3>Object Options</h3>
+      <magary-segmented
+        [formControl]="viewMode"
+        [options]="viewOptions"
+        [optionLabel]="'label'"
+        [optionValue]="'value'"
+      />
+
+      <h3>Full Width</h3>
+      <magary-segmented
+        [formControl]="alignment"
+        [options]="['Left', 'Center', 'Right']"
+        [fullWidth]="true"
+      />
+
+      <h3>Sizes</h3>
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <magary-segmented
+          [formControl]="sizeSmall"
+          [options]="['S', 'M', 'L', 'XL']"
+          [size]="'small'"
+        />
+        
+        <magary-segmented
+          [formControl]="sizeNormal"
+          [options]="['S', 'M', 'L', 'XL']"
+          [size]="'normal'"
+        />
+        
+        <magary-segmented
+          [formControl]="sizeLarge"
+          [options]="['S', 'M', 'L', 'XL']"
+          [size]="'large'"
+        />
+      </div>
+
+      <h3>Disabled State</h3>
+      <magary-segmented
+        [formControl]="disabled"
+        [options]="['Option 1', 'Option 2', 'Option 3']"
+        [disabled]="true"
+      />
+
+      <h3>Number Options</h3>
+      <magary-segmented
+        [formControl]="rating"
+        [options]="[1, 2, 3, 4, 5]"
+      />
+    </div>
+  `
+})
+export class SegmentedDemoComponent {
+  period = new FormControl<string>('Weekly');
+  viewMode = new FormControl<string>('list');
+  alignment = new FormControl<string>('Center');
+  sizeSmall = new FormControl<string>('M');
+  sizeNormal = new FormControl<string>('M');
+  sizeLarge = new FormControl<string>('M');
+  disabled = new FormControl<string>('Option 2');
+  rating = new FormControl<number>(3);
+
+  viewOptions: ViewOption[] = [
+    { label: 'List View', value: 'list' },
+    { label: 'Grid View', value: 'grid' },
+    { label: 'Table View', value: 'table' }
+  ];
+
+  onPeriodChange(value: string) {
+    console.log('Period changed to:', value);
+  }
+}
+```

@@ -1,0 +1,234 @@
+---
+title: Rating
+description: A star rating component for collecting user ratings
+---
+
+## Overview
+
+The Rating component provides an intuitive star-based interface for users to submit ratings. It supports customizable icons, optional cancel functionality, and read-only mode.
+
+## Component Selector
+
+```html
+<magary-rating />
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryRating } from 'ng-magary';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagaryRating, FormsModule],
+  template: `
+    <magary-rating [(ngModel)]="rating" />
+  `
+})
+export class DemoComponent {
+  rating: number | null = null;
+}
+```
+
+```html Template
+<magary-rating [(ngModel)]="rating" />
+```
+</CodeGroup>
+
+## Custom Number of Stars
+
+```html
+<magary-rating
+  [(ngModel)]="rating"
+  [stars]="10"
+/>
+```
+
+## Without Cancel Button
+
+```html
+<magary-rating
+  [(ngModel)]="rating"
+  [cancel]="false"
+/>
+```
+
+## Read-Only Mode
+
+```html
+<magary-rating
+  [(ngModel)]="rating"
+  [readonly]="true"
+/>
+```
+
+## Custom Icons
+
+```html
+<magary-rating
+  [(ngModel)]="rating"
+  [iconOn]="'heart'"
+  [iconOff]="'heart'"
+  [iconCancel]="'x'"
+/>
+```
+
+## Properties
+
+<ParamField path="value" type="number | null">
+  The current rating value (1 to number of stars). Supports two-way binding with `[(value)]`
+</ParamField>
+
+<ParamField path="stars" type="number" default="5">
+  Number of star icons to display
+</ParamField>
+
+<ParamField path="cancel" type="boolean" default="true">
+  When true, shows a cancel button to clear the rating
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, prevents user interaction with the rating component
+</ParamField>
+
+<ParamField path="readonly" type="boolean" default="false">
+  When true, displays the rating but prevents modification
+</ParamField>
+
+<ParamField path="iconOn" type="string" default="'star'">
+  Lucide icon name for filled/selected stars
+</ParamField>
+
+<ParamField path="iconOff" type="string" default="'star'">
+  Lucide icon name for empty/unselected stars
+</ParamField>
+
+<ParamField path="iconCancel" type="string" default="'ban'">
+  Lucide icon name for the cancel button
+</ParamField>
+
+## Events
+
+<ParamField path="onRate" type="output<{ originalEvent: Event; value: number }>">
+  Emitted when a star is clicked to set a rating. Returns the rating value (1 to stars)
+</ParamField>
+
+<ParamField path="onCancel" type="output<Event>">
+  Emitted when the cancel button is clicked to clear the rating
+</ParamField>
+
+## Form Integration
+
+<Note>
+  The Rating component implements `ControlValueAccessor` and integrates with Angular forms.
+</Note>
+
+### Reactive Forms
+
+```typescript
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+
+productRating = new FormControl<number | null>(null);
+```
+
+```html
+<magary-rating [formControl]="productRating" />
+```
+
+### Template-Driven Forms
+
+```html
+<magary-rating
+  [(ngModel)]="rating"
+  name="userRating"
+/>
+```
+
+## Accessibility Features
+
+- Keyboard navigation support
+- ARIA labels and roles
+- Focus management
+- Screen reader support
+- Disabled and readonly state handling
+
+## Styling
+
+The Rating component uses the following CSS classes:
+
+- `.magary-rating`: Main container
+- `.magary-rating-item`: Individual star wrapper
+- `.magary-rating-icon`: Star icon element
+- `.magary-rating-cancel`: Cancel button
+- `.magary-disabled`: Applied when disabled
+- `.magary-readonly`: Applied when readonly
+
+## Complete Example
+
+```typescript
+import { Component } from '@angular/core';
+import { MagaryRating } from 'ng-magary';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-rating-demo',
+  standalone: true,
+  imports: [MagaryRating, ReactiveFormsModule, CommonModule],
+  template: `
+    <div class="demo-container">
+      <h3>Product Rating</h3>
+      <magary-rating
+        [formControl]="productRating"
+        (onRate)="onProductRate($event)"
+      />
+      <p *ngIf="productRating.value">
+        You rated: {{ productRating.value }} stars
+      </p>
+
+      <h3>Service Rating (10 stars)</h3>
+      <magary-rating
+        [formControl]="serviceRating"
+        [stars]="10"
+      />
+
+      <h3>Average Rating (Read-only)</h3>
+      <magary-rating
+        [formControl]="averageRating"
+        [readonly]="true"
+        [cancel]="false"
+      />
+      <p>Average: {{ averageRating.value }} / 5</p>
+
+      <h3>Custom Icons</h3>
+      <magary-rating
+        [formControl]="likeRating"
+        [iconOn]="'heart'"
+        [iconOff]="'heart'"
+        [iconCancel]="'x'"
+      />
+
+      <h3>Disabled State</h3>
+      <magary-rating
+        [formControl]="disabledRating"
+        [disabled]="true"
+      />
+    </div>
+  `
+})
+export class RatingDemoComponent {
+  productRating = new FormControl<number | null>(null);
+  serviceRating = new FormControl<number | null>(7);
+  averageRating = new FormControl<number | null>(4);
+  likeRating = new FormControl<number | null>(null);
+  disabledRating = new FormControl<number | null>(3);
+
+  onProductRate(event: { value: number }) {
+    console.log('Product rated:', event.value);
+  }
+}
+```

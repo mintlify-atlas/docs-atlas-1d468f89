@@ -1,0 +1,193 @@
+---
+title: 'Image'
+description: 'Display images with preview and controls'
+---
+
+## Overview
+
+Image component displays images with optional preview mode, zoom, rotate, and download functionality.
+
+## Import
+
+```typescript
+import { MagaryImage } from 'ng-magary';
+```
+
+## Basic Usage
+
+```html
+<magary-image
+  [src]="'assets/photo.jpg'"
+  [alt]="'Product photo'"
+  [width]="'300px'"
+  [height]="'200px'">
+</magary-image>
+```
+
+## With Preview Mode
+
+```html
+<magary-image
+  [src]="'assets/photo.jpg'"
+  [preview]="true"
+  [alt]="'Click to preview'">
+</magary-image>
+```
+
+## Object Fit Options
+
+<CodeGroup>
+```html Cover (Default)
+<magary-image
+  [src]="'assets/photo.jpg'"
+  [objectFit]="'cover'">
+</magary-image>
+```
+
+```html Contain
+<magary-image
+  [src]="'assets/photo.jpg'"
+  [objectFit]="'contain'">
+</magary-image>
+```
+
+```html Fill
+<magary-image
+  [src]="'assets/photo.jpg'"
+  [objectFit]="'fill'">
+</magary-image>
+```
+</CodeGroup>
+
+## Lazy Loading
+
+```html
+<magary-image
+  [src]="'assets/large-photo.jpg'"
+  [loading]="'lazy'"
+  [alt]="'Lazy loaded image'">
+</magary-image>
+```
+
+## With Event Handlers
+
+<CodeGroup>
+```html Component
+<magary-image
+  [src]="imageSrc"
+  [preview]="true"
+  (onLoad)="handleLoad($event)"
+  (onError)="handleError($event)">
+</magary-image>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryImage } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryImage],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  imageSrc = 'assets/photo.jpg';
+  
+  handleLoad(event: Event) {
+    console.log('Image loaded successfully');
+  }
+  
+  handleError(event: Event) {
+    console.error('Failed to load image');
+    // Show fallback image
+    this.imageSrc = 'assets/fallback.jpg';
+  }
+}
+```
+</CodeGroup>
+
+## Input Properties
+
+<ParamField path="src" type="string">
+  Source URL of the image
+</ParamField>
+
+<ParamField path="alt" type="string">
+  Alternative text for the image
+</ParamField>
+
+<ParamField path="width" type="string">
+  Width of the image
+</ParamField>
+
+<ParamField path="height" type="string">
+  Height of the image
+</ParamField>
+
+<ParamField path="objectFit" type="'cover' | 'contain' | 'fill' | 'none' | 'scale-down'" default="'cover'">
+  How the image should fit its container
+</ParamField>
+
+<ParamField path="loading" type="'lazy' | 'eager'" default="'lazy'">
+  Image loading strategy
+</ParamField>
+
+<ParamField path="preview" type="boolean" default="false">
+  Enable preview mode with zoom and controls
+</ParamField>
+
+## Output Events
+
+<ParamField path="onLoad" type="EventEmitter<Event>">
+  Callback when image loads successfully
+</ParamField>
+
+<ParamField path="onError" type="EventEmitter<Event>">
+  Callback when image fails to load
+</ParamField>
+
+## Preview Mode Controls
+
+When preview mode is enabled, the following controls are available:
+
+- **Zoom In**: Increase image scale
+- **Zoom Out**: Decrease image scale
+- **Rotate Left**: Rotate counter-clockwise
+- **Rotate Right**: Rotate clockwise
+- **Download**: Download the image
+- **Close**: Close preview mode
+
+## Features
+
+- **Preview mode**: Full-screen preview with controls
+- **Zoom**: In/out functionality
+- **Rotate**: Left/right rotation
+- **Download**: Download image to device
+- **Lazy loading**: Optimize performance
+- **Object fit**: Multiple fit options
+- **Error handling**: Handle load failures
+- **Keyboard support**: Escape to close preview
+
+## Preview Mode Example
+
+```html
+<div class="gallery">
+  <magary-image
+    *ngFor="let photo of photos"
+    [src]="photo.url"
+    [alt]="photo.title"
+    [preview]="true"
+    [width]="'200px'"
+    [height]="'200px'"
+    [objectFit]="'cover'">
+  </magary-image>
+</div>
+```
+
+## Accessibility
+
+- Alt text for screen readers
+- Keyboard navigation in preview mode
+- Focus management
+- ARIA labels on controls

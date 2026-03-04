@@ -1,0 +1,319 @@
+---
+title: 'Carousel'
+description: 'Advanced carousel with multiple effects and features'
+---
+
+## Overview
+
+Carousel is an enterprise-grade carousel component with 100+ features including multiple transition effects, virtual scrolling, autoplay, and full accessibility support.
+
+## Import
+
+```typescript
+import { MagaryCarouselComponent } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```html Component
+<magary-carousel
+  [value]="products"
+  [(page)]="currentPage"
+  [numVisible]="3"
+  [numScroll]="1">
+  
+  <ng-template #item let-product>
+    <div class="product-card">
+      <img [src]="product.image" [alt]="product.name">
+      <h3>{{ product.name }}</h3>
+      <p>{{ product.price | currency }}</p>
+    </div>
+  </ng-template>
+</magary-carousel>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryCarouselComponent } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryCarouselComponent, CommonModule],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  currentPage = 0;
+  
+  products = [
+    { name: 'Product 1', price: 99, image: 'assets/p1.jpg' },
+    { name: 'Product 2', price: 149, image: 'assets/p2.jpg' },
+    { name: 'Product 3', price: 199, image: 'assets/p3.jpg' }
+  ];
+}
+```
+</CodeGroup>
+
+## With Autoplay
+
+```html
+<magary-carousel
+  [value]="items"
+  [numVisible]="1"
+  [autoplayInterval]="3000"
+  [loop]="true"
+  [showProgress]="true"
+  [pauseOnHover]="true">
+  
+  <ng-template #item let-item>
+    <img [src]="item.image" [alt]="item.title">
+  </ng-template>
+</magary-carousel>
+```
+
+## Transition Effects
+
+<CodeGroup>
+```html Slide (Default)
+<magary-carousel
+  [value]="items"
+  [effect]="'slide'">
+</magary-carousel>
+```
+
+```html Fade
+<magary-carousel
+  [value]="items"
+  [effect]="'fade'">
+</magary-carousel>
+```
+
+```html Coverflow
+<magary-carousel
+  [value]="items"
+  [effect]="'coverflow'"
+  [numVisible]="3">
+</magary-carousel>
+```
+
+```html Cards
+<magary-carousel
+  [value]="items"
+  [effect]="'cards'">
+</magary-carousel>
+```
+</CodeGroup>
+
+## Responsive Configuration
+
+```typescript
+responsiveOptions = [
+  {
+    breakpoint: 1024,
+    numVisible: 3,
+    numScroll: 1
+  },
+  {
+    breakpoint: 768,
+    numVisible: 2,
+    numScroll: 1
+  },
+  {
+    breakpoint: 560,
+    numVisible: 1,
+    numScroll: 1
+  }
+];
+```
+
+```html
+<magary-carousel
+  [value]="products"
+  [numVisible]="4"
+  [responsiveOptions]="responsiveOptions">
+</magary-carousel>
+```
+
+## Vertical Carousel
+
+```html
+<magary-carousel
+  [value]="items"
+  [orientation]="'vertical'"
+  [verticalViewPortHeight]="'400px'">
+</magary-carousel>
+```
+
+## Input Properties
+
+### Core
+
+<ParamField path="value" type="T[]" default="[]">
+  Array of items to display
+</ParamField>
+
+<ParamField path="page" type="number" default="0">
+  Current page (two-way binding)
+</ParamField>
+
+<ParamField path="numVisible" type="number" default="1">
+  Number of items visible at once
+</ParamField>
+
+<ParamField path="numScroll" type="number" default="1">
+  Number of items to scroll per navigation
+</ParamField>
+
+<ParamField path="spaceBetween" type="number" default="0">
+  Gap between items in pixels
+</ParamField>
+
+<ParamField path="responsiveOptions" type="CarouselResponsiveOptions[]">
+  Responsive configuration per breakpoint
+</ParamField>
+
+### Layout
+
+<ParamField path="orientation" type="'horizontal' | 'vertical'" default="'horizontal'">
+  Carousel orientation
+</ParamField>
+
+<ParamField path="direction" type="'ltr' | 'rtl'" default="'ltr'">
+  Text direction (RTL support)
+</ParamField>
+
+<ParamField path="width" type="string">
+  Width constraint
+</ParamField>
+
+<ParamField path="verticalViewPortHeight" type="string" default="'300px'">
+  Height for vertical carousels
+</ParamField>
+
+### Effects
+
+<ParamField path="effect" type="'slide' | 'fade' | 'cube' | 'flip' | 'coverflow' | 'cards'" default="'slide'">
+  Visual transition effect
+</ParamField>
+
+<ParamField path="transitionDuration" type="number" default="300">
+  Transition duration in milliseconds
+</ParamField>
+
+<ParamField path="transitionTimingFunction" type="string" default="'cubic-bezier(0.4, 0, 0.2, 1)'">
+  CSS easing function
+</ParamField>
+
+### Navigation
+
+<ParamField path="circular" type="boolean" default="false">
+  Enable circular navigation (jump to start/end)
+</ParamField>
+
+<ParamField path="loop" type="boolean" default="false">
+  Enable true infinite loop
+</ParamField>
+
+<ParamField path="showNavigators" type="boolean" default="true">
+  Show navigation buttons
+</ParamField>
+
+<ParamField path="showIndicators" type="boolean" default="true">
+  Show page indicators
+</ParamField>
+
+<ParamField path="indicatorStyle" type="'dots' | 'lines' | 'thumbnails' | 'fraction' | 'progress'" default="'dots'">
+  Style of page indicators
+</ParamField>
+
+### Interaction
+
+<ParamField path="swipeable" type="boolean" default="true">
+  Enable touch/mouse swipe
+</ParamField>
+
+<ParamField path="mousewheel" type="boolean" default="false">
+  Enable mousewheel navigation
+</ParamField>
+
+<ParamField path="keyboard" type="boolean" default="true">
+  Enable keyboard navigation
+</ParamField>
+
+### Autoplay
+
+<ParamField path="autoplayInterval" type="number" default="0">
+  Autoplay interval in ms (0 = disabled)
+</ParamField>
+
+<ParamField path="pauseOnHover" type="boolean" default="true">
+  Pause autoplay on hover
+</ParamField>
+
+<ParamField path="showProgress" type="boolean" default="false">
+  Show autoplay progress indicator
+</ParamField>
+
+### Performance
+
+<ParamField path="virtual" type="boolean" default="false">
+  Enable virtual scrolling for large datasets
+</ParamField>
+
+<ParamField path="lazyLoad" type="boolean" default="true">
+  Lazy load items
+</ParamField>
+
+## Output Events
+
+<ParamField path="pageChange" type="EventEmitter<number>">
+  Emitted when page changes
+</ParamField>
+
+<ParamField path="slideChange" type="EventEmitter<CarouselSlideEvent<T>>">
+  Emitted before slide change
+</ParamField>
+
+<ParamField path="slideChanged" type="EventEmitter<CarouselSlideEvent<T>>">
+  Emitted after slide change completes
+</ParamField>
+
+<ParamField path="itemClick" type="EventEmitter<{item: T, index: number}>">
+  Emitted when item is clicked
+</ParamField>
+
+## Methods
+
+<ParamField path="next()" type="void">
+  Navigate to next slide
+</ParamField>
+
+<ParamField path="previous()" type="void">
+  Navigate to previous slide
+</ParamField>
+
+<ParamField path="goToPage(index)" type="void">
+  Navigate to specific page
+</ParamField>
+
+## Features
+
+- **100+ features**: Comprehensive carousel solution
+- **Multiple effects**: Slide, fade, cube, flip, coverflow, cards
+- **Virtual scrolling**: Handle thousands of items
+- **Responsive**: Breakpoint-based configuration
+- **Autoplay**: With progress indicators
+- **Touch gestures**: Swipe, pinch, momentum
+- **Keyboard nav**: Full keyboard support
+- **RTL support**: Right-to-left languages
+- **Accessibility**: WCAG compliant
+- **Performance**: Optimized rendering
+
+## Accessibility
+
+- ARIA roles and labels
+- Keyboard navigation (Arrow keys, Home, End, Page Up/Down)
+- Focus management
+- Screen reader support
+- Respects prefers-reduced-motion

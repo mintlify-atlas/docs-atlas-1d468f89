@@ -1,0 +1,323 @@
+---
+title: 'Tree'
+description: 'Hierarchical tree component with selection, filtering, and drag-and-drop support.'
+---
+
+## Overview
+
+The Tree component displays hierarchical data in an expandable/collapsible tree structure. It supports single/multiple selection, checkbox selection, filtering, and drag-and-drop reordering.
+
+## Import
+
+```typescript
+import { MagaryTree, MagaryTreeNode } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component, signal } from '@angular/core';
+import { MagaryTree, MagaryTreeNode } from 'ng-magary';
+
+@Component({
+  selector: 'app-tree-demo',
+  standalone: true,
+  imports: [MagaryTree],
+  template: `
+    <magary-tree
+      [value]="nodes()"
+      (onNodeSelect)="onNodeSelect($event)"
+      (onNodeUnselect)="onNodeUnselect($event)">
+    </magary-tree>
+  `
+})
+export class TreeDemoComponent {
+  nodes = signal<MagaryTreeNode[]>([
+    {
+      label: 'Documents',
+      expanded: true,
+      children: [
+        { label: 'Work', children: [
+          { label: 'Report.pdf', icon: 'file-text' },
+          { label: 'Budget.xlsx', icon: 'file-spreadsheet' }
+        ]},
+        { label: 'Personal', children: [
+          { label: 'Resume.pdf', icon: 'file-text' }
+        ]}
+      ]
+    }
+  ]);
+
+  onNodeSelect(event: any) {
+    console.log('Selected:', event.node.label);
+  }
+
+  onNodeUnselect(event: any) {
+    console.log('Unselected:', event.node.label);
+  }
+}
+```
+
+```html Template
+<magary-tree
+  [value]="nodes"
+  (onNodeSelect)="onNodeSelect($event)"
+  (onNodeUnselect)="onNodeUnselect($event)">
+</magary-tree>
+```
+</CodeGroup>
+
+## With Selection
+
+```typescript
+@Component({
+  template: `
+    <magary-tree
+      [value]="nodes"
+      selectionMode="single"
+      [(selection)]="selectedNode"
+      (onNodeSelect)="onNodeSelect($event)">
+    </magary-tree>
+  `
+})
+export class TreeSelectionComponent {
+  nodes: MagaryTreeNode[] = [...];
+  selectedNode: MagaryTreeNode | null = null;
+
+  onNodeSelect(event: any) {
+    console.log('Selected:', event.node);
+  }
+}
+```
+
+## With Checkbox Selection
+
+```typescript
+@Component({
+  template: `
+    <magary-tree
+      [value]="nodes"
+      selectionMode="checkbox"
+      [(selection)]="selectedNodes"
+      (onNodeSelect)="onNodeSelect($event)">
+    </magary-tree>
+  `
+})
+export class TreeCheckboxComponent {
+  nodes: MagaryTreeNode[] = [...];
+  selectedNodes: Record<string, boolean> = {};
+
+  onNodeSelect(event: any) {
+    console.log('Selection changed:', this.selectedNodes);
+  }
+}
+```
+
+## With Filtering
+
+```html
+<magary-tree
+  [value]="nodes"
+  [filter]="true"
+  filterPlaceholder="Search tree..."
+  filterMode="lenient"
+  (onNodeSelect)="onNodeSelect($event)">
+</magary-tree>
+```
+
+## With Drag and Drop
+
+```typescript
+@Component({
+  template: `
+    <magary-tree
+      [value]="nodes"
+      [draggable]="true"
+      [droppable]="true"
+      [validateDrop]="true"
+      (onNodeDrop)="onNodeDrop($event)">
+    </magary-tree>
+  `
+})
+export class TreeDragDropComponent {
+  nodes: MagaryTreeNode[] = [...];
+
+  onNodeDrop(event: any) {
+    console.log('Dropped:', event.dragNode, 'to', event.parent);
+    // Update your data structure here
+  }
+}
+```
+
+## Properties
+
+<ParamField path="value" type="MagaryTreeNode[]" default="[]">
+  Array of tree nodes to display.
+</ParamField>
+
+<ParamField path="selectionMode" type="'single' | 'multiple' | 'checkbox' | null" default="null">
+  Selection mode for the tree. When null, selection is disabled.
+</ParamField>
+
+<ParamField path="selection" type="MagaryTreeSelectionValue" default="null">
+  Currently selected node(s). Type depends on selectionMode.
+</ParamField>
+
+<ParamField path="filter" type="boolean" default="false">
+  When enabled, displays a search input to filter tree nodes.
+</ParamField>
+
+<ParamField path="filterPlaceholder" type="string" default="'Search...'">
+  Placeholder text for the filter input.
+</ParamField>
+
+<ParamField path="filterAriaLabel" type="string" default="'Filter tree nodes'">
+  ARIA label for the filter input.
+</ParamField>
+
+<ParamField path="filterMode" type="'lenient' | 'strict'" default="'lenient'">
+  Filter matching mode. 'lenient' uses contains, 'strict' uses exact match.
+</ParamField>
+
+<ParamField path="draggable" type="boolean" default="false">
+  Enables drag functionality for tree nodes.
+</ParamField>
+
+<ParamField path="droppable" type="boolean" default="false">
+  Enables drop functionality for tree nodes.
+</ParamField>
+
+<ParamField path="validateDrop" type="boolean" default="false">
+  When enabled, prevents dropping nodes onto their descendants.
+</ParamField>
+
+<ParamField path="treeAriaLabel" type="string" default="'Tree data'">
+  ARIA label for the tree element.
+</ParamField>
+
+## Events
+
+<ParamField path="onNodeSelect" type="EventEmitter<MagaryTreeNodeSelectionEvent>">
+  Emitted when a node is selected.
+</ParamField>
+
+<ParamField path="onNodeUnselect" type="EventEmitter<MagaryTreeNodeSelectionEvent>">
+  Emitted when a node is unselected.
+</ParamField>
+
+<ParamField path="onNodeExpand" type="EventEmitter<MagaryTreeNode>">
+  Emitted when a node is expanded.
+</ParamField>
+
+<ParamField path="onNodeCollapse" type="EventEmitter<MagaryTreeNode>">
+  Emitted when a node is collapsed.
+</ParamField>
+
+<ParamField path="onNodeDrop" type="EventEmitter<MagaryTreeNodeDropEvent>">
+  Emitted when a node is dropped (requires draggable and droppable).
+</ParamField>
+
+## Interfaces
+
+### MagaryTreeNode
+
+```typescript
+interface MagaryTreeNode {
+  label?: string;              // Node label text
+  data?: any;                  // Custom data
+  icon?: string;               // Icon name
+  expandedIcon?: string;       // Icon when expanded
+  collapsedIcon?: string;      // Icon when collapsed
+  children?: MagaryTreeNode[]; // Child nodes
+  leaf?: boolean;              // Is leaf node
+  expanded?: boolean;          // Expansion state
+  type?: string;               // Node type
+  parent?: MagaryTreeNode;     // Parent node reference
+  partialSelected?: boolean;   // Partial selection state
+  styleClass?: string;         // Custom CSS class
+  draggable?: boolean;         // Can be dragged
+  droppable?: boolean;         // Can receive drops
+  selectable?: boolean;        // Can be selected
+  key?: string;                // Unique identifier
+}
+```
+
+### MagaryTreeSelectionValue
+
+```typescript
+type MagaryTreeSelectionValue =
+  | MagaryTreeNode              // Single selection
+  | MagaryTreeNode[]            // Multiple selection
+  | Record<string, boolean>     // Checkbox selection
+  | null;
+```
+
+### MagaryTreeNodeSelectionEvent
+
+```typescript
+interface MagaryTreeNodeSelectionEvent {
+  originalEvent: Event;        // Original DOM event
+  node: MagaryTreeNode;        // Selected/unselected node
+}
+```
+
+### MagaryTreeNodeDropEvent
+
+```typescript
+interface MagaryTreeNodeDropEvent {
+  originalEvent: CdkDragDrop<MagaryTreeNode[]>;
+  parent: MagaryTreeNode | null;  // New parent node
+  dragNode: MagaryTreeNode;       // Dragged node
+}
+```
+
+## Filtering Behavior
+
+When filtering is enabled:
+
+- **Lenient Mode**: Shows nodes whose labels contain the filter text (case-insensitive)
+- **Strict Mode**: Shows nodes whose labels exactly match the filter text
+- Parent nodes are automatically expanded when children match
+- The tree structure is preserved (parent nodes shown if children match)
+
+## Drag and Drop Behavior
+
+When `validateDrop` is enabled:
+
+- Nodes cannot be dropped onto themselves
+- Nodes cannot be dropped onto their descendants
+- Invalid drop targets are rejected
+
+Handle the `onNodeDrop` event to update your data structure:
+
+```typescript
+onNodeDrop(event: MagaryTreeNodeDropEvent) {
+  const dragNode = event.dragNode;
+  const newParent = event.parent;
+  
+  // Update your data structure
+  // Remove dragNode from old parent
+  // Add dragNode to newParent.children
+}
+```
+
+## Accessibility
+
+- Uses proper ARIA tree roles and attributes
+- Keyboard navigation with arrow keys
+- Expand/collapse with Enter/Space
+- Focus management for keyboard users
+- Screen reader announcements for selection changes
+
+## Styling
+
+Key CSS classes:
+- `magary-tree` - Main tree container
+- `magary-tree-node` - Individual tree node
+- `magary-tree-node-content` - Node content wrapper
+- `magary-tree-node-children` - Children container
+
+## Source
+
+View source: `projects/ng-magary/src/lib/Data/tree/tree.ts:36`

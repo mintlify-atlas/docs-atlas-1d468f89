@@ -1,122 +1,133 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Magary",
+  "theme": "palm",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#55a5c0",
+    "light": "#8975a8",
+    "dark": "#b7cbdb"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "https://media.brand.dev/0113ff5e-3069-4ab1-97ac-617d704b7506.png",
+  "logo": {
+    "light": "https://media.brand.dev/801d626c-9844-4bb6-b142-5cefbce7e890.png",
+    "dark": "https://media.brand.dev/801d626c-9844-4bb6-b142-5cefbce7e890.png"
+  },
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/JhoanGon/magary"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/JhoanGon/magary"
+    }
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Get Started",
+            "pages": ["introduction", "installation", "quickstart", "theming"]
+          },
+          {
+            "group": "Components",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "components/overview",
+              "components/button",
+              "components/speed-dial",
+              "components/split-button",
+              "components/input",
+              "components/checkbox",
+              "components/switch",
+              "components/select",
+              "components/radio",
+              "components/textarea",
+              "components/datepicker",
+              "components/input-number",
+              "components/slider",
+              "components/rating",
+              "components/cascade-select",
+              "components/segmented",
+              "components/card",
+              "components/tabs",
+              "components/accordion",
+              "components/fieldset",
+              "components/toolbar",
+              "components/table",
+              "components/paginator",
+              "components/tree",
+              "components/timeline",
+              "components/organizationchart",
+              "components/dataview",
+              "components/kanban",
+              "components/picklist",
+              "components/orderlist",
+              "components/dialog",
+              "components/tooltip",
+              "components/overlaypanel",
+              "components/confirm-dialog",
+              "components/panelmenu",
+              "components/sidebar",
+              "components/breadcrumb",
+              "components/steps",
+              "components/tieredmenu",
+              "components/contextmenu",
+              "components/menubar",
+              "components/megamenu",
+              "components/slidemenu",
+              "components/image",
+              "components/galleria",
+              "components/carousel",
+              "components/upload",
+              "components/toast",
+              "components/message",
+              "components/avatar",
+              "components/skeleton",
+              "components/divider",
+              "components/tag",
+              "components/grid"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Services",
+            "pages": ["services/theme-service", "services/toast-service", "services/confirmation-service"]
+          },
+          {
+            "group": "Guides",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "guides/styling",
+              "guides/accessibility",
+              "guides/animations",
+              "guides/responsive-design",
+              "guides/drag-and-drop"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Examples",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "examples/dashboard",
+              "examples/ecommerce",
+              "examples/logistics"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "API Reference",
         "groups": [
           {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
+            "group": "Core Exports",
+            "pages": ["api/exports"]
           },
           {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
-            ]
+            "group": "Interfaces",
+            "pages": ["api/interfaces"]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    ]
   }
 }

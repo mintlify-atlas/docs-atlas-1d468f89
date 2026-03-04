@@ -1,0 +1,238 @@
+---
+title: 'Tag'
+description: 'Display categorized labels and status indicators'
+---
+
+## Overview
+
+Tag component displays a label with different severity colors for categorization or status indication.
+
+## Import
+
+```typescript
+import { MagaryTag } from 'ng-magary';
+```
+
+## Basic Usage
+
+```html
+<magary-tag [value]="'New'"></magary-tag>
+```
+
+## Severity Levels
+
+<CodeGroup>
+```html Success
+<magary-tag
+  [severity]="'success'"
+  [value]="'Completed'">
+</magary-tag>
+```
+
+```html Info (Default)
+<magary-tag
+  [severity]="'info'"
+  [value]="'Information'">
+</magary-tag>
+```
+
+```html Warning
+<magary-tag
+  [severity]="'warning'"
+  [value]="'Pending'">
+</magary-tag>
+```
+
+```html Danger
+<magary-tag
+  [severity]="'danger'"
+  [value]="'Failed'">
+</magary-tag>
+```
+
+```html Secondary
+<magary-tag
+  [severity]="'secondary'"
+  [value]="'Draft'">
+</magary-tag>
+```
+</CodeGroup>
+
+## With Icons
+
+```html
+<magary-tag
+  [severity]="'success'"
+  [icon]="'check'"
+  [value]="'Verified'">
+</magary-tag>
+
+<magary-tag
+  [severity]="'warning'"
+  [icon]="'alert-triangle'"
+  [value]="'Warning'">
+</magary-tag>
+
+<magary-tag
+  [severity]="'danger'"
+  [icon]="'x-circle'"
+  [value]="'Error'">
+</magary-tag>
+```
+
+## Rounded Tags
+
+```html
+<magary-tag
+  [severity]="'info'"
+  [value]="'Tag'"
+  [rounded]="true">
+</magary-tag>
+```
+
+## Input Properties
+
+<ParamField path="severity" type="'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast'" default="'info'">
+  Color severity of the tag
+</ParamField>
+
+<ParamField path="value" type="string">
+  Text to display in the tag
+</ParamField>
+
+<ParamField path="icon" type="string">
+  Lucide icon name to display
+</ParamField>
+
+<ParamField path="rounded" type="boolean" default="false">
+  Display tag with rounded corners
+</ParamField>
+
+## Usage Examples
+
+### Status Tags
+
+```html
+<div class="status-tags">
+  <magary-tag
+    [severity]="'success'"
+    [icon]="'check-circle'"
+    [value]="'Active'">
+  </magary-tag>
+  
+  <magary-tag
+    [severity]="'danger'"
+    [icon]="'x-circle'"
+    [value]="'Inactive'">
+  </magary-tag>
+  
+  <magary-tag
+    [severity]="'warning'"
+    [icon]="'pause-circle'"
+    [value]="'Paused'">
+  </magary-tag>
+</div>
+```
+
+### Product Categories
+
+```html
+<div class="product-tags">
+  <magary-tag
+    [severity]="'info'"
+    [value]="'Electronics'"
+    [rounded]="true">
+  </magary-tag>
+  
+  <magary-tag
+    [severity]="'secondary'"
+    [value]="'New Arrival'"
+    [rounded]="true">
+  </magary-tag>
+  
+  <magary-tag
+    [severity]="'danger'"
+    [value]="'Sale'"
+    [rounded]="true">
+  </magary-tag>
+</div>
+```
+
+### Dynamic Tags
+
+<CodeGroup>
+```html Component
+<div class="tags-container">
+  <magary-tag
+    *ngFor="let tag of tags"
+    [severity]="tag.severity"
+    [value]="tag.value"
+    [icon]="tag.icon">
+  </magary-tag>
+</div>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryTag } from 'ng-magary';
+import { CommonModule } from '@angular/common';
+
+interface Tag {
+  severity: 'success' | 'info' | 'warning' | 'danger';
+  value: string;
+  icon?: string;
+}
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryTag, CommonModule],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  tags: Tag[] = [
+    { severity: 'success', value: 'Approved', icon: 'check' },
+    { severity: 'warning', value: 'Pending', icon: 'clock' },
+    { severity: 'danger', value: 'Rejected', icon: 'x' }
+  ];
+}
+```
+</CodeGroup>
+
+### Order Status
+
+```typescript
+getStatusTag(status: string) {
+  const statusMap: Record<string, any> = {
+    'completed': { severity: 'success', icon: 'check-circle' },
+    'processing': { severity: 'info', icon: 'loader' },
+    'pending': { severity: 'warning', icon: 'clock' },
+    'cancelled': { severity: 'danger', icon: 'x-circle' }
+  };
+  return statusMap[status] || { severity: 'secondary', icon: null };
+}
+```
+
+```html
+<magary-tag
+  [severity]="getStatusTag(order.status).severity"
+  [icon]="getStatusTag(order.status).icon"
+  [value]="order.status | titlecase">
+</magary-tag>
+```
+
+## Features
+
+- **6 severity levels**: Success, info, warning, danger, secondary, contrast
+- **Icon support**: Display Lucide icons
+- **Rounded option**: Pill-shaped tags
+- **Compact design**: Minimal space usage
+- **Semantic colors**: Intuitive color meanings
+- **Flexible**: Use for any categorization
+
+## Accessibility
+
+- Semantic HTML
+- Color + text (not color alone)
+- Screen reader friendly
+- Proper contrast ratios

@@ -1,0 +1,270 @@
+---
+title: 'ContextMenu'
+description: 'Right-click context menu component'
+---
+
+## Overview
+
+ContextMenu displays a menu when right-clicking on an element or document.
+
+## Import
+
+```typescript
+import { MagaryContextMenu, MenuItem } from 'ng-magary';
+```
+
+## Basic Usage (Global)
+
+<CodeGroup>
+```html Component
+<magary-context-menu 
+  [model]="items"
+  [global]="true">
+</magary-context-menu>
+
+<div class="content">
+  <p>Right-click anywhere to see the context menu</p>
+</div>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryContextMenu, MenuItem } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryContextMenu],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  items: MenuItem[] = [
+    {
+      label: 'Copy',
+      icon: 'copy',
+      command: () => this.copy()
+    },
+    {
+      label: 'Paste',
+      icon: 'clipboard',
+      command: () => this.paste()
+    },
+    { separator: true },
+    {
+      label: 'Delete',
+      icon: 'trash',
+      command: () => this.delete()
+    }
+  ];
+  
+  copy() {
+    console.log('Copy action');
+  }
+  
+  paste() {
+    console.log('Paste action');
+  }
+  
+  delete() {
+    console.log('Delete action');
+  }
+}
+```
+</CodeGroup>
+
+## Target Specific Element
+
+<CodeGroup>
+```html Component
+<div #targetElement class="target-area">
+  <p>Right-click this area for context menu</p>
+</div>
+
+<magary-context-menu 
+  [model]="items"
+  [target]="targetElement">
+</magary-context-menu>
+```
+
+```typescript TypeScript
+export class ExampleComponent {
+  items: MenuItem[] = [
+    { label: 'Edit', icon: 'edit' },
+    { label: 'Delete', icon: 'trash' }
+  ];
+}
+```
+</CodeGroup>
+
+## With Nested Menus
+
+```typescript
+items: MenuItem[] = [
+  {
+    label: 'File',
+    icon: 'file',
+    items: [
+      { label: 'New', icon: 'plus' },
+      { label: 'Open', icon: 'folder-open' },
+      { separator: true },
+      {
+        label: 'Recent',
+        icon: 'clock',
+        items: [
+          { label: 'document1.txt' },
+          { label: 'document2.txt' }
+        ]
+      }
+    ]
+  },
+  {
+    label: 'Edit',
+    icon: 'edit',
+    items: [
+      { label: 'Cut', icon: 'scissors' },
+      { label: 'Copy', icon: 'copy' },
+      { label: 'Paste', icon: 'clipboard' }
+    ]
+  }
+];
+```
+
+## Using CSS Selector
+
+```html
+<div class="document-area">
+  <p>Right-click for options</p>
+</div>
+
+<magary-context-menu 
+  [model]="items"
+  [target]="'.document-area'">
+</magary-context-menu>
+```
+
+## Input Properties
+
+<ParamField path="model" type="MenuItem[]" default="[]">
+  Array of menu items
+</ParamField>
+
+<ParamField path="style" type="Record<string, any>">
+  Inline styles for the component
+</ParamField>
+
+<ParamField path="styleClass" type="string">
+  CSS class for the component
+</ParamField>
+
+<ParamField path="global" type="boolean" default="false">
+  Attach context menu to document (global)
+</ParamField>
+
+<ParamField path="target" type="string | ElementRef | HTMLElement">
+  Element to attach the context menu to
+</ParamField>
+
+## Methods
+
+<ParamField path="show(event)" type="void">
+  Shows the context menu at event position
+</ParamField>
+
+<ParamField path="hide()" type="void">
+  Hides the context menu
+</ParamField>
+
+## Complete Example
+
+<CodeGroup>
+```html Component
+<div class="grid">
+  <div 
+    *ngFor="let item of data"
+    class="card"
+    (contextmenu)="onContextMenu($event, item)">
+    {{ item.name }}
+  </div>
+</div>
+
+<magary-context-menu 
+  #cm
+  [model]="menuItems">
+</magary-context-menu>
+```
+
+```typescript TypeScript
+import { Component, ViewChild } from '@angular/core';
+import { MagaryContextMenu, MenuItem } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryContextMenu, CommonModule],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  @ViewChild('cm') contextMenu!: MagaryContextMenu;
+  
+  selectedItem: any;
+  
+  data = [
+    { id: 1, name: 'Item 1' },
+    { id: 2, name: 'Item 2' },
+    { id: 3, name: 'Item 3' }
+  ];
+  
+  menuItems: MenuItem[] = [
+    {
+      label: 'View',
+      icon: 'eye',
+      command: () => this.viewItem()
+    },
+    {
+      label: 'Edit',
+      icon: 'edit',
+      command: () => this.editItem()
+    },
+    { separator: true },
+    {
+      label: 'Delete',
+      icon: 'trash',
+      command: () => this.deleteItem()
+    }
+  ];
+  
+  onContextMenu(event: MouseEvent, item: any) {
+    this.selectedItem = item;
+    this.contextMenu.show(event);
+  }
+  
+  viewItem() {
+    console.log('View:', this.selectedItem);
+  }
+  
+  editItem() {
+    console.log('Edit:', this.selectedItem);
+  }
+  
+  deleteItem() {
+    console.log('Delete:', this.selectedItem);
+  }
+}
+```
+</CodeGroup>
+
+## Features
+
+- **Global or targeted**: Apply to entire document or specific elements
+- **Nested menus**: Multi-level menu support
+- **Auto-positioning**: Positioned at cursor location
+- **Click outside**: Auto-close behavior
+- **Viewport aware**: Adjusts position to stay in view
+- **Custom commands**: Execute functions on item click
+
+## Accessibility
+
+- Keyboard navigation
+- ARIA attributes
+- Focus management
+- Screen reader support

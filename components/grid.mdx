@@ -1,0 +1,311 @@
+---
+title: 'Grid'
+description: 'Drag-and-drop grid layout powered by GridStack'
+---
+
+## Overview
+
+Grid component provides a drag-and-drop grid layout system powered by GridStack.js. Create dashboards and draggable layouts with ease.
+
+## Import
+
+```typescript
+import { MagaryGrid } from 'ng-magary';
+import 'gridstack/dist/gridstack.min.css';
+```
+
+## Installation
+
+Install GridStack dependency:
+
+```bash
+npm install gridstack
+```
+
+## Basic Usage
+
+<CodeGroup>
+```html Component
+<magary-grid
+  [columns]="12"
+  [gap]="10"
+  [editable]="true"
+  (change)="handleChange($event)">
+  
+  <div gs-w="6" gs-h="2" gs-x="0" gs-y="0">
+    <div class="grid-item-content">
+      <h3>Widget 1</h3>
+      <p>Content here...</p>
+    </div>
+  </div>
+  
+  <div gs-w="6" gs-h="2" gs-x="6" gs-y="0">
+    <div class="grid-item-content">
+      <h3>Widget 2</h3>
+      <p>Content here...</p>
+    </div>
+  </div>
+  
+  <div gs-w="12" gs-h="3" gs-x="0" gs-y="2">
+    <div class="grid-item-content">
+      <h3>Widget 3</h3>
+      <p>Full width content...</p>
+    </div>
+  </div>
+</magary-grid>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryGrid, MagaryGridEvent } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryGrid],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  handleChange(event: MagaryGridEvent) {
+    console.log('Grid changed:', event.items);
+  }
+}
+```
+</CodeGroup>
+
+## Static Grid (Non-editable)
+
+```html
+<magary-grid [editable]="false">
+  <div gs-w="4" gs-h="2" gs-x="0" gs-y="0">
+    <div class="grid-item-content">Static Item 1</div>
+  </div>
+  
+  <div gs-w="4" gs-h="2" gs-x="4" gs-y="0">
+    <div class="grid-item-content">Static Item 2</div>
+  </div>
+</magary-grid>
+```
+
+## Custom Row Height
+
+```html
+<magary-grid
+  [columns]="12"
+  [rowHeight]="100"
+  [gap]="15">
+  <!-- grid items -->
+</magary-grid>
+```
+
+## Advanced Options
+
+```html
+<magary-grid
+  [options]="{
+    column: 12,
+    cellHeight: 80,
+    margin: 10,
+    float: true,
+    animate: true,
+    disableDrag: false,
+    disableResize: false,
+    acceptWidgets: true
+  }">
+  <!-- grid items -->
+</magary-grid>
+```
+
+## Input Properties
+
+### Simple API
+
+<ParamField path="columns" type="number">
+  Number of columns in the grid
+</ParamField>
+
+<ParamField path="rowHeight" type="number | 'auto'">
+  Height of each row in pixels
+</ParamField>
+
+<ParamField path="gap" type="number | string">
+  Gap between grid items
+</ParamField>
+
+<ParamField path="editable" type="boolean">
+  Whether grid items can be dragged and resized
+</ParamField>
+
+### Advanced API
+
+<ParamField path="options" type="GridStackOptions">
+  GridStack options object (overrides simple API)
+</ParamField>
+
+## Output Events
+
+<ParamField path="change" type="EventEmitter<MagaryGridEvent>">
+  Emitted when grid layout changes
+</ParamField>
+
+<ParamField path="added" type="EventEmitter<MagaryGridEvent>">
+  Emitted when items are added
+</ParamField>
+
+<ParamField path="removed" type="EventEmitter<MagaryGridEvent>">
+  Emitted when items are removed
+</ParamField>
+
+<ParamField path="itemsChange" type="EventEmitter<MagaryGridLayoutItem[]>">
+  Emitted with current layout state
+</ParamField>
+
+## Grid Item Attributes
+
+Add these attributes to grid items:
+
+```html
+<div 
+  gs-w="6"      <!-- Width in columns -->
+  gs-h="2"      <!-- Height in rows -->
+  gs-x="0"      <!-- X position -->
+  gs-y="0"      <!-- Y position -->
+  gs-id="item1" <!-- Unique ID -->
+  gs-no-move    <!-- Disable dragging -->
+  gs-no-resize  <!-- Disable resizing -->
+  gs-locked>    <!-- Lock position and size -->
+  <!-- Content -->
+</div>
+```
+
+## Dashboard Example
+
+<CodeGroup>
+```html Component
+<magary-grid
+  [columns]="12"
+  [rowHeight]="100"
+  [gap]="10"
+  [editable]="true"
+  (itemsChange)="saveLayout($event)">
+  
+  <!-- Chart Widget -->
+  <div gs-w="8" gs-h="3" gs-x="0" gs-y="0" gs-id="chart">
+    <div class="widget">
+      <h3>Sales Chart</h3>
+      <app-chart></app-chart>
+    </div>
+  </div>
+  
+  <!-- Stats Widget -->
+  <div gs-w="4" gs-h="3" gs-x="8" gs-y="0" gs-id="stats">
+    <div class="widget">
+      <h3>Statistics</h3>
+      <app-stats></app-stats>
+    </div>
+  </div>
+  
+  <!-- Table Widget -->
+  <div gs-w="12" gs-h="4" gs-x="0" gs-y="3" gs-id="table">
+    <div class="widget">
+      <h3>Recent Orders</h3>
+      <app-table></app-table>
+    </div>
+  </div>
+</magary-grid>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryGrid, MagaryGridLayoutItem } from 'ng-magary';
+
+@Component({
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [MagaryGrid],
+  templateUrl: './dashboard.component.html'
+})
+export class DashboardComponent {
+  saveLayout(layout: MagaryGridLayoutItem[]) {
+    // Save layout to localStorage or backend
+    localStorage.setItem('dashboardLayout', JSON.stringify(layout));
+  }
+}
+```
+</CodeGroup>
+
+## Interfaces
+
+```typescript
+interface MagaryGridEvent {
+  event: Event;
+  items: GridStackNode[];
+}
+
+interface MagaryGridLayoutItem {
+  id?: string;
+  col: number;
+  row: number;
+  cols: number;
+  rows: number;
+  movable: boolean;
+  resizable: boolean;
+  locked: boolean;
+}
+```
+
+## Methods
+
+Access the GridStack instance:
+
+```typescript
+import { Component, ViewChild } from '@angular/core';
+import { MagaryGrid } from 'ng-magary';
+
+@Component({...})
+export class ExampleComponent {
+  @ViewChild(MagaryGrid) grid!: MagaryGrid;
+  
+  addWidget() {
+    const gridInstance = this.grid.getGridInstance();
+    gridInstance?.addWidget('<div>New Widget</div>');
+  }
+}
+```
+
+## Features
+
+- **Drag and drop**: Intuitive grid rearrangement
+- **Resize**: Adjust widget sizes
+- **Responsive**: Auto-adjusts columns
+- **Customizable**: Full GridStack options
+- **Layout persistence**: Save/restore layouts
+- **Lock items**: Prevent moving/resizing
+- **Static mode**: Non-editable grids
+- **Animation**: Smooth transitions
+
+## Styling
+
+```css
+.grid-item-content {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  height: 100%;
+  overflow: auto;
+}
+
+.widget {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+```
+
+## Accessibility
+
+- Keyboard navigation
+- ARIA attributes
+- Focus management
+- Screen reader support

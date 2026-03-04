@@ -1,0 +1,328 @@
+---
+title: 'Speed Dial'
+description: 'Floating action button with expandable menu items for quick access to actions'
+icon: 'zap'
+---
+
+## Overview
+
+The Speed Dial component provides a floating action button (FAB) that expands to reveal a set of related actions. It supports multiple layout types (linear, circular) and various directions.
+
+## Import
+
+```typescript
+import { MagarySpeedDial } from 'ng-magary';
+import { SpeedDialItem } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagarySpeedDial, SpeedDialItem } from 'ng-magary';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagarySpeedDial],
+  template: `
+    <magary-speed-dial
+      [items]="actions"
+      (itemSelect)="onActionSelect($event)"
+    />
+  `
+})
+export class DemoComponent {
+  actions: SpeedDialItem[] = [
+    { icon: 'home', tooltip: 'Home', command: () => this.goHome() },
+    { icon: 'user', tooltip: 'Profile', command: () => this.goToProfile() },
+    { icon: 'settings', tooltip: 'Settings', command: () => this.openSettings() }
+  ];
+
+  onActionSelect(event: { item: SpeedDialItem; event: Event }) {
+    console.log('Selected:', event.item.tooltip);
+  }
+
+  goHome() { console.log('Navigate to home'); }
+  goToProfile() { console.log('Navigate to profile'); }
+  openSettings() { console.log('Open settings'); }
+}
+```
+
+```html Template
+<magary-speed-dial
+  [items]="actions"
+  icon="plus"
+  activeIcon="x"
+  type="linear"
+  direction="up"
+  (itemSelect)="onActionSelect($event)"
+/>
+```
+</CodeGroup>
+
+## Properties
+
+### Inputs
+
+<ParamField path="items" type="SpeedDialItem[]" required>
+  Array of menu items to display when expanded. Each item defines an action with icon and optional command.
+</ParamField>
+
+<ParamField path="icon" type="string" default="'plus'">
+  Lucide icon name for the closed state trigger button
+</ParamField>
+
+<ParamField path="activeIcon" type="string" default="'x'">
+  Lucide icon name for the open state trigger button
+</ParamField>
+
+<ParamField path="type" type="SpeedDialType" default="'linear'">
+  Layout type for the menu items
+  
+  Options: `'linear'` | `'circle'` | `'semicircle'` | `'quartercircle'`
+</ParamField>
+
+<ParamField path="direction" type="SpeedDialDirection" default="undefined">
+  Direction in which items expand
+  
+  Options: `'up'` | `'down'` | `'left'` | `'right'` | `'up-left'` | `'up-right'` | `'down-left'` | `'down-right'`
+</ParamField>
+
+<ParamField path="radius" type="number" default="80">
+  Radius in pixels for circular layouts (circle, semicircle, quartercircle)
+</ParamField>
+
+<ParamField path="showMask" type="boolean" default="false">
+  When true, displays an overlay mask behind the speed dial when open
+</ParamField>
+
+<ParamField path="background" type="string | null" default="null">
+  Custom background color for the trigger button (CSS color value)
+</ParamField>
+
+<ParamField path="triggerSize" type="number" default="56">
+  Size of the trigger button in pixels
+</ParamField>
+
+<ParamField path="itemSize" type="number" default="40">
+  Size of each menu item button in pixels
+</ParamField>
+
+<ParamField path="itemGap" type="number" default="64">
+  Gap between items in linear layout (pixels)
+</ParamField>
+
+<ParamField path="closeOnItemSelect" type="boolean" default="true">
+  When true, the speed dial closes automatically after an item is selected
+</ParamField>
+
+<ParamField path="ariaLabel" type="string" default="'Speed dial menu'">
+  ARIA label for the trigger button for accessibility
+</ParamField>
+
+### Outputs
+
+<ParamField path="speedDialToggle" type="EventEmitter<boolean>">
+  Emitted when the speed dial is opened or closed. Passes the new open state.
+</ParamField>
+
+<ParamField path="itemSelect" type="EventEmitter<{ item: SpeedDialItem; event: Event }>">
+  Emitted when a menu item is clicked. Passes the selected item and the original event.
+</ParamField>
+
+## SpeedDialItem Interface
+
+```typescript
+interface SpeedDialItem {
+  readonly icon: string;              // Lucide icon name (required)
+  readonly tooltip?: string;          // Tooltip text on hover
+  readonly command?: (event?: Event) => void;  // Action to execute
+  readonly id?: string;               // Unique identifier
+  readonly ariaLabel?: string;        // Custom ARIA label
+  readonly backgroundColor?: string;  // Custom background color
+  readonly disabled?: boolean;        // Disable the item
+}
+```
+
+## Examples
+
+### Linear Direction
+
+<CodeGroup>
+```html Up
+<magary-speed-dial
+  [items]="items"
+  type="linear"
+  direction="up"
+/>
+```
+
+```html Right
+<magary-speed-dial
+  [items]="items"
+  type="linear"
+  direction="right"
+/>
+```
+
+```html Down
+<magary-speed-dial
+  [items]="items"
+  type="linear"
+  direction="down"
+/>
+```
+</CodeGroup>
+
+### Circular Layouts
+
+<CodeGroup>
+```html Full Circle
+<magary-speed-dial
+  [items]="items"
+  type="circle"
+  [radius]="100"
+/>
+```
+
+```html Semicircle
+<magary-speed-dial
+  [items]="items"
+  type="semicircle"
+  direction="up"
+  [radius]="80"
+/>
+```
+
+```html Quarter Circle
+<magary-speed-dial
+  [items]="items"
+  type="quartercircle"
+  direction="up-right"
+  [radius]="80"
+/>
+```
+</CodeGroup>
+
+### With Mask Overlay
+
+```html
+<magary-speed-dial
+  [items]="items"
+  [showMask]="true"
+  type="linear"
+  direction="up"
+/>
+```
+
+### Custom Styling
+
+```html
+<magary-speed-dial
+  [items]="items"
+  background="#6366f1"
+  [triggerSize]="64"
+  [itemSize]="48"
+  [itemGap]="72"
+  icon="menu"
+  activeIcon="x"
+/>
+```
+
+### With Commands and Tooltips
+
+```typescript
+actions: SpeedDialItem[] = [
+  {
+    icon: 'file-plus',
+    tooltip: 'New Document',
+    ariaLabel: 'Create new document',
+    command: () => this.createDocument()
+  },
+  {
+    icon: 'folder-plus',
+    tooltip: 'New Folder',
+    ariaLabel: 'Create new folder',
+    command: () => this.createFolder()
+  },
+  {
+    icon: 'upload',
+    tooltip: 'Upload',
+    ariaLabel: 'Upload files',
+    command: () => this.uploadFiles(),
+    backgroundColor: '#10b981'
+  },
+  {
+    icon: 'trash',
+    tooltip: 'Delete (disabled)',
+    disabled: true
+  }
+];
+```
+
+### Disable Auto-Close
+
+```html
+<magary-speed-dial
+  [items]="items"
+  [closeOnItemSelect]="false"
+  (itemSelect)="handleAction($event)"
+/>
+```
+
+## Accessibility
+
+The Speed Dial component includes comprehensive accessibility features:
+
+- **Keyboard Navigation**: Press Escape to close the menu
+- **Click Outside**: Automatically closes when clicking outside
+- **ARIA Labels**: Proper labels for trigger and items
+- **Disabled State**: Respects and communicates disabled items
+- **Focus Management**: Manages focus appropriately
+
+### Keyboard Support
+
+- **Escape**: Close the speed dial menu
+- **Click/Touch**: Toggle menu or select items
+
+## Behavior
+
+### Auto-Close
+
+The speed dial automatically closes when:
+- An item is clicked (if `closeOnItemSelect` is true)
+- User clicks outside the component
+- User presses the Escape key
+- The mask overlay is clicked (if `showMask` is true)
+
+### Transition Animation
+
+Items animate in/out with staggered delays:
+- **Linear layout**: 34ms/22ms delay steps (open/close)
+- **Circular layouts**: 26ms/16ms delay steps (open/close)
+- Animation reverses on close (last item first)
+
+## Component Details
+
+- **Selector**: `magary-speed-dial`
+- **Source**: `/home/daytona/workspace/source/projects/ng-magary/src/lib/Button/speed-dial/speed-dial.ts`
+- **Standalone**: Yes (with CommonModule, LucideAngularModule)
+- **Change Detection**: OnPush
+
+## Type Definitions
+
+```typescript
+type SpeedDialType = 'linear' | 'circle' | 'semicircle' | 'quartercircle';
+
+type SpeedDialDirection = 
+  | 'up' 
+  | 'down' 
+  | 'left' 
+  | 'right' 
+  | 'up-left' 
+  | 'up-right' 
+  | 'down-left' 
+  | 'down-right';
+```

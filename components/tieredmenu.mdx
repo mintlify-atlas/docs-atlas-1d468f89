@@ -1,0 +1,202 @@
+---
+title: 'TieredMenu'
+description: 'Nested hierarchical menu with flyout submenus'
+---
+
+## Overview
+
+TieredMenu displays nested menu items with hover-activated flyout submenus.
+
+## Import
+
+```typescript
+import { MagaryTieredMenu, MenuItem } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```html Component
+<magary-tiered-menu [model]="items"></magary-tiered-menu>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryTieredMenu, MenuItem } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryTieredMenu],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  items: MenuItem[] = [
+    {
+      label: 'File',
+      icon: 'file',
+      items: [
+        {
+          label: 'New',
+          icon: 'plus',
+          items: [
+            { label: 'Document', icon: 'file-text' },
+            { label: 'Folder', icon: 'folder' }
+          ]
+        },
+        { label: 'Open', icon: 'folder-open' },
+        { label: 'Save', icon: 'save' }
+      ]
+    },
+    {
+      label: 'Edit',
+      icon: 'edit',
+      items: [
+        { label: 'Undo', icon: 'undo' },
+        { label: 'Redo', icon: 'redo' }
+      ]
+    }
+  ];
+}
+```
+</CodeGroup>
+
+## Popup Mode
+
+<CodeGroup>
+```html Component
+<button (click)="menu.toggle($event)">Show Menu</button>
+
+<magary-tiered-menu 
+  #menu
+  [model]="items"
+  [popup]="true">
+</magary-tiered-menu>
+```
+
+```typescript TypeScript
+export class ExampleComponent {
+  items: MenuItem[] = [
+    {
+      label: 'Actions',
+      items: [
+        { label: 'Edit', icon: 'edit' },
+        { label: 'Delete', icon: 'trash' },
+        { label: 'Archive', icon: 'archive' }
+      ]
+    }
+  ];
+}
+```
+</CodeGroup>
+
+## With Commands
+
+```typescript
+items: MenuItem[] = [
+  {
+    label: 'File',
+    items: [
+      {
+        label: 'Save',
+        icon: 'save',
+        command: () => {
+          this.saveDocument();
+        }
+      },
+      {
+        label: 'Export',
+        icon: 'download',
+        items: [
+          {
+            label: 'PDF',
+            command: () => this.exportPDF()
+          },
+          {
+            label: 'Excel',
+            command: () => this.exportExcel()
+          }
+        ]
+      }
+    ]
+  }
+];
+```
+
+## Input Properties
+
+<ParamField path="model" type="MenuItem[]" default="[]">
+  Array of menu items
+</ParamField>
+
+<ParamField path="popup" type="boolean" default="false">
+  Display as a popup menu
+</ParamField>
+
+<ParamField path="style" type="Record<string, any>">
+  Inline styles for the component
+</ParamField>
+
+<ParamField path="styleClass" type="string" default="''">
+  CSS class for the component
+</ParamField>
+
+## Methods
+
+<ParamField path="toggle(event)" type="void">
+  Toggles the menu visibility (popup mode)
+</ParamField>
+
+<ParamField path="show(event)" type="void">
+  Shows the menu (popup mode)
+</ParamField>
+
+<ParamField path="hide()" type="void">
+  Hides the menu (popup mode)
+</ParamField>
+
+## MenuItem Interface
+
+```typescript
+interface MenuItem {
+  label?: string;
+  icon?: string;
+  command?: (event?: any) => void;
+  url?: string;
+  route?: string;
+  routerLink?: string | any[];
+  items?: MenuItem[]; // Nested items
+  disabled?: boolean;
+  visible?: boolean;
+  target?: string;
+  separator?: boolean;
+  badge?: string;
+  badgeStyleClass?: string;
+  styleClass?: string;
+  style?: any;
+  queryParams?: any;
+  fragment?: string;
+  automationId?: string;
+  tabindex?: string;
+  routerLinkActiveOptions?: any;
+  expanded?: boolean; // Internal state
+}
+```
+
+## Features
+
+- **Nested menus**: Multi-level menu hierarchy
+- **Hover activation**: Submenus open on hover
+- **Popup mode**: Display as overlay menu
+- **Router integration**: Navigate with Angular Router
+- **Icons**: Support for Lucide icons
+- **Commands**: Execute functions on item click
+- **Auto-positioning**: Smart submenu placement
+- **Click outside**: Auto-close when clicking outside
+
+## Accessibility
+
+- ARIA attributes
+- Keyboard navigation
+- Focus management
+- Screen reader support

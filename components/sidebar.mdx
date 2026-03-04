@@ -1,0 +1,238 @@
+---
+title: 'Sidebar'
+description: 'Responsive sidebar navigation component'
+---
+
+## Overview
+
+Sidebar provides a collapsible navigation panel with support for menu sections, user profile, and mobile responsive behavior.
+
+## Import
+
+```typescript
+import { Sidebar } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```html Component
+<magary-sidebar
+  [menu]="menuItems"
+  [appTitle]="'My App'"
+  [logoSrc]="'assets/logo.svg'">
+</magary-sidebar>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { Sidebar, MenuItem } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [Sidebar],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  menuItems: MenuItem[] = [
+    {
+      label: 'Dashboard',
+      icon: 'layout-dashboard',
+      route: '/dashboard'
+    },
+    {
+      label: 'Settings',
+      icon: 'settings',
+      route: '/settings'
+    }
+  ];
+}
+```
+</CodeGroup>
+
+## With User Section
+
+```html
+<magary-sidebar
+  [menu]="menuItems"
+  [showUserSection]="true"
+  [userName]="'John Doe'"
+  [userEmail]="'john@example.com'"
+  [avatarConfig]="{
+    type: 'label',
+    label: 'JD',
+    size: 'normal',
+    shape: 'circle'
+  }"
+  [showLogoutButton]="true"
+  (onLogout)="handleLogout()">
+</magary-sidebar>
+```
+
+## With Sections
+
+```typescript
+import { SidebarSection } from 'ng-magary';
+
+sections: SidebarSection[] = [
+  {
+    title: 'Main',
+    icon: 'home',
+    items: [
+      { label: 'Dashboard', icon: 'layout-dashboard', route: '/' },
+      { label: 'Analytics', icon: 'bar-chart', route: '/analytics' }
+    ]
+  },
+  {
+    title: 'Settings',
+    icon: 'settings',
+    items: [
+      { label: 'Profile', route: '/profile' },
+      { label: 'Preferences', route: '/preferences' }
+    ]
+  }
+];
+```
+
+```html
+<magary-sidebar [sections]="sections"></magary-sidebar>
+```
+
+## Collapsible Sidebar
+
+```html
+<magary-sidebar
+  [menu]="menuItems"
+  [collapsible]="true"
+  [showToggle]="true">
+</magary-sidebar>
+```
+
+## Input Properties
+
+<ParamField path="sections" type="SidebarSection[]" default="[]">
+  Array of menu sections with items
+</ParamField>
+
+<ParamField path="menu" type="MenuItem[]" default="[]">
+  Simple menu items array (alternative to sections)
+</ParamField>
+
+<ParamField path="menuTitle" type="string" default="'Menu'">
+  Title for the menu section
+</ParamField>
+
+<ParamField path="showUserSection" type="boolean" default="false">
+  Display the user profile section
+</ParamField>
+
+<ParamField path="showUserAvatar" type="boolean" default="true">
+  Show user avatar in user section
+</ParamField>
+
+<ParamField path="showUserName" type="boolean" default="true">
+  Show user name in user section
+</ParamField>
+
+<ParamField path="showUserEmail" type="boolean" default="true">
+  Show user email in user section
+</ParamField>
+
+<ParamField path="showLogoutButton" type="boolean" default="true">
+  Show logout button in user section
+</ParamField>
+
+<ParamField path="userName" type="string" default="'John Doe'">
+  Name displayed in user section
+</ParamField>
+
+<ParamField path="userEmail" type="string" default="'user@example.com'">
+  Email displayed in user section
+</ParamField>
+
+<ParamField path="avatarConfig" type="SidebarAvatarConfig">
+  Configuration for user avatar
+</ParamField>
+
+<ParamField path="logoSrc" type="string" default="'assets/logo.svg'">
+  Path to logo image
+</ParamField>
+
+<ParamField path="appTitle" type="string" default="'PRIMENG'">
+  Application title displayed in header
+</ParamField>
+
+<ParamField path="collapsible" type="boolean" default="true">
+  Whether sidebar can be collapsed
+</ParamField>
+
+<ParamField path="showToggle" type="boolean" default="true">
+  Show collapse toggle button
+</ParamField>
+
+<ParamField path="showLogo" type="boolean" default="true">
+  Display the logo
+</ParamField>
+
+<ParamField path="closeOnEscape" type="boolean" default="true">
+  Close mobile sidebar on Escape key
+</ParamField>
+
+<ParamField path="trapFocus" type="boolean" default="true">
+  Trap focus within sidebar when open (mobile)
+</ParamField>
+
+## Output Events
+
+<ParamField path="onLogout" type="EventEmitter<void>">
+  Emitted when logout button is clicked
+</ParamField>
+
+<ParamField path="closeSidebar" type="EventEmitter<void>">
+  Emitted when mobile sidebar is closed
+</ParamField>
+
+## Interfaces
+
+```typescript
+interface SidebarSection {
+  title: string;
+  icon?: string;
+  items: MenuItem[];
+  backgroundColor?: string;
+  textColor?: string;
+  hoverColor?: string;
+  iconClass?: string;
+}
+
+interface SidebarAvatarConfig {
+  type: 'image' | 'label' | 'icon';
+  size?: AvatarSize;
+  shape?: AvatarShape;
+  image?: string;
+  label?: string;
+  icon?: string;
+  badgeValue?: string;
+  badgeSeverity?: BadgeSeverity;
+}
+```
+
+## Features
+
+- **Responsive**: Mobile-friendly with overlay mode
+- **Collapsible**: Desktop collapse functionality
+- **User section**: Display user info and logout
+- **Panel menus**: Expandable menu sections
+- **Router integration**: Navigation with Angular Router
+- **Focus trap**: Keyboard navigation support
+- **Auto-close**: Closes on route change (mobile)
+- **Accessibility**: Full keyboard and screen reader support
+
+## Accessibility
+
+- ARIA labels and roles
+- Keyboard navigation (Tab, Escape)
+- Focus management
+- Screen reader announcements
+- Focus trap in mobile mode

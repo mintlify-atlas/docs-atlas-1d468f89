@@ -1,0 +1,664 @@
+---
+title: Drag and Drop
+description: Learn how to use Magary's drag-and-drop components powered by Atlassian's Pragmatic Drag and Drop library
+---
+
+## Overview
+
+Magary provides powerful drag-and-drop functionality through integration with `@atlaskit/pragmatic-drag-and-drop`, a performant and accessible drag-and-drop library. Three components support drag-and-drop out of the box: Kanban, OrderList, and PickList.
+
+## Installation
+
+Drag-and-drop functionality requires the Pragmatic Drag and Drop library:
+
+```bash
+npm install @atlaskit/pragmatic-drag-and-drop
+```
+
+<Note>
+This dependency is included when you install Magary, but ensure it's in your `package.json`.
+</Note>
+
+## Kanban Component
+
+The Kanban board allows dragging cards between columns.
+
+### Basic Usage
+
+```typescript
+import { Component, signal } from '@angular/core';
+import { MagaryKanban, MagaryKanbanColumn, MagaryKanbanItem } from 'ng-magary';
+
+@Component({
+  selector: 'app-board',
+  imports: [MagaryKanban],
+  template: `
+    <magary-kanban 
+      [(columns)]="columns"
+      [dragDrop]="true"
+      (onMove)="handleMove($event)">
+      
+      <ng-template #kanbanItemTemplate let-item let-column="column">
+        <div class="task-card">
+          <h4>{{ item.title }}</h4>
+          <p>{{ item.description }}</p>
+        </div>
+      </ng-template>
+      
+      <ng-template #kanbanColumnHeaderTemplate let-column let-index="index">
+        <div class="column-header">
+          <h3>{{ column.title }}</h3>
+          <span class="badge">{{ column.items.length }}</span>
+        </div>
+      </ng-template>
+    </magary-kanban>
+  `
+})
+export class BoardComponent {
+  columns = signal<MagaryKanbanColumn[]>([
+    {
+      id: 'todo',
+      title: 'To Do',
+      items: [
+        { id: '1', title: 'Task 1', description: 'Description' },
+        { id: '2', title: 'Task 2', description: 'Description' }
+      ]
+    },
+    {
+      id: 'in-progress',
+      title: 'In Progress',
+      items: [
+        { id: '3', title: 'Task 3', description: 'Description' }
+      ]
+    },
+    {
+      id: 'done',
+      title: 'Done',
+      items: []
+    }
+  ]);
+
+  handleMove(event: MagaryKanbanMoveEvent) {
+    console.log('Task moved:', event);
+    // event.item - the moved item
+    // event.fromColumnId - source column
+    // event.toColumnId - destination column
+    // event.fromIndex - original position
+    // event.toIndex - new position
+    // event.columns - updated columns array
+    
+    // Persist to backend
+    this.saveBoard(event.columns);
+  }
+}
+```
+
+### Kanban API
+
+#### Inputs
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `columns` | `MagaryKanbanColumn[]` | `[]` | Two-way bound columns data |
+| `dragDrop` | `boolean` | `true` | Enable/disable drag and drop |
+| `listStyle` | `Record<string, any>` | `null` | Custom styles for column lists |
+
+#### Outputs
+
+| Output | Type | Description |
+|--------|------|-------------|
+| `onMove` | `MagaryKanbanMoveEvent` | Emitted when item is moved |
+| `onColumnsChange` | `MagaryKanbanColumn[]` | Emitted when columns change |
+
+#### Type Definitions
+
+```typescript
+interface MagaryKanbanItem {
+  id: string;              // Required unique identifier
+  label?: unknown;         // Optional label for default template
+  [key: string]: unknown;  // Any additional properties
+}
+
+interface MagaryKanbanColumn {
+  id: string;              // Required unique identifier
+  title?: string;          // Column title
+  items: MagaryKanbanItem[];  // Items in this column
+}
+
+interface MagaryKanbanMoveEvent {
+  item: MagaryKanbanItem;     // The item that was moved
+  fromColumnId: string;       // Source column ID
+  toColumnId: string;         // Destination column ID
+  fromIndex: number;          // Original index
+  toIndex: number;            // New index
+  columns: MagaryKanbanColumn[];  // Updated columns array
+}
+```
+
+### How It Works
+
+The Kanban component uses Pragmatic Drag and Drop's element adapter:
+
+```typescript
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
+import {
+  draggable,
+  dropTargetForElements,
+  monitorForElements,
+} from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+
+// Each card is made draggable
+const cleanup = combine(
+  draggable({
+    element: cardElement,
+    getInitialData: () => ({ itemId, columnId }),
+  }),
+  dropTargetForElements({
+    element: cardElement,
+    getData: () => ({ itemId, columnId, index }),
+  })
+);
+
+// Columns are drop targets
+dropTargetForElements({
+  element: columnElement,
+  getData: () => ({ columnId }),
+});
+
+// Monitor drag events globally
+monitorForElements({
+  onDrop: ({ source, location }) => {
+    // Update board state
+  },
+});
+```
+
+## OrderList Component
+
+OrderList allows reordering items within a single list.
+
+### Basic Usage
+
+```typescript
+import { Component, signal } from '@angular/core';
+import { MagaryOrderList } from 'ng-magary';
+
+interface Task {
+  id: number;
+  label: string;
+  priority: string;
+}
+
+@Component({
+  selector: 'app-tasks',
+  imports: [MagaryOrderList],
+  template: `
+    <magary-order-list
+      [(value)]="tasks"
+      [(selection)]="selectedTasks"
+      [dragDrop]="true"
+      [showControls]="true"
+      header="Task Priority"
+      (onReorder)="handleReorder($event)">
+      
+      <ng-template #itemTemplate let-task>
+        <div class="task-item">
+          <span class="priority-badge" 
+                [class]="task.priority">
+            {{ task.priority }}
+          </span>
+          <span>{{ task.label }}</span>
+        </div>
+      </ng-template>
+    </magary-order-list>
+  `
+})
+export class TasksComponent {
+  tasks = signal<Task[]>([
+    { id: 1, label: 'Fix critical bug', priority: 'high' },
+    { id: 2, label: 'Update documentation', priority: 'medium' },
+    { id: 3, label: 'Refactor code', priority: 'low' },
+  ]);
+  
+  selectedTasks = signal<Task[]>([]);
+
+  handleReorder(newOrder: Task[]) {
+    console.log('New order:', newOrder);
+    // Save to backend
+  }
+}
+```
+
+### OrderList API
+
+#### Inputs
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `value` | `T[]` | `[]` | Two-way bound list items |
+| `selection` | `T[]` | `[]` | Two-way bound selected items |
+| `dragDrop` | `boolean` | `false` | Enable drag and drop |
+| `showControls` | `boolean` | `true` | Show move up/down buttons |
+| `header` | `string` | `null` | List header text |
+| `listStyle` | `Record<string, any>` | `null` | Custom list styles |
+
+#### Outputs
+
+| Output | Type | Description |
+|--------|------|-------------|
+| `onReorder` | `T[]` | Emitted when list is reordered |
+| `onSelectionChange` | `T[]` | Emitted when selection changes |
+
+### Control Buttons
+
+When `showControls="true"`, buttons appear for manual reordering:
+
+- **Move Top** - Move selected items to top
+- **Move Up** - Move selected items up one position
+- **Move Down** - Move selected items down one position
+- **Move Bottom** - Move selected items to bottom
+
+```typescript
+// Manual movement
+moveUp() {
+  const selected = this.selection();
+  if (selected.length === 0) return;
+
+  let list = [...this.value()];
+  for (let i = 0; i < selected.length; i++) {
+    const item = selected[i];
+    const index = list.indexOf(item);
+    if (index > 0) {
+      list[index] = list[index - 1];
+      list[index - 1] = item;
+    }
+  }
+  this.value.set(list);
+  this.onReorder.emit(list);
+}
+```
+
+### Drag and Drop Implementation
+
+```typescript
+import { reorder } from '@atlaskit/pragmatic-drag-and-drop/reorder';
+
+// Make each item draggable
+draggable({
+  element: itemElement,
+  getInitialData: () => ({ index }),
+});
+
+// Each item is also a drop target
+dropTargetForElements({
+  element: itemElement,
+  getData: () => ({ index }),
+  onDrop: ({ source, location }) => {
+    const sourceIndex = source.data.index as number;
+    const targetIndex = location.current.dropTargets[0]?.data.index as number;
+    
+    if (sourceIndex !== undefined && targetIndex !== undefined) {
+      const reordered = reorder({
+        list: this.value(),
+        startIndex: sourceIndex,
+        finishIndex: targetIndex,
+      });
+      this.value.set(reordered);
+      this.onReorder.emit(reordered);
+    }
+  },
+});
+```
+
+## PickList Component
+
+PickList allows moving items between two lists (source and target).
+
+### Basic Usage
+
+```typescript
+import { Component, signal } from '@angular/core';
+import { MagaryPickList } from 'ng-magary';
+
+interface Product {
+  id: number;
+  name: string;
+  category: string;
+}
+
+@Component({
+  selector: 'app-products',
+  imports: [MagaryPickList],
+  template: `
+    <magary-picklist
+      [(source)]="availableProducts"
+      [(target)]="selectedProducts"
+      [dragDrop]="true"
+      sourceHeader="Available Products"
+      targetHeader="Selected Products"
+      (onMoveToTarget)="handleMoveToTarget($event)"
+      (onMoveToSource)="handleMoveToSource($event)">
+      
+      <ng-template #itemTemplate let-product>
+        <div class="product-item">
+          <strong>{{ product.name }}</strong>
+          <span class="category">{{ product.category }}</span>
+        </div>
+      </ng-template>
+    </magary-picklist>
+  `
+})
+export class ProductsComponent {
+  availableProducts = signal<Product[]>([
+    { id: 1, name: 'Laptop', category: 'Electronics' },
+    { id: 2, name: 'Desk Chair', category: 'Furniture' },
+    { id: 3, name: 'Monitor', category: 'Electronics' },
+  ]);
+  
+  selectedProducts = signal<Product[]>([]);
+
+  handleMoveToTarget(items: Product[]) {
+    console.log('Moved to target:', items);
+  }
+
+  handleMoveToSource(items: Product[]) {
+    console.log('Moved to source:', items);
+  }
+}
+```
+
+### PickList API
+
+#### Inputs
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `source` | `T[]` | `[]` | Two-way bound source items |
+| `target` | `T[]` | `[]` | Two-way bound target items |
+| `dragDrop` | `boolean` | `true` | Enable drag and drop |
+| `sourceHeader` | `string` | `'Available'` | Source list header |
+| `targetHeader` | `string` | `'Selected'` | Target list header |
+| `showSourceControls` | `boolean` | `true` | Show source controls |
+| `showTargetControls` | `boolean` | `true` | Show target controls |
+
+#### Outputs
+
+| Output | Type | Description |
+|--------|------|-------------|
+| `onMoveToTarget` | `T[]` | Items moved to target |
+| `onMoveToSource` | `T[]` | Items moved to source |
+| `onSourceReorder` | `T[]` | Source list reordered |
+| `onTargetReorder` | `T[]` | Target list reordered |
+
+## Advanced Features
+
+### Custom Drag Handles
+
+Create custom drag handles for better UX:
+
+```html
+<magary-order-list [dragDrop]="true">
+  <ng-template #itemTemplate let-item>
+    <div class="task-item">
+      <span class="drag-handle" aria-label="Drag to reorder">
+        <lucide-icon name="grip-vertical"></lucide-icon>
+      </span>
+      <span>{{ item.label }}</span>
+    </div>
+  </ng-template>
+</magary-order-list>
+```
+
+```css
+.drag-handle {
+  cursor: grab;
+  padding: 0.5rem;
+  color: var(--text-tertiary);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+```
+
+### Visual Feedback
+
+Add custom styles during drag:
+
+```css
+/* Item being dragged */
+.magary-kanban-item[data-dragging="true"] {
+  opacity: 0.5;
+  transform: rotate(3deg);
+}
+
+/* Drop target highlight */
+.magary-kanban-column[data-drag-over="true"] {
+  background: var(--primary-50);
+  border: 2px dashed var(--primary-500);
+}
+
+/* Drag preview */
+.drag-preview {
+  background: var(--surface-0);
+  border: 1px solid var(--primary-500);
+  box-shadow: var(--shadow-lg);
+  padding: 1rem;
+  border-radius: 8px;
+}
+```
+
+### Conditional Drag and Drop
+
+```typescript
+@Component({
+  template: `
+    <magary-kanban 
+      [(columns)]="columns"
+      [dragDrop]="canEdit()">
+    </magary-kanban>
+  `
+})
+export class BoardComponent {
+  userRole = signal('viewer');
+  
+  canEdit = computed(() => {
+    return this.userRole() === 'admin' || this.userRole() === 'editor';
+  });
+}
+```
+
+### Persistence
+
+Save drag-and-drop changes:
+
+```typescript
+import { debounceTime } from 'rxjs/operators';
+import { effect } from '@angular/core';
+
+@Component({ })
+export class BoardComponent {
+  columns = signal<MagaryKanbanColumn[]>([]);
+  
+  constructor(private boardService: BoardService) {
+    // Auto-save on changes
+    effect(() => {
+      const cols = this.columns();
+      this.saveToBackend(cols);
+    }, { allowSignalWrites: false });
+  }
+  
+  handleMove(event: MagaryKanbanMoveEvent) {
+    // Optimistic update
+    this.columns.set(event.columns);
+    
+    // Persist to backend
+    this.boardService.updateBoard(event.columns).subscribe({
+      error: (err) => {
+        // Rollback on error
+        this.loadBoard();
+      }
+    });
+  }
+}
+```
+
+## Accessibility
+
+Drag-and-drop components are keyboard accessible:
+
+### Keyboard Navigation
+
+- **Space/Enter** - Pick up item
+- **Arrow Keys** - Move item while dragging
+- **Space/Enter** - Drop item
+- **Escape** - Cancel drag
+
+### Screen Reader Support
+
+```html
+<!-- Kanban card -->
+<div role="button"
+     tabindex="0"
+     aria-label="Task: Fix critical bug. Column: To Do. Press space to pick up."
+     aria-grabbed="false">
+  <!-- Card content -->
+</div>
+
+<!-- During drag -->
+<div aria-grabbed="true"
+     aria-label="Task: Fix critical bug. Use arrow keys to move. Press space to drop.">
+  <!-- Card content -->
+</div>
+```
+
+<Tip>
+Always provide clear labels for draggable items and announce drag state changes to screen readers.
+</Tip>
+
+## Best Practices
+
+<Steps>
+  <Step title="Provide Visual Feedback">
+    Show clear visual cues during drag operations:
+    - Highlight drop zones
+    - Show drag preview
+    - Indicate valid/invalid drop targets
+  </Step>
+  
+  <Step title="Use Unique IDs">
+    Always provide unique `id` properties for items:
+    
+    ```typescript
+    // Good
+    items: [
+      { id: '1', label: 'Task' },
+      { id: '2', label: 'Task' }
+    ]
+    
+    // Bad - missing IDs
+    items: [
+      { label: 'Task' },
+      { label: 'Task' }
+    ]
+    ```
+  </Step>
+  
+  <Step title="Handle Errors Gracefully">
+    Implement rollback logic if server updates fail:
+    
+    ```typescript
+    const previousState = this.columns();
+    
+    try {
+      await this.saveBoard(newState);
+    } catch (error) {
+      this.columns.set(previousState);
+      this.showError('Failed to save changes');
+    }
+    ```
+  </Step>
+  
+  <Step title="Test on Touch Devices">
+    Ensure drag-and-drop works on mobile:
+    - Test touch interactions
+    - Verify long-press to drag
+    - Check drop zone visibility
+  </Step>
+  
+  <Step title="Add Loading States">
+    Show feedback during async operations:
+    
+    ```html
+    <magary-kanban 
+      [(columns)]="columns"
+      [dragDrop]="!isSaving()"
+      [class.loading]="isSaving()">
+    </magary-kanban>
+    ```
+  </Step>
+</Steps>
+
+<Warning>
+Never block the UI during drag operations. Keep all state updates synchronous and perform backend saves asynchronously.
+</Warning>
+
+## Performance Tips
+
+### Optimize Large Lists
+
+```typescript
+// Use trackBy for better performance
+@Component({
+  template: `
+    @for (item of items(); track item.id) {
+      <div>{{ item.label }}</div>
+    }
+  `
+})
+```
+
+### Virtual Scrolling
+
+For very large lists, consider virtual scrolling:
+
+```typescript
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+
+@Component({
+  template: `
+    <cdk-virtual-scroll-viewport itemSize="50">
+      <magary-order-list [value]="largeDataset()">
+      </magary-order-list>
+    </cdk-virtual-scroll-viewport>
+  `
+})
+```
+
+### Debounce Updates
+
+```typescript
+import { debounceTime } from 'rxjs';
+
+handleMove(event: MagaryKanbanMoveEvent) {
+  // Update UI immediately
+  this.columns.set(event.columns);
+  
+  // Debounce backend saves
+  this.saveSubject.next(event.columns);
+}
+
+ngOnInit() {
+  this.saveSubject.pipe(
+    debounceTime(500)
+  ).subscribe(columns => {
+    this.boardService.save(columns);
+  });
+}
+```
+
+## Next Steps
+
+- Learn about [Accessibility](/guides/accessibility) in drag-and-drop
+- Explore [Animations](/guides/animations) for drag feedback
+- See [Responsive Design](/guides/responsive-design) for mobile drag-and-drop

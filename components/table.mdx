@@ -1,0 +1,244 @@
+---
+title: 'Table'
+description: 'A feature-rich data table component with sorting, filtering, pagination, and custom templates.'
+---
+
+## Overview
+
+The Table component displays tabular data with built-in support for sorting, filtering, pagination, and custom cell rendering. It uses Angular signals for reactive state management and provides a flexible API for data presentation.
+
+## Import
+
+```typescript
+import { MagaryTable, MagaryTableColumn } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryTable, MagaryTableColumn } from 'ng-magary';
+
+@Component({
+  selector: 'app-table-demo',
+  standalone: true,
+  imports: [MagaryTable],
+  template: `
+    <magary-table
+      [value]="products"
+      [columns]="columns"
+      [paginator]="true"
+      [rows]="10"
+      title="Products">
+    </magary-table>
+  `
+})
+export class TableDemoComponent {
+  products = [
+    { id: 1, name: 'Product 1', price: 100, category: 'Electronics' },
+    { id: 2, name: 'Product 2', price: 200, category: 'Clothing' },
+    { id: 3, name: 'Product 3', price: 150, category: 'Electronics' }
+  ];
+
+  columns: MagaryTableColumn[] = [
+    { field: 'id', header: 'ID', sortable: true },
+    { field: 'name', header: 'Name', sortable: true },
+    { field: 'price', header: 'Price', type: 'currency', sortable: true },
+    { field: 'category', header: 'Category', sortable: true }
+  ];
+}
+```
+
+```html Template
+<magary-table
+  [value]="products"
+  [columns]="columns"
+  [paginator]="true"
+  [rows]="10"
+  title="Products">
+</magary-table>
+```
+</CodeGroup>
+
+## With Filtering
+
+```typescript
+@Component({
+  template: `
+    <magary-table
+      [value]="products"
+      [columns]="columns"
+      [paginator]="true"
+      [rows]="10"
+      [globalFilterFields]="['name', 'category']"
+      title="Products">
+    </magary-table>
+  `
+})
+export class FilterableTableComponent {
+  products = [...];
+  columns = [...];
+}
+```
+
+## With Custom Templates
+
+```html
+<magary-table [value]="products" [columns]="columns">
+  <ng-template magaryTemplate="caption">
+    <div class="flex justify-between">
+      <h3>Product List</h3>
+      <button>Add New</button>
+    </div>
+  </ng-template>
+
+  <ng-template magaryTemplate="body" let-row>
+    <tr>
+      <td>{{ row.name }}</td>
+      <td>
+        <span class="badge">{{ row.status }}</span>
+      </td>
+    </tr>
+  </ng-template>
+</magary-table>
+```
+
+## Column Types
+
+The table supports different column types for automatic formatting:
+
+```typescript
+columns: MagaryTableColumn[] = [
+  { field: 'name', header: 'Name', type: 'text' },
+  { field: 'avatar', header: 'Avatar', type: 'avatar' },
+  { field: 'status', header: 'Status', type: 'badge' },
+  { field: 'createdAt', header: 'Date', type: 'date' },
+  { field: 'price', header: 'Price', type: 'currency' }
+];
+```
+
+## Properties
+
+<ParamField path="value" type="any[]" default="[]">
+  Array of data to display in the table.
+</ParamField>
+
+<ParamField path="columns" type="MagaryTableColumn[]" default="[]">
+  Array of column definitions. Each column can specify field, header, type, sortable, and width.
+</ParamField>
+
+<ParamField path="paginator" type="boolean" default="false">
+  Whether to display pagination controls.
+</ParamField>
+
+<ParamField path="rows" type="number" default="5">
+  Number of rows to display per page when pagination is enabled.
+</ParamField>
+
+<ParamField path="rowsPerPageOptions" type="number[]" default="[]">
+  Array of page size options for the paginator dropdown.
+</ParamField>
+
+<ParamField path="globalFilterFields" type="string[]" default="[]">
+  Array of field names to include in global search filtering.
+</ParamField>
+
+<ParamField path="title" type="string" default="''">
+  Title to display above the table.
+</ParamField>
+
+<ParamField path="loading" type="boolean" default="false">
+  When true, displays skeleton loaders instead of data.
+</ParamField>
+
+<ParamField path="responsiveLayout" type="boolean" default="true">
+  Enables responsive layout for mobile devices.
+</ParamField>
+
+## Events
+
+<ParamField path="onPageChange" type="EventEmitter<PaginatorState>">
+  Emitted when the page changes. Event contains: `page`, `first`, `rows`, and `pageCount`.
+</ParamField>
+
+<ParamField path="onSortChange" type="EventEmitter<MagaryTableSortState>">
+  Emitted when sorting changes. Event contains: `field` and `order` (-1, 0, or 1).
+</ParamField>
+
+## Interfaces
+
+### MagaryTableColumn
+
+```typescript
+interface MagaryTableColumn {
+  field: string;              // Field name in the data object
+  header: string;             // Display header text
+  type?: 'text' | 'avatar' | 'badge' | 'date' | 'currency';
+  sortable?: boolean;         // Enable sorting for this column
+  width?: string;             // Column width (e.g., '200px')
+}
+```
+
+### MagaryTableSortState
+
+```typescript
+interface MagaryTableSortState {
+  field: string | null;       // Field being sorted
+  order: -1 | 0 | 1;         // Sort order: -1 desc, 0 none, 1 asc
+}
+```
+
+## Templates
+
+The table supports three template types:
+
+- `caption` - Custom content above the table
+- `header` - Custom table header
+- `body` - Custom row rendering
+
+```html
+<magary-table [value]="data" [columns]="columns">
+  <ng-template magaryTemplate="caption">
+    <!-- Custom caption -->
+  </ng-template>
+  
+  <ng-template magaryTemplate="header" let-columns>
+    <!-- Custom header -->
+  </ng-template>
+  
+  <ng-template magaryTemplate="body" let-row let-columns="columns">
+    <!-- Custom row -->
+  </ng-template>
+</magary-table>
+```
+
+## Sorting
+
+Enable sorting by setting `sortable: true` in column definitions:
+
+```typescript
+columns = [
+  { field: 'name', header: 'Name', sortable: true },
+  { field: 'price', header: 'Price', sortable: true }
+];
+```
+
+Listen to sort events:
+
+```typescript
+onSort(event: MagaryTableSortState) {
+  console.log('Sorting by:', event.field, 'Order:', event.order);
+}
+```
+
+## Accessibility
+
+- Table headers include `scope="col"` attributes
+- Sortable columns have ARIA labels and `aria-sort` attributes
+- Keyboard navigation supported for sort controls
+- Screen reader announcements for sorting state changes
+
+## Source
+
+View source: `projects/ng-magary/src/lib/Data/table/table.ts:65`

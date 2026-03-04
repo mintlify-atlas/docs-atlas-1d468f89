@@ -1,0 +1,475 @@
+---
+title: 'Radio'
+description: 'Radio button component for single selection from multiple options'
+icon: 'circle-dot'
+---
+
+## Overview
+
+The Radio component allows users to select a single option from a group of mutually exclusive choices. It implements ControlValueAccessor for seamless Angular Forms integration.
+
+## Import
+
+```typescript
+import { MagaryRadioButton } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryRadioButton } from 'ng-magary';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagaryRadioButton, FormsModule],
+  template: `
+    <div class="radio-group">
+      <magary-radio
+        name="size"
+        label="Small"
+        value="small"
+        [(ngModel)]="selectedSize"
+      />
+      <magary-radio
+        name="size"
+        label="Medium"
+        value="medium"
+        [(ngModel)]="selectedSize"
+      />
+      <magary-radio
+        name="size"
+        label="Large"
+        value="large"
+        [(ngModel)]="selectedSize"
+      />
+    </div>
+    
+    <p>Selected: {{ selectedSize }}</p>
+  `
+})
+export class DemoComponent {
+  selectedSize = 'medium';
+}
+```
+
+```html Template
+<magary-radio
+  name="size"
+  label="Small"
+  value="small"
+  [(ngModel)]="selectedSize"
+/>
+```
+</CodeGroup>
+
+## Properties
+
+### Inputs
+
+<ParamField path="value" type="unknown" required>
+  The value associated with this radio button. When selected, this value is emitted.
+</ParamField>
+
+<ParamField path="name" type="string" required>
+  Name attribute for the radio group. Radio buttons with the same name are mutually exclusive.
+</ParamField>
+
+<ParamField path="label" type="string" default="undefined">
+  Label text displayed next to the radio button
+</ParamField>
+
+<ParamField path="inputId" type="string" default="undefined">
+  Custom ID for the input element. Auto-generated if not provided.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, radio button is disabled and cannot be selected
+</ParamField>
+
+## Examples
+
+### Basic Radio Group
+
+```typescript
+@Component({
+  template: `
+    <div>
+      <h3>Choose a plan:</h3>
+      <magary-radio
+        name="plan"
+        label="Free"
+        value="free"
+        [(ngModel)]="selectedPlan"
+      />
+      <magary-radio
+        name="plan"
+        label="Pro"
+        value="pro"
+        [(ngModel)]="selectedPlan"
+      />
+      <magary-radio
+        name="plan"
+        label="Enterprise"
+        value="enterprise"
+        [(ngModel)]="selectedPlan"
+      />
+    </div>
+  `
+})
+export class PlanSelectorComponent {
+  selectedPlan = 'free';
+}
+```
+
+### With Object Values
+
+```typescript
+@Component({
+  template: `
+    <div>
+      @for (option of paymentMethods; track option.id) {
+        <magary-radio
+          name="payment"
+          [label]="option.label"
+          [value]="option"
+          [(ngModel)]="selectedPayment"
+        />
+      }
+    </div>
+  `
+})
+export class PaymentComponent {
+  paymentMethods = [
+    { id: 1, label: 'Credit Card', type: 'card' },
+    { id: 2, label: 'PayPal', type: 'paypal' },
+    { id: 3, label: 'Bank Transfer', type: 'bank' }
+  ];
+  selectedPayment = this.paymentMethods[0];
+}
+```
+
+### Disabled Options
+
+```typescript
+@Component({
+  template: `
+    <magary-radio
+      name="shipping"
+      label="Standard (3-5 days)"
+      value="standard"
+      [(ngModel)]="shippingMethod"
+    />
+    <magary-radio
+      name="shipping"
+      label="Express (1-2 days)"
+      value="express"
+      [(ngModel)]="shippingMethod"
+    />
+    <magary-radio
+      name="shipping"
+      label="Overnight (unavailable)"
+      value="overnight"
+      [disabled]="true"
+      [(ngModel)]="shippingMethod"
+    />
+  `
+})
+export class ShippingComponent {
+  shippingMethod = 'standard';
+}
+```
+
+### Reactive Forms
+
+```typescript
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MagaryRadioButton } from 'ng-magary';
+
+@Component({
+  selector: 'app-survey',
+  standalone: true,
+  imports: [ReactiveFormsModule, MagaryRadioButton],
+  template: `
+    <form [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
+      <div>
+        <h3>How satisfied are you?</h3>
+        <magary-radio
+          name="satisfaction"
+          label="Very Satisfied"
+          value="5"
+          formControlName="satisfaction"
+        />
+        <magary-radio
+          name="satisfaction"
+          label="Satisfied"
+          value="4"
+          formControlName="satisfaction"
+        />
+        <magary-radio
+          name="satisfaction"
+          label="Neutral"
+          value="3"
+          formControlName="satisfaction"
+        />
+        <magary-radio
+          name="satisfaction"
+          label="Dissatisfied"
+          value="2"
+          formControlName="satisfaction"
+        />
+        <magary-radio
+          name="satisfaction"
+          label="Very Dissatisfied"
+          value="1"
+          formControlName="satisfaction"
+        />
+      </div>
+      
+      <button type="submit" [disabled]="!surveyForm.valid">
+        Submit
+      </button>
+    </form>
+  `
+})
+export class SurveyComponent {
+  surveyForm: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.surveyForm = this.fb.group({
+      satisfaction: [null, Validators.required]
+    });
+  }
+
+  onSubmit() {
+    console.log('Survey result:', this.surveyForm.value);
+  }
+}
+```
+
+### Dynamic Options
+
+```typescript
+@Component({
+  template: `
+    <div>
+      <h3>Select a color:</h3>
+      @for (color of colors; track color.id) {
+        <magary-radio
+          name="color"
+          [label]="color.name"
+          [value]="color.hex"
+          [(ngModel)]="selectedColor"
+          [inputId]="'color-' + color.id"
+        />
+      }
+    </div>
+    
+    <div class="preview" [style.background-color]="selectedColor">
+      Preview
+    </div>
+  `
+})
+export class ColorPickerComponent {
+  colors = [
+    { id: 1, name: 'Red', hex: '#ff0000' },
+    { id: 2, name: 'Green', hex: '#00ff00' },
+    { id: 3, name: 'Blue', hex: '#0000ff' },
+    { id: 4, name: 'Yellow', hex: '#ffff00' }
+  ];
+  selectedColor = this.colors[0].hex;
+}
+```
+
+### Conditional Radio Groups
+
+```typescript
+@Component({
+  template: `
+    <div>
+      <h3>Account Type:</h3>
+      <magary-radio
+        name="accountType"
+        label="Personal"
+        value="personal"
+        [(ngModel)]="accountType"
+      />
+      <magary-radio
+        name="accountType"
+        label="Business"
+        value="business"
+        [(ngModel)]="accountType"
+      />
+    </div>
+    
+    @if (accountType === 'business') {
+      <div>
+        <h3>Business Size:</h3>
+        <magary-radio
+          name="businessSize"
+          label="Small (1-10 employees)"
+          value="small"
+          [(ngModel)]="businessSize"
+        />
+        <magary-radio
+          name="businessSize"
+          label="Medium (11-50 employees)"
+          value="medium"
+          [(ngModel)]="businessSize"
+        />
+        <magary-radio
+          name="businessSize"
+          label="Large (51+ employees)"
+          value="large"
+          [(ngModel)]="businessSize"
+        />
+      </div>
+    }
+  `
+})
+export class AccountSetupComponent {
+  accountType = 'personal';
+  businessSize = 'small';
+}
+```
+
+### With Descriptions
+
+```typescript
+@Component({
+  template: `
+    <div class="plan-selector">
+      <div class="plan-option">
+        <magary-radio
+          name="plan"
+          label="Starter Plan"
+          value="starter"
+          [(ngModel)]="selectedPlan"
+        />
+        <p class="description">Perfect for individuals - $9/month</p>
+      </div>
+      
+      <div class="plan-option">
+        <magary-radio
+          name="plan"
+          label="Professional Plan"
+          value="pro"
+          [(ngModel)]="selectedPlan"
+        />
+        <p class="description">Great for teams - $29/month</p>
+      </div>
+      
+      <div class="plan-option">
+        <magary-radio
+          name="plan"
+          label="Enterprise Plan"
+          value="enterprise"
+          [(ngModel)]="selectedPlan"
+        />
+        <p class="description">Custom solutions - Contact us</p>
+      </div>
+    </div>
+  `
+})
+export class PricingComponent {
+  selectedPlan = 'pro';
+}
+```
+
+## Accessibility
+
+The Radio component includes comprehensive accessibility features:
+
+- **Keyboard Support**: Arrow keys for navigation within groups
+- **Focus Indicators**: Clear visual focus states
+- **Label Association**: Proper label/input connection
+- **ARIA Attributes**: Checked and disabled states
+- **Semantic HTML**: Uses native radio input
+- **Group Navigation**: Tab moves between groups, arrows within group
+
+### Keyboard Support
+
+- **Space**: Select the focused radio button
+- **ArrowUp/ArrowLeft**: Select previous option in the group
+- **ArrowDown/ArrowRight**: Select next option in the group
+- **Tab**: Move focus to next form element
+
+### Focus Management
+
+The component tracks and displays focus state:
+- Visual focus ring when focused
+- Focus moves to selected radio on Tab
+- Arrow keys navigate between radios in same group
+- Disabled radios cannot receive focus
+
+## Radio Groups
+
+Radio buttons are grouped by the `name` attribute:
+
+```html
+<!-- Group 1 -->
+<magary-radio name="size" value="s" [(ngModel)]="size" />
+<magary-radio name="size" value="m" [(ngModel)]="size" />
+<magary-radio name="size" value="l" [(ngModel)]="size" />
+
+<!-- Group 2 (independent) -->
+<magary-radio name="color" value="red" [(ngModel)]="color" />
+<magary-radio name="color" value="blue" [(ngModel)]="color" />
+```
+
+- All radios with the same `name` are mutually exclusive
+- Selecting one deselects the others in the same group
+- Different `name` values create independent groups
+
+## ControlValueAccessor
+
+The Radio component implements Angular's ControlValueAccessor interface:
+
+```typescript
+// Works with ngModel
+<magary-radio [(ngModel)]="value" name="group" value="option" />
+
+// Works with FormControl
+<magary-radio [formControl]="control" name="group" value="option" />
+
+// Works with FormControlName
+<form [formGroup]="form">
+  <magary-radio formControlName="field" name="group" value="option" />
+</form>
+```
+
+### Form Validation
+
+```typescript
+import { Validators } from '@angular/forms';
+
+form = this.fb.group({
+  preference: [null, Validators.required]
+});
+```
+
+## Component Details
+
+- **Selector**: `magary-radio`
+- **Source**: `/home/daytona/workspace/source/projects/ng-magary/src/lib/Form/radio/radio.ts`
+- **Standalone**: Yes
+- **Change Detection**: OnPush
+- **Implements**: ControlValueAccessor
+
+## State Management
+
+The radio maintains its state using Angular signals:
+
+```typescript
+// Internal state signals
+focused = signal(false);           // Focus state
+modelValue = signal<unknown>(null); // Selected value
+value = input<unknown>();          // This radio's value
+
+// Computed checked state
+checked = computed(() => this.modelValue() === this.value());
+```

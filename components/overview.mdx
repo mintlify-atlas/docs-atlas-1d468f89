@@ -1,0 +1,116 @@
+---
+title: 'Components Overview'
+description: 'Comprehensive collection of Angular UI components for building modern applications'
+icon: 'puzzle-piece'
+---
+
+## Introduction
+
+Magary is a comprehensive Angular UI component library that provides a rich set of interactive, accessible, and customizable components. Built with modern Angular features including signals, input/output functions, and standalone components.
+
+## Component Categories
+
+### Buttons
+Interactive button components for user actions:
+- **[Button](/components/button)** - Standard button with multiple variants and states
+- **[Speed Dial](/components/speed-dial)** - Floating action button with expandable menu items
+- **[Split Button](/components/split-button)** - Combined primary action with dropdown menu
+
+### Form Controls
+Input components for collecting user data:
+- **[Input](/components/input)** - Text input with validation and icons
+- **[Textarea](/components/textarea)** - Multi-line text input with auto-resize
+- **[Checkbox](/components/checkbox)** - Binary selection control
+- **[Radio](/components/radio)** - Single selection from multiple options
+- **[Switch](/components/switch)** - Toggle switch for on/off states
+- **[Select](/components/select)** - Dropdown selection with filtering
+
+## Key Features
+
+### Modern Angular
+All components are built using:
+- **Signals** for reactive state management
+- **Input/Output functions** for streamlined component APIs
+- **Standalone components** for better tree-shaking
+- **OnPush change detection** for optimal performance
+
+### Accessibility
+Components follow WCAG guidelines:
+- Keyboard navigation support
+- ARIA attributes for screen readers
+- Focus management
+- Semantic HTML structure
+
+### Customization
+Flexible styling options:
+- CSS custom properties (variables)
+- Multiple variants and sizes
+- Custom colors and themes
+- Responsive design
+
+### Form Integration
+Seamless Angular Forms support:
+- ControlValueAccessor implementation
+- Reactive and template-driven forms
+- Validation integration
+- Disabled state management
+
+## Installation
+
+```bash
+npm install ng-magary lucide-angular
+```
+
+## Basic Usage
+
+Import components directly in your Angular components:
+
+```typescript
+import { Component } from '@angular/core';
+import { MagaryButton } from 'ng-magary';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [MagaryButton],
+  template: `
+    <magary-button 
+      label="Click me" 
+      severity="primary"
+      (onClick)="handleClick($event)"
+    />
+  `
+})
+export class AppComponent {
+  handleClick(event: Event) {
+    console.log('Button clicked!', event);
+  }
+}
+```
+
+## Dependencies
+
+Magary uses the following peer dependencies:
+- **@angular/core** - Angular framework
+- **@angular/common** - Common Angular utilities
+- **lucide-angular** - Icon library
+- **@angular/cdk** - Angular Component Dev Kit (for overlays)
+
+## Browser Support
+
+Magary supports all modern browsers:
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Button Components" icon="hand-pointer" href="/components/button">
+    Explore button variants and interactions
+  </Card>
+  <Card title="Form Controls" icon="input" href="/components/input">
+    Learn about form input components
+  </Card>
+</CardGroup>

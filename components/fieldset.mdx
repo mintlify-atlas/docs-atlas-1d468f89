@@ -1,0 +1,407 @@
+---
+title: Fieldset
+description: A container component with an optional legend and toggleable content
+---
+
+## Overview
+
+The Fieldset component provides a styled container with a legend (title) and optional collapse/expand functionality. It's useful for grouping related form fields or content sections.
+
+## Component Selector
+
+```html
+<magary-fieldset />
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryFieldset } from 'ng-magary';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagaryFieldset],
+  template: `
+    <magary-fieldset legend="User Information">
+      <p>Form fields go here</p>
+    </magary-fieldset>
+  `
+})
+export class DemoComponent {}
+```
+
+```html Template
+<magary-fieldset legend="User Information">
+  <p>Form fields go here</p>
+</magary-fieldset>
+```
+</CodeGroup>
+
+## Toggleable Content
+
+```html
+<magary-fieldset
+  legend="Advanced Settings"
+  [toggleable]="true"
+  [(collapsed)]="isCollapsed"
+>
+  <p>These settings are optional.</p>
+  <p>Click the legend to toggle visibility.</p>
+</magary-fieldset>
+```
+
+## Initially Collapsed
+
+```html
+<magary-fieldset
+  legend="Additional Options"
+  [toggleable]="true"
+  [(collapsed)]="true"
+>
+  <p>This content is hidden by default.</p>
+</magary-fieldset>
+```
+
+## With Form Fields
+
+```html
+<magary-fieldset legend="Contact Information">
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" id="email" />
+  </div>
+  <div class="form-group">
+    <label for="phone">Phone</label>
+    <input type="tel" id="phone" />
+  </div>
+</magary-fieldset>
+```
+
+## Properties
+
+<ParamField path="legend" type="string" default="''">
+  The legend text displayed at the top of the fieldset
+</ParamField>
+
+<ParamField path="toggleable" type="boolean" default="false">
+  When true, clicking the legend toggles the content visibility
+</ParamField>
+
+<ParamField path="collapsed" type="boolean" default="false">
+  Whether the content is collapsed. Supports two-way binding with `[(collapsed)]`
+</ParamField>
+
+## Events
+
+<ParamField path="onBeforeToggle" type="output<MagaryFieldsetToggleEvent>">
+  Emitted before the fieldset is toggled. Event contains:
+  - `originalEvent`: The DOM event
+  - `collapsed`: The new collapsed state (after toggle)
+</ParamField>
+
+<ParamField path="onAfterToggle" type="output<MagaryFieldsetToggleEvent>">
+  Emitted after the fieldset is toggled. Event contains:
+  - `originalEvent`: The DOM event
+  - `collapsed`: The new collapsed state (after toggle)
+</ParamField>
+
+## Methods
+
+The Fieldset component provides programmatic control methods:
+
+<ParamField path="toggle(event: Event)" type="void">
+  Toggles the collapsed state (only if toggleable is true)
+</ParamField>
+
+<ParamField path="expand(event: Event)" type="void">
+  Expands the content if currently collapsed
+</ParamField>
+
+<ParamField path="collapse(event: Event)" type="void">
+  Collapses the content if currently expanded
+</ParamField>
+
+## Two-Way Binding
+
+```typescript
+import { Component } from '@angular/core';
+
+@Component({
+  template: `
+    <magary-fieldset
+      legend="Controlled Fieldset"
+      [toggleable]="true"
+      [(collapsed)]="isCollapsed"
+    >
+      <p>Content here</p>
+    </magary-fieldset>
+    
+    <button (click)="isCollapsed = !isCollapsed">
+      {{ isCollapsed ? 'Expand' : 'Collapse' }}
+    </button>
+  `
+})
+export class DemoComponent {
+  isCollapsed = false;
+}
+```
+
+## Animations
+
+The Fieldset features smooth expand/collapse animations:
+- Height transition from 0 to auto
+- Opacity fade in/out
+- Cubic bezier easing for natural motion
+
+## Accessibility Features
+
+- Semantic `<fieldset>` and `<legend>` HTML elements
+- ARIA attributes for toggle functionality
+- Keyboard support for toggleable fieldsets
+- `aria-expanded` state on legend button
+- `aria-controls` association
+- Focus management
+
+## Keyboard Support
+
+When toggleable is true:
+
+| Key | Action |
+|-----|--------|
+| `Enter` / `Space` | Toggle collapsed state |
+| `Tab` | Move focus to next element |
+
+## Styling
+
+The Fieldset uses the following CSS structure:
+
+- `.magary-fieldset`: Main fieldset element
+- `.magary-fieldset-legend`: Legend/header area
+- `.magary-fieldset-content`: Content area
+- `.magary-fieldset-toggleable`: Applied when toggleable is true
+- `.magary-fieldset-collapsed`: Applied when collapsed
+
+## Complete Example
+
+```typescript
+import { Component, signal, viewChild } from '@angular/core';
+import { MagaryFieldset } from 'ng-magary';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+interface UserProfile {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  notifications: boolean;
+}
+
+@Component({
+  selector: 'app-fieldset-demo',
+  standalone: true,
+  imports: [MagaryFieldset, CommonModule, FormsModule],
+  template: `
+    <div class="demo-container">
+      <h3>User Profile Form</h3>
+      <form>
+        <!-- Basic Information -->
+        <magary-fieldset legend="Basic Information">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input
+              type="text"
+              id="name"
+              [(ngModel)]="profile.name"
+              name="name"
+            />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              [(ngModel)]="profile.email"
+              name="email"
+            />
+          </div>
+        </magary-fieldset>
+
+        <!-- Contact Details (Toggleable) -->
+        <magary-fieldset
+          legend="Contact Details"
+          [toggleable]="true"
+          [(collapsed)]="contactCollapsed"
+          (onAfterToggle)="onContactToggle($event)"
+        >
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input
+              type="tel"
+              id="phone"
+              [(ngModel)]="profile.phone"
+              name="phone"
+            />
+          </div>
+          <div class="form-group">
+            <label for="address">Address</label>
+            <textarea
+              id="address"
+              [(ngModel)]="profile.address"
+              name="address"
+              rows="3"
+            ></textarea>
+          </div>
+        </magary-fieldset>
+
+        <!-- Advanced Settings (Initially Collapsed) -->
+        <magary-fieldset
+          legend="Advanced Settings"
+          [toggleable]="true"
+          [(collapsed)]="advancedCollapsed"
+        >
+          <div class="form-group">
+            <label>
+              <input
+                type="checkbox"
+                [(ngModel)]="profile.notifications"
+                name="notifications"
+              />
+              Enable email notifications
+            </label>
+          </div>
+          <p class="help-text">
+            These settings control advanced features and notifications.
+          </p>
+        </magary-fieldset>
+
+        <!-- Programmatic Control -->
+        <magary-fieldset
+          legend="Controlled Fieldset"
+          [toggleable]="true"
+          [(collapsed)]="controlledCollapsed"
+        >
+          <p>This fieldset can be controlled with buttons below.</p>
+        </magary-fieldset>
+
+        <div class="button-group" style="margin-top: 1rem;">
+          <button
+            type="button"
+            (click)="controlledCollapsed = false"
+          >
+            Expand
+          </button>
+          <button
+            type="button"
+            (click)="controlledCollapsed = true"
+          >
+            Collapse
+          </button>
+          <button
+            type="button"
+            (click)="controlledCollapsed = !controlledCollapsed"
+          >
+            Toggle
+          </button>
+        </div>
+
+        <div class="button-group" style="margin-top: 2rem;">
+          <button type="submit">Save Profile</button>
+          <button type="button">Cancel</button>
+        </div>
+      </form>
+
+      <h3>Profile Data</h3>
+      <pre>{{ profile | json }}</pre>
+    </div>
+  `,
+  styles: [`
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 500;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+    }
+
+    .help-text {
+      color: #6b7280;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      background: white;
+      cursor: pointer;
+    }
+
+    button[type="submit"] {
+      background: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
+    }
+
+    magary-fieldset {
+      margin-bottom: 1.5rem;
+    }
+  `]
+})
+export class FieldsetDemoComponent {
+  contactCollapsed = signal(false);
+  advancedCollapsed = signal(true);
+  controlledCollapsed = signal(false);
+
+  profile: UserProfile = {
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    notifications: false
+  };
+
+  onContactToggle(event: { collapsed: boolean }) {
+    console.log('Contact details:', event.collapsed ? 'collapsed' : 'expanded');
+  }
+}
+```
+
+## Type Definitions
+
+```typescript
+interface MagaryFieldsetToggleEvent {
+  originalEvent: Event;
+  collapsed: boolean;
+}
+```
+
+## Use Cases
+
+- Grouping related form fields
+- Creating collapsible sections in forms
+- Organizing settings panels
+- Displaying optional or advanced configurations
+- Creating FAQ-style content sections
+- Structuring complex data entry forms

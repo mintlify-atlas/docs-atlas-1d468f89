@@ -1,0 +1,366 @@
+---
+title: Styling & Theming
+description: Learn how to customize the appearance of Magary components using CSS variables, theming system, and glassmorphism effects
+---
+
+## Overview
+
+Magary provides a comprehensive styling system built on CSS custom properties (variables), allowing you to customize every aspect of your UI. The library includes a powerful theming system with 9+ pre-built themes and support for glassmorphism effects.
+
+## CSS Variables
+
+Magary's styling is built on a foundation of CSS variables defined in `magary-core.scss`. These variables are organized into several categories:
+
+### Color Palettes
+
+#### Primary Colors
+The primary palette uses cyan/blue tones by default:
+
+```css
+:root {
+  --primary-50: #ecfeff;
+  --primary-100: #cffafe;
+  --primary-200: #a5f3fc;
+  --primary-300: #67e8f9;
+  --primary-400: #22d3ee;
+  --primary-500: #06b6d4;  /* Main primary color */
+  --primary-600: #0891b2;
+  --primary-700: #0e7490;
+  --primary-800: #155e75;
+  --primary-900: #164e63;
+}
+```
+
+#### Surface Colors
+Surface colors control backgrounds and containers:
+
+```css
+:root {
+  --surface-0: #ffffff;    /* Pure white */
+  --surface-50: #f8fafc;
+  --surface-100: #f1f5f9;
+  --surface-200: #e2e8f0;
+  --surface-300: #cbd5e1;
+  --surface-500: #64748b;
+  --surface-700: #334155;
+  --surface-800: #1e293b;
+  --surface-900: #0f172a;
+}
+```
+
+#### Semantic Colors
+Semantic colors provide consistent meaning across components:
+
+```css
+:root {
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #3b82f6;
+  --help: #8b5cf6;
+}
+```
+
+### Typography
+
+```css
+:root {
+  --font-family: "Inter", system-ui, -apple-system, sans-serif;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #94a3b8;
+}
+```
+
+### Spacing & Layout
+
+```css
+:root {
+  --border-radius: 1.25rem;
+  --magary-field-radius: 1.25rem;
+  --magary-field-height-sm: 2.25rem;
+  --magary-field-height-md: 2.75rem;
+  --magary-field-height-lg: 3.125rem;
+  --magary-field-padding-x: 1rem;
+}
+```
+
+### Shadows
+
+```css
+:root {
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.08);
+  --shadow-glow: 0 0 20px rgba(6, 182, 212, 0.4);
+}
+```
+
+## Theming System
+
+Magary includes a powerful theming service that allows dynamic theme switching with 9+ built-in themes.
+
+### Available Themes
+
+- **light** - Clean, modern light theme (default)
+- **dark** - Dark theme with high contrast
+- **purple** - Purple-accented theme
+- **green** - Nature-inspired green theme
+- **neo** - Modern neo-brutalist design
+- **midnight** - Deep blue midnight theme
+- **cyberpunk** - Futuristic neon aesthetics
+- **cotton** - Soft, pastel color palette
+- **liquid** - Flowing gradient design
+
+### Using the Theme Service
+
+Inject the `MagaryThemeService` to control themes:
+
+```typescript
+import { Component, inject } from '@angular/core';
+import { MagaryThemeService } from 'ng-magary';
+
+@Component({
+  selector: 'app-root',
+  template: `
+    <magary-button (onClick)="toggleTheme()">Switch Theme</magary-button>
+  `
+})
+export class AppComponent {
+  themeService = inject(MagaryThemeService);
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
+  }
+
+  setSpecificTheme() {
+    this.themeService.setTheme('dark');
+  }
+
+  getCurrentTheme() {
+    return this.themeService.currentTheme();
+  }
+}
+```
+
+### How Themes Work
+
+Themes are applied via the `data-theme` attribute on the `<body>` element:
+
+```html
+<body data-theme="dark">
+  <!-- Your app -->
+</body>
+```
+
+Theme-specific CSS variables override the defaults:
+
+```css
+[data-theme="dark"] {
+  --surface-0: #0f172a;
+  --surface-50: #1e293b;
+  --text-primary: #f8fafc;
+  --glass-bg: rgba(15, 23, 42, 0.85);
+}
+```
+
+### Theme Persistence
+
+The theme service automatically:
+- Saves the selected theme to `localStorage`
+- Restores the theme on page load
+- Respects system color scheme preference if no theme is saved
+
+```typescript
+// Theme is automatically saved
+themeService.setTheme('cyberpunk');
+
+// On next page load, 'cyberpunk' theme is restored
+```
+
+## Glassmorphism
+
+Magary includes built-in glassmorphism support for creating modern frosted-glass effects.
+
+### Glass Variables
+
+```css
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: 1px solid rgba(219, 217, 217, 0.85);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  --backdrop-blur: blur(16px);
+}
+```
+
+### Creating Glass Effects
+
+Apply glassmorphism to any component:
+
+```html
+<magary-card styleClass="glass-effect">
+  <p>This card has a frosted glass appearance</p>
+</magary-card>
+```
+
+```css
+.glass-effect {
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+}
+```
+
+<Note>
+Glassmorphism requires a semi-transparent background and backdrop-filter support. Ensure your background has some visual interest for the best effect.
+</Note>
+
+## Gradients
+
+Magary provides pre-defined gradients for modern UI effects:
+
+```css
+:root {
+  --gradient-primary: linear-gradient(135deg, #06b6d4 0%, #d946ef 100%);
+  --gradient-hover: linear-gradient(135deg, #22d3ee 0%, #e879f9 100%);
+  --gradient-text: linear-gradient(to right, #0891b2, #c026d3);
+  --gradient-surface: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+```
+
+### Using Gradients
+
+```html
+<magary-button styleClass="gradient-button">
+  Gradient Button
+</magary-button>
+```
+
+```css
+.gradient-button {
+  background: var(--gradient-primary);
+  border: none;
+  color: white;
+}
+
+.gradient-button:hover {
+  background: var(--gradient-hover);
+}
+
+.gradient-text {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+```
+
+## Customizing Components
+
+### Per-Component Styling
+
+Most Magary components accept `style` and `styleClass` inputs:
+
+```html
+<magary-button 
+  [style]="{ backgroundColor: '#8b5cf6', color: 'white' }"
+  styleClass="custom-button">
+  Custom Styled Button
+</magary-button>
+```
+
+### Custom Theme
+
+Create your own theme by defining CSS variables:
+
+```css
+/* custom-theme.scss */
+[data-theme="custom"] {
+  /* Primary palette */
+  --primary-500: #ff6b6b;
+  --primary-600: #ee5a5a;
+  
+  /* Surface colors */
+  --surface-0: #ffffff;
+  --surface-50: #f9fafb;
+  --text-primary: #111827;
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 107, 107, 0.1);
+  --glass-border: 1px solid rgba(255, 107, 107, 0.2);
+}
+```
+
+Then use it:
+
+```typescript
+// Add 'custom' to the theme service type
+themeService.setTheme('custom' as any);
+```
+
+## Responsive Styling
+
+Magary components include responsive breakpoints:
+
+```css
+/* Mobile-first approach */
+@media (max-width: 768px) {
+  /* Tablet and mobile */
+}
+
+@media (max-width: 480px) {
+  /* Mobile only */
+}
+```
+
+Components automatically adjust padding, font sizes, and spacing on smaller screens.
+
+<Tip>
+Use CSS variables for consistent styling across your application. Override them at different scopes for granular control.
+</Tip>
+
+## Best Practices
+
+<Steps>
+  <Step title="Use CSS Variables">
+    Always prefer CSS variables over hard-coded values for consistency and theme support.
+    
+    ```css
+    /* Good */
+    .my-component {
+      background: var(--surface-0);
+      color: var(--text-primary);
+    }
+    
+    /* Avoid */
+    .my-component {
+      background: #ffffff;
+      color: #000000;
+    }
+    ```
+  </Step>
+  
+  <Step title="Test Multiple Themes">
+    Always test your custom styles across multiple themes (light, dark, and one accent theme).
+  </Step>
+  
+  <Step title="Respect Accessibility">
+    Ensure sufficient contrast ratios when customizing colors (minimum 4.5:1 for text).
+  </Step>
+  
+  <Step title="Use Semantic Colors">
+    Use semantic color variables (`--success`, `--danger`, etc.) for consistent meaning.
+  </Step>
+</Steps>
+
+<Warning>
+Avoid using `!important` in your custom styles, as it can break theme switching and component styling.
+</Warning>
+
+## Next Steps
+
+- Learn about [Accessibility](/guides/accessibility) features
+- Explore [Animations](/guides/animations) in Magary
+- See [Responsive Design](/guides/responsive-design) patterns

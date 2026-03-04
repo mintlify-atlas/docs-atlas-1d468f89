@@ -1,0 +1,151 @@
+---
+title: 'Menubar'
+description: 'Horizontal menu bar with dropdowns'
+---
+
+## Overview
+
+Menubar displays a horizontal menu bar with dropdown submenus.
+
+## Import
+
+```typescript
+import { MagaryMenubar, MenuItem } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```html Component
+<magary-menubar [model]="items"></magary-menubar>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryMenubar, MenuItem } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryMenubar],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  items: MenuItem[] = [
+    {
+      label: 'File',
+      icon: 'file',
+      items: [
+        { label: 'New', icon: 'plus', route: '/new' },
+        { label: 'Open', icon: 'folder-open', route: '/open' },
+        { separator: true },
+        { label: 'Exit', icon: 'log-out' }
+      ]
+    },
+    {
+      label: 'Edit',
+      icon: 'edit',
+      items: [
+        { label: 'Undo', icon: 'undo' },
+        { label: 'Redo', icon: 'redo' }
+      ]
+    },
+    {
+      label: 'View',
+      icon: 'eye',
+      items: [
+        { label: 'Zoom In', icon: 'zoom-in' },
+        { label: 'Zoom Out', icon: 'zoom-out' }
+      ]
+    }
+  ];
+}
+```
+</CodeGroup>
+
+## With Nested Submenus
+
+```typescript
+items: MenuItem[] = [
+  {
+    label: 'File',
+    items: [
+      {
+        label: 'New',
+        icon: 'plus',
+        items: [
+          { label: 'Project', icon: 'folder' },
+          { label: 'File', icon: 'file' },
+          { label: 'Folder', icon: 'folder-plus' }
+        ]
+      },
+      {
+        label: 'Export',
+        icon: 'download',
+        items: [
+          { label: 'PDF' },
+          { label: 'Excel' },
+          { label: 'CSV' }
+        ]
+      }
+    ]
+  }
+];
+```
+
+## With Router Links
+
+```typescript
+items: MenuItem[] = [
+  {
+    label: 'Home',
+    icon: 'home',
+    routerLink: '/'
+  },
+  {
+    label: 'Products',
+    icon: 'package',
+    items: [
+      { label: 'All Products', routerLink: '/products' },
+      { label: 'Categories', routerLink: '/categories' },
+      { label: 'Brands', routerLink: '/brands' }
+    ]
+  },
+  {
+    label: 'About',
+    icon: 'info',
+    routerLink: '/about'
+  }
+];
+```
+
+## Input Properties
+
+<ParamField path="model" type="MenuItem[]" default="[]">
+  Array of menu items
+</ParamField>
+
+<ParamField path="style" type="Record<string, any>">
+  Inline styles for the component
+</ParamField>
+
+<ParamField path="styleClass" type="string" default="''">
+  CSS class for the component
+</ParamField>
+
+## Features
+
+- **Horizontal layout**: Top-level items displayed horizontally
+- **Dropdown submenus**: Nested items shown in dropdowns
+- **Hover activation**: Submenus open on hover
+- **Router integration**: Navigate with Angular Router
+- **Icons**: Support for Lucide icons
+- **Multi-level**: Unlimited nesting depth
+- **Click outside**: Auto-close when clicking outside
+
+## Accessibility
+
+- ARIA menubar role
+- Keyboard navigation (Arrow keys, Enter, Escape)
+- Focus management
+- Screen reader support

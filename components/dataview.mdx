@@ -1,0 +1,390 @@
+---
+title: 'DataView'
+description: 'Display data in list or grid layouts with pagination and custom templates.'
+---
+
+## Overview
+
+The DataView component provides flexible data presentation with support for list and grid layouts. It includes built-in pagination and allows complete customization of item rendering through templates.
+
+## Import
+
+```typescript
+import { MagaryDataView } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component, signal } from '@angular/core';
+import { MagaryDataView, PaginatorState } from 'ng-magary';
+
+@Component({
+  selector: 'app-dataview-demo',
+  standalone: true,
+  imports: [MagaryDataView],
+  template: `
+    <magary-dataview
+      [value]="products"
+      layout="grid"
+      [paginator]="true"
+      [rows]="9">
+      <ng-template #gridItem let-product>
+        <div class="product-card">
+          <img [src]="product.image" [alt]="product.name" />
+          <h4>{{ product.name }}</h4>
+          <p>\${{ product.price }}</p>
+        </div>
+      </ng-template>
+    </magary-dataview>
+  `
+})
+export class DataViewDemoComponent {
+  products = [
+    { id: 1, name: 'Product 1', price: 100, image: '/img/product1.jpg' },
+    { id: 2, name: 'Product 2', price: 200, image: '/img/product2.jpg' },
+    // ...
+  ];
+}
+```
+
+```html Template
+<magary-dataview
+  [value]="products"
+  layout="grid"
+  [paginator]="true"
+  [rows]="9">
+  <ng-template #gridItem let-product>
+    <div class="product-card">
+      <img [src]="product.image" [alt]="product.name" />
+      <h4>{{ product.name }}</h4>
+      <p>${{ product.price }}</p>
+    </div>
+  </ng-template>
+</magary-dataview>
+```
+</CodeGroup>
+
+## List Layout
+
+```html
+<magary-dataview
+  [value]="products"
+  layout="list"
+  [paginator]="true"
+  [rows]="5">
+  <ng-template #listItem let-product let-index="index">
+    <div class="flex items-center gap-4 p-4 border-b">
+      <img [src]="product.image" class="w-20 h-20 rounded" />
+      <div class="flex-1">
+        <h4 class="font-semibold">{{ product.name }}</h4>
+        <p class="text-gray-600">{{ product.description }}</p>
+      </div>
+      <div class="text-right">
+        <p class="text-xl font-bold">${{ product.price }}</p>
+        <button class="btn btn-primary">Add to Cart</button>
+      </div>
+    </div>
+  </ng-template>
+</magary-dataview>
+```
+
+## With Header and Footer
+
+```html
+<magary-dataview
+  [value]="products"
+  layout="grid"
+  [paginator]="true"
+  [rows]="6">
+  <ng-template #header>
+    <div class="flex justify-between items-center p-4">
+      <h2 class="text-2xl font-bold">Our Products</h2>
+      <div class="flex gap-2">
+        <button (click)="switchLayout('list')" class="btn">List</button>
+        <button (click)="switchLayout('grid')" class="btn">Grid</button>
+      </div>
+    </div>
+  </ng-template>
+  
+  <ng-template #gridItem let-product>
+    <div class="product-card">
+      <!-- product content -->
+    </div>
+  </ng-template>
+  
+  <ng-template #footer>
+    <div class="p-4 text-center text-gray-600">
+      Showing {{ products.length }} products
+    </div>
+  </ng-template>
+</magary-dataview>
+```
+
+## With Pagination
+
+```typescript
+@Component({
+  template: `
+    <magary-dataview
+      [value]="products"
+      layout="grid"
+      [paginator]="true"
+      [rows]="rows()"
+      [rowsPerPageOptions]="[6, 12, 24, 48]"
+      (onPage)="onPageChange($event)">
+      <ng-template #gridItem let-product>
+        <div class="product-card">{{ product.name }}</div>
+      </ng-template>
+    </magary-dataview>
+  `
+})
+export class DataViewPaginationComponent {
+  products = [...];
+  rows = signal(12);
+
+  onPageChange(event: PaginatorState) {
+    console.log('Page:', event.page, 'Rows:', event.rows);
+  }
+}
+```
+
+## Properties
+
+<ParamField path="value" type="any[]" default="[]">
+  Array of data items to display.
+</ParamField>
+
+<ParamField path="layout" type="'list' | 'grid'" default="'list'">
+  Display layout mode.
+</ParamField>
+
+<ParamField path="paginator" type="boolean" default="false">
+  When enabled, displays pagination controls.
+</ParamField>
+
+<ParamField path="rows" type="number" default="0">
+  Number of items to display per page. 0 means show all.
+</ParamField>
+
+<ParamField path="totalRecords" type="number" default="0">
+  Total number of records (useful for server-side pagination). Defaults to value.length.
+</ParamField>
+
+<ParamField path="pageLinks" type="number" default="5">
+  Number of page links to display in paginator.
+</ParamField>
+
+<ParamField path="rowsPerPageOptions" type="number[]" default="[]">
+  Array of page size options to show in the paginator dropdown.
+</ParamField>
+
+<ParamField path="emptyMessage" type="string" default="'No records found'">
+  Message to display when the data array is empty.
+</ParamField>
+
+<ParamField path="sortField" type="string | null" default="null">
+  Field name to sort by (for reference, sorting logic not built-in).
+</ParamField>
+
+<ParamField path="sortOrder" type="number | null" default="null">
+  Sort order: 1 for ascending, -1 for descending.
+</ParamField>
+
+<ParamField path="loading" type="boolean" default="false">
+  When true, shows loading state.
+</ParamField>
+
+<ParamField path="trackBy" type="Function" default="(index, item) => item">
+  TrackBy function for *ngFor optimization.
+</ParamField>
+
+## Events
+
+<ParamField path="onPage" type="EventEmitter<PaginatorState>">
+  Emitted when pagination changes. Event contains page, first, rows, and pageCount.
+</ParamField>
+
+## Templates
+
+The DataView supports four template types:
+
+### listItem
+
+Template for rendering items in list layout (required when layout="list").
+
+```html
+<ng-template #listItem let-item let-index="index">
+  <div class="list-item">
+    {{ item.name }}
+  </div>
+</ng-template>
+```
+
+### gridItem
+
+Template for rendering items in grid layout (required when layout="grid").
+
+```html
+<ng-template #gridItem let-item let-index="index">
+  <div class="grid-item">
+    {{ item.name }}
+  </div>
+</ng-template>
+```
+
+### header
+
+Optional header template.
+
+```html
+<ng-template #header>
+  <div class="dataview-header">
+    <h2>Products</h2>
+  </div>
+</ng-template>
+```
+
+### footer
+
+Optional footer template.
+
+```html
+<ng-template #footer>
+  <div class="dataview-footer">
+    Total: {{ products.length }} items
+  </div>
+</ng-template>
+```
+
+## Layout Switching
+
+```typescript
+import { Component, signal } from '@angular/core';
+
+@Component({
+  template: `
+    <div class="toolbar">
+      <button (click)="layout.set('list')">List View</button>
+      <button (click)="layout.set('grid')">Grid View</button>
+    </div>
+    
+    <magary-dataview
+      [value]="products"
+      [layout]="layout()"
+      [paginator]="true"
+      [rows]="9">
+      <ng-template #listItem let-product>
+        <!-- List layout -->
+      </ng-template>
+      
+      <ng-template #gridItem let-product>
+        <!-- Grid layout -->
+      </ng-template>
+    </magary-dataview>
+  `
+})
+export class DataViewLayoutComponent {
+  layout = signal<'list' | 'grid'>('grid');
+  products = [...];
+}
+```
+
+## Server-Side Pagination
+
+```typescript
+import { Component, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+@Component({
+  template: `
+    <magary-dataview
+      [value]="data()"
+      [totalRecords]="totalRecords()"
+      [rows]="rows()"
+      [paginator]="true"
+      [loading]="loading()"
+      (onPage)="loadPage($event)">
+      <ng-template #gridItem let-item>
+        <div class="item-card">{{ item.name }}</div>
+      </ng-template>
+    </magary-dataview>
+  `
+})
+export class ServerSideDataViewComponent {
+  data = signal([]);
+  totalRecords = signal(0);
+  rows = signal(10);
+  loading = signal(false);
+
+  constructor(private http: HttpClient) {
+    this.loadPage({ first: 0, rows: 10, page: 0, pageCount: 0 });
+  }
+
+  loadPage(event: PaginatorState) {
+    this.loading.set(true);
+    this.http.get(`/api/items?offset=${event.first}&limit=${event.rows}`)
+      .subscribe((response: any) => {
+        this.data.set(response.items);
+        this.totalRecords.set(response.total);
+        this.loading.set(false);
+      });
+  }
+}
+```
+
+## Styling
+
+The DataView uses these CSS classes:
+
+- `magary-dataview` - Main container
+- `magary-dataview-header` - Header section
+- `magary-dataview-content` - Content area
+- `magary-dataview-footer` - Footer section
+- `magary-dataview-list` - List layout container
+- `magary-dataview-grid` - Grid layout container
+- `magary-dataview-empty-message` - Empty state message
+
+## Grid Layout Styling
+
+```css
+.magary-dataview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.product-card {
+  border: 1px solid var(--surface-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background: var(--surface-card);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+```
+
+## Use Cases
+
+- **Product Catalogs**: Display products in grid or list view
+- **Image Galleries**: Show images with pagination
+- **Search Results**: Display search results with different layouts
+- **User Directories**: Show user profiles in various formats
+- **Dashboard Cards**: Present dashboard widgets in grid layout
+
+## Accessibility
+
+- Semantic HTML structure
+- Keyboard navigation for pagination
+- ARIA labels for layout controls
+- Screen reader support for empty states
+
+## Source
+
+View source: `projects/ng-magary/src/lib/Data/dataview/dataview.ts:32`

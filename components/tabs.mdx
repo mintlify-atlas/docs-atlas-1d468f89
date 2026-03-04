@@ -1,0 +1,331 @@
+---
+title: Tabs
+description: A tabbed interface component for organizing content into separate views
+---
+
+## Overview
+
+The Tabs component provides a tabbed interface for organizing content into multiple panels. It features animated transitions, keyboard navigation, and extensive customization options.
+
+## Component Selector
+
+```html
+<magary-tabs />
+```
+
+Tabs must be used with `<magary-tab>` child components.
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryTabs } from 'ng-magary';
+import { MagaryTab } from 'ng-magary';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagaryTabs, MagaryTab],
+  template: `
+    <magary-tabs>
+      <magary-tab label="Overview">
+        <p>Overview content</p>
+      </magary-tab>
+      <magary-tab label="Details">
+        <p>Details content</p>
+      </magary-tab>
+      <magary-tab label="Settings">
+        <p>Settings content</p>
+      </magary-tab>
+    </magary-tabs>
+  `
+})
+export class DemoComponent {}
+```
+
+```html Template
+<magary-tabs>
+  <magary-tab label="Overview">
+    <p>Overview content</p>
+  </magary-tab>
+  <magary-tab label="Details">
+    <p>Details content</p>
+  </magary-tab>
+  <magary-tab label="Settings">
+    <p>Settings content</p>
+  </magary-tab>
+</magary-tabs>
+```
+</CodeGroup>
+
+## Programmatic Tab Selection
+
+```typescript
+import { Component, viewChild } from '@angular/core';
+import { MagaryTabs } from 'ng-magary';
+
+@Component({
+  template: `
+    <magary-tabs>
+      <magary-tab label="Tab 1">Content 1</magary-tab>
+      <magary-tab label="Tab 2">Content 2</magary-tab>
+      <magary-tab label="Tab 3">Content 3</magary-tab>
+    </magary-tabs>
+    <button (click)="selectSecondTab()">Go to Tab 2</button>
+  `
+})
+export class DemoComponent {
+  tabs = viewChild(MagaryTabs);
+
+  selectSecondTab() {
+    this.tabs()?.selectTab(1); // Zero-based index
+  }
+}
+```
+
+## Custom Styling
+
+```html
+<magary-tabs
+  [lineColor]="'#10b981'"
+  [background]="'#f9fafb'"
+  [activeBg]="'#ecfdf5'"
+  [activeText]="'#065f46'"
+  [hoverBg]="'#f3f4f6'"
+>
+  <magary-tab label="Tab 1">Content 1</magary-tab>
+  <magary-tab label="Tab 2">Content 2</magary-tab>
+</magary-tabs>
+```
+
+## Properties
+
+### Tabs Container
+
+<ParamField path="tabListAriaLabel" type="string" default="'Tabs'">
+  ARIA label for the tab list
+</ParamField>
+
+<ParamField path="lineColor" type="string" default="'var(--primary-500)'">
+  Color of the active tab indicator line
+</ParamField>
+
+<ParamField path="backgroundLine" type="string | null" default="null">
+  Legacy alias for `lineColor` (deprecated, use `lineColor` instead)
+</ParamField>
+
+<ParamField path="heightLine" type="string" default="'2px'">
+  Height of the active tab indicator line
+</ParamField>
+
+<ParamField path="background" type="string" default="'var(--surface-0)'">
+  Background color for the tab headers container
+</ParamField>
+
+<ParamField path="hoverBg" type="string | null" default="null">
+  Background color for tabs on hover. Defaults to `var(--surface-50)` if not set
+</ParamField>
+
+<ParamField path="activeBg" type="string | null" default="null">
+  Background color for the active tab
+</ParamField>
+
+<ParamField path="activeTabBackground" type="string | null" default="null">
+  Legacy alias for `activeBg` (deprecated, use `activeBg` instead)
+</ParamField>
+
+<ParamField path="activeText" type="string | null" default="null">
+  Text color for the active tab
+</ParamField>
+
+<ParamField path="activeTabTextColor" type="string | null" default="null">
+  Legacy alias for `activeText` (deprecated, use `activeText` instead)
+</ParamField>
+
+<ParamField path="padding" type="string" default="'0'">
+  Padding for the tab headers
+</ParamField>
+
+<ParamField path="positionContent" type="string" default="'center'">
+  Alignment of tab header content (CSS justify-content value)
+</ParamField>
+
+<ParamField path="panelWidth" type="'auto' | 'full'" default="'full'">
+  Width behavior for tab panels:
+  - `full`: Panels take full width
+  - `auto`: Panels size to content
+</ParamField>
+
+<ParamField path="showHeaderScrollbar" type="boolean" default="false">
+  When true, shows scrollbar on tab headers if they overflow
+</ParamField>
+
+### Tab (Child Component)
+
+<ParamField path="label" type="string" required>
+  The text label displayed in the tab header
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, disables the tab
+</ParamField>
+
+## Keyboard Navigation
+
+| Key | Action |
+|-----|--------|
+| `Arrow Right` | Move to next tab |
+| `Arrow Left` | Move to previous tab |
+| `Home` | Move to first tab |
+| `End` | Move to last tab |
+| `Enter` / `Space` | Activate the focused tab |
+| `Tab` | Move focus to tab panel |
+
+## Accessibility Features
+
+- ARIA tabs pattern with proper roles
+- Keyboard navigation support
+- Roving tab index for tab headers
+- Tab panel associations
+- Focus management
+- Screen reader announcements
+
+## Animated Indicator
+
+The Tabs component features a smooth animated underline that transitions between active tabs, providing visual feedback for tab changes.
+
+## Scrollable Headers
+
+When tabs overflow the container width, the headers become scrollable. Active tab scrolls into view automatically when selected via keyboard.
+
+## Styling
+
+The Tabs component uses the following CSS structure:
+
+- `.magary-tabs`: Main container
+- `.magary-tabs-header`: Tab headers container
+- `.magary-tabs-tab-button`: Individual tab button
+- `.magary-tabs-panel`: Tab content panel
+- `.active`: Applied to active tab button
+
+CSS custom properties are used for dynamic styling:
+- `--underline-left`: Position of active indicator
+- `--underline-width`: Width of active indicator
+
+## Complete Example
+
+```typescript
+import { Component, signal, viewChild } from '@angular/core';
+import { MagaryTabs, MagaryTab } from 'ng-magary';
+import { CommonModule } from '@angular/common';
+
+interface TabData {
+  label: string;
+  icon?: string;
+  content: string;
+}
+
+@Component({
+  selector: 'app-tabs-demo',
+  standalone: true,
+  imports: [MagaryTabs, MagaryTab, CommonModule],
+  template: `
+    <div class="demo-container">
+      <h3>Basic Tabs</h3>
+      <magary-tabs>
+        <magary-tab label="Profile">
+          <div class="tab-content">
+            <h4>User Profile</h4>
+            <p>Manage your profile information.</p>
+          </div>
+        </magary-tab>
+        <magary-tab label="Settings">
+          <div class="tab-content">
+            <h4>Settings</h4>
+            <p>Configure your preferences.</p>
+          </div>
+        </magary-tab>
+        <magary-tab label="Notifications">
+          <div class="tab-content">
+            <h4>Notifications</h4>
+            <p>Manage your notification settings.</p>
+          </div>
+        </magary-tab>
+      </magary-tabs>
+
+      <h3>Custom Styled Tabs</h3>
+      <magary-tabs
+        [lineColor]="'#10b981'"
+        [background]="'#f9fafb'"
+        [activeBg]="'#ecfdf5'"
+        [activeText]="'#065f46'"
+        [heightLine]="'3px'"
+      >
+        <magary-tab label="Dashboard">
+          <p>Dashboard content with custom styling</p>
+        </magary-tab>
+        <magary-tab label="Analytics">
+          <p>Analytics content</p>
+        </magary-tab>
+        <magary-tab label="Reports">
+          <p>Reports content</p>
+        </magary-tab>
+      </magary-tabs>
+
+      <h3>Programmatic Control</h3>
+      <div style="margin-bottom: 1rem;">
+        <button (click)="tabs()?.selectTab(0)">Tab 1</button>
+        <button (click)="tabs()?.selectTab(1)">Tab 2</button>
+        <button (click)="tabs()?.selectTab(2)">Tab 3</button>
+      </div>
+      <magary-tabs>
+        <magary-tab label="Overview">
+          <p>Overview content - Switch tabs using buttons above</p>
+        </magary-tab>
+        <magary-tab label="Details">
+          <p>Details content</p>
+        </magary-tab>
+        <magary-tab label="History">
+          <p>History content</p>
+        </magary-tab>
+      </magary-tabs>
+
+      <h3>Many Tabs (Scrollable)</h3>
+      <magary-tabs>
+        <magary-tab *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]" [label]="'Tab ' + i">
+          <p>Content for tab {{ i }}</p>
+        </magary-tab>
+      </magary-tabs>
+    </div>
+  `
+})
+export class TabsDemoComponent {
+  tabs = viewChild(MagaryTabs);
+  
+  currentTab = signal(0);
+}
+```
+
+## Tab Component API
+
+The `MagaryTab` component is used as a child of `MagaryTabs`:
+
+```typescript
+import { MagaryTab } from 'ng-magary';
+```
+
+### Properties
+
+- `label: string` - The tab header label (required)
+- `disabled: boolean` - Whether the tab is disabled
+
+### Usage
+
+```html
+<magary-tabs>
+  <magary-tab label="Tab Label">
+    Tab content goes here
+  </magary-tab>
+</magary-tabs>
+```

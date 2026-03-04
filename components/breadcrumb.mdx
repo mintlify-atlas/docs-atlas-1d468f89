@@ -1,0 +1,181 @@
+---
+title: 'Breadcrumb'
+description: 'Display hierarchical navigation path'
+---
+
+## Overview
+
+Breadcrumb provides navigation showing the current page's location within a hierarchy.
+
+## Import
+
+```typescript
+import { MagaryBreadcrumb, BreadcrumbItem } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```html Component
+<magary-breadcrumb
+  [model]="items"
+  [home]="homeItem">
+</magary-breadcrumb>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryBreadcrumb, BreadcrumbItem } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryBreadcrumb],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  homeItem: BreadcrumbItem = {
+    label: 'Home',
+    icon: 'home',
+    routerLink: '/'
+  };
+  
+  items: BreadcrumbItem[] = [
+    { label: 'Products', routerLink: '/products' },
+    { label: 'Electronics', routerLink: '/products/electronics' },
+    { label: 'Computers' }
+  ];
+}
+```
+</CodeGroup>
+
+## With Icons
+
+```typescript
+items: BreadcrumbItem[] = [
+  { 
+    label: 'Dashboard', 
+    icon: 'layout-dashboard',
+    routerLink: '/dashboard' 
+  },
+  { 
+    label: 'Settings', 
+    icon: 'settings',
+    routerLink: '/settings' 
+  },
+  { 
+    label: 'Profile',
+    icon: 'user'
+  }
+];
+```
+
+## With Command Handler
+
+```typescript
+items: BreadcrumbItem[] = [
+  { 
+    label: 'Home',
+    command: (event) => {
+      console.log('Home clicked', event);
+    }
+  },
+  { 
+    label: 'Products',
+    command: (event) => {
+      this.loadProducts();
+    }
+  }
+];
+```
+
+## Disabled Items
+
+```typescript
+items: BreadcrumbItem[] = [
+  { label: 'Home', routerLink: '/' },
+  { label: 'Archived', disabled: true },
+  { label: 'Item' }
+];
+```
+
+## Input Properties
+
+<ParamField path="model" type="BreadcrumbItem[]" default="[]">
+  Array of breadcrumb items
+</ParamField>
+
+<ParamField path="home" type="BreadcrumbItem">
+  Home item shown at the start
+</ParamField>
+
+<ParamField path="style" type="Record<string, any>">
+  Inline styles for the component
+</ParamField>
+
+<ParamField path="styleClass" type="string">
+  CSS class for the component
+</ParamField>
+
+## Output Events
+
+<ParamField path="onItemClick" type="EventEmitter<{originalEvent: Event, item: BreadcrumbItem}>">
+  Emitted when a breadcrumb item is clicked
+</ParamField>
+
+## BreadcrumbItem Interface
+
+```typescript
+interface BreadcrumbItem {
+  label?: string;
+  icon?: string;
+  command?: (event?: any) => void;
+  url?: string;
+  routerLink?: string | any[];
+  queryParams?: Record<string, unknown>;
+  disabled?: boolean;
+  target?: string;
+  routerLinkActiveOptions?: IsActiveMatchOptions;
+  style?: Record<string, any>;
+  styleClass?: string;
+  fragment?: string;
+  preserveFragment?: boolean;
+  skipLocationChange?: boolean;
+  replaceUrl?: boolean;
+  state?: Record<string, unknown>;
+}
+```
+
+## Custom Styling
+
+```html
+<magary-breadcrumb
+  [model]="items"
+  [styleClass]="'custom-breadcrumb'">
+</magary-breadcrumb>
+```
+
+```css
+.custom-breadcrumb {
+  background: #f0f0f0;
+  padding: 1rem;
+  border-radius: 8px;
+}
+```
+
+## Features
+
+- **Router integration**: Works with Angular Router
+- **Icons**: Support for Lucide icons
+- **Custom actions**: Command callbacks
+- **Disabled state**: Non-clickable items
+- **Flexible navigation**: URLs or router links
+- **Query params**: Support for query parameters
+- **Custom styling**: Style and class bindings
+
+## Accessibility
+
+- Semantic HTML structure
+- Proper link roles
+- Keyboard navigation
+- Screen reader support

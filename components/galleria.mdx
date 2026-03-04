@@ -1,0 +1,305 @@
+---
+title: 'Galleria'
+description: 'Advanced image gallery with thumbnails and slideshow'
+---
+
+## Overview
+
+Galleria is a feature-rich image gallery component with thumbnails, slideshow, fullscreen, zoom, and many premium features.
+
+## Import
+
+```typescript
+import { MagaryGalleria, GalleriaItem } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```html Component
+<magary-galleria
+  [value]="images"
+  [(activeIndex)]="activeIndex"
+  [showThumbnails]="true">
+</magary-galleria>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryGalleria, GalleriaItem } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryGalleria],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  activeIndex = 0;
+  
+  images: GalleriaItem[] = [
+    {
+      src: 'assets/photo1.jpg',
+      alt: 'Photo 1',
+      title: 'Beautiful Landscape',
+      description: 'A stunning mountain view',
+      thumbnail: 'assets/photo1-thumb.jpg'
+    },
+    {
+      src: 'assets/photo2.jpg',
+      alt: 'Photo 2',
+      title: 'Ocean Sunset',
+      description: 'Peaceful sunset by the sea'
+    }
+  ];
+}
+```
+</CodeGroup>
+
+## With Autoplay
+
+```html
+<magary-galleria
+  [value]="images"
+  [(activeIndex)]="activeIndex"
+  [autoPlay]="true"
+  [transitionInterval]="3000"
+  [circular]="true"
+  [showProgressBar]="true">
+</magary-galleria>
+```
+
+## Thumbnail Positions
+
+<CodeGroup>
+```html Bottom (Default)
+<magary-galleria
+  [value]="images"
+  [thumbnailsPosition]="'bottom'">
+</magary-galleria>
+```
+
+```html Top
+<magary-galleria
+  [value]="images"
+  [thumbnailsPosition]="'top'">
+</magary-galleria>
+```
+
+```html Left
+<magary-galleria
+  [value]="images"
+  [thumbnailsPosition]="'left'">
+</magary-galleria>
+```
+
+```html Right
+<magary-galleria
+  [value]="images"
+  [thumbnailsPosition]="'right'">
+</magary-galleria>
+```
+</CodeGroup>
+
+## With All Features
+
+```html
+<magary-galleria
+  [value]="images"
+  [(activeIndex)]="activeIndex"
+  [circular]="true"
+  [autoPlay]="true"
+  [transitionInterval]="5000"
+  [showItemNavigators]="true"
+  [showThumbnails]="true"
+  [showThumbnailNavigators]="true"
+  [showFullScreenButton]="true"
+  [showDownloadButton]="true"
+  [showShareButton]="true"
+  [showProgressBar]="true"
+  [showImageCounter]="true"
+  [enableZoom]="true"
+  [enableSwipe]="true"
+  [enableKeyboardNavigation]="true"
+  (onImageClick)="handleImageClick($event)"
+  (onFullScreenChange)="handleFullscreenChange($event)">
+</magary-galleria>
+```
+
+## Input Properties
+
+### Core
+
+<ParamField path="value" type="GalleriaItem[]" default="[]">
+  Array of images to display
+</ParamField>
+
+<ParamField path="activeIndex" type="number" default="0">
+  Index of currently active image (two-way binding)
+</ParamField>
+
+<ParamField path="responsiveOptions" type="GalleriaResponsiveOptions[]">
+  Responsive configuration
+</ParamField>
+
+### Display Options
+
+<ParamField path="showItemNavigators" type="boolean" default="true">
+  Show previous/next navigation buttons
+</ParamField>
+
+<ParamField path="showThumbnails" type="boolean" default="true">
+  Display thumbnail strip
+</ParamField>
+
+<ParamField path="thumbnailsPosition" type="'bottom' | 'top' | 'left' | 'right'" default="'bottom'">
+  Position of thumbnail strip
+</ParamField>
+
+<ParamField path="showIndicators" type="boolean" default="false">
+  Show page indicators
+</ParamField>
+
+<ParamField path="showImageCounter" type="boolean" default="true">
+  Display image counter (e.g., "1 / 10")
+</ParamField>
+
+### Behavior
+
+<ParamField path="circular" type="boolean" default="true">
+  Enable circular navigation
+</ParamField>
+
+<ParamField path="autoPlay" type="boolean" default="false">
+  Enable automatic slideshow
+</ParamField>
+
+<ParamField path="transitionInterval" type="number" default="4000">
+  Slideshow interval in milliseconds
+</ParamField>
+
+<ParamField path="pauseOnHover" type="boolean" default="true">
+  Pause autoplay on hover
+</ParamField>
+
+### Premium Features
+
+<ParamField path="showFullScreenButton" type="boolean" default="true">
+  Show fullscreen toggle button
+</ParamField>
+
+<ParamField path="showDownloadButton" type="boolean" default="true">
+  Show download button
+</ParamField>
+
+<ParamField path="showShareButton" type="boolean" default="true">
+  Show share button
+</ParamField>
+
+<ParamField path="showProgressBar" type="boolean" default="true">
+  Show autoplay progress bar
+</ParamField>
+
+<ParamField path="showPlayPauseButton" type="boolean" default="true">
+  Show play/pause button
+</ParamField>
+
+### Zoom & Interaction
+
+<ParamField path="enableZoom" type="boolean" default="true">
+  Enable zoom functionality
+</ParamField>
+
+<ParamField path="maxZoomLevel" type="number" default="3">
+  Maximum zoom level
+</ParamField>
+
+<ParamField path="enableSwipe" type="boolean" default="true">
+  Enable touch swipe navigation
+</ParamField>
+
+<ParamField path="enableKeyboardNavigation" type="boolean" default="true">
+  Enable keyboard shortcuts
+</ParamField>
+
+<ParamField path="enableDoubleClickZoom" type="boolean" default="true">
+  Zoom on double click
+</ParamField>
+
+<ParamField path="enablePinchZoom" type="boolean" default="true">
+  Enable pinch to zoom on mobile
+</ParamField>
+
+## Output Events
+
+<ParamField path="activeIndexChange" type="EventEmitter<number>">
+  Emitted when active image changes
+</ParamField>
+
+<ParamField path="onImageClick" type="EventEmitter<GalleriaItemEvent>">
+  Emitted when image is clicked
+</ParamField>
+
+<ParamField path="onFullScreenChange" type="EventEmitter<boolean>">
+  Emitted when fullscreen mode toggles
+</ParamField>
+
+<ParamField path="onImageLoad" type="EventEmitter<GalleriaImageLoadEvent>">
+  Emitted when image loads
+</ParamField>
+
+<ParamField path="onImageError" type="EventEmitter<GalleriaImageLoadEvent>">
+  Emitted when image fails to load
+</ParamField>
+
+<ParamField path="onShare" type="EventEmitter<GalleriaItemEvent>">
+  Emitted when share button is clicked
+</ParamField>
+
+<ParamField path="onDownload" type="EventEmitter<GalleriaItemEvent>">
+  Emitted when download button is clicked
+</ParamField>
+
+## GalleriaItem Interface
+
+```typescript
+interface GalleriaItem {
+  src: string;
+  alt?: string;
+  title?: string;
+  description?: string;
+  thumbnail?: string;
+  type?: 'image' | 'video';
+  videoUrl?: string;
+}
+```
+
+## Keyboard Shortcuts
+
+- **Arrow Left/Right**: Navigate images
+- **Escape**: Exit fullscreen/presentation
+- **Space**: Play/pause slideshow
+- **+/-**: Zoom in/out
+- **0**: Reset zoom
+- **F**: Toggle fullscreen
+- **P**: Toggle presentation mode
+
+## Features
+
+- **Fullscreen mode**: Full-screen image viewing
+- **Presentation mode**: Auto-play slideshow
+- **Zoom**: Pan and zoom images
+- **Touch gestures**: Swipe and pinch
+- **Progress bar**: Visual autoplay progress
+- **Download**: Save images locally
+- **Share**: Native share API integration
+- **Lazy loading**: Load images on demand
+- **Keyboard navigation**: Full keyboard support
+- **Responsive**: Adapts to screen size
+
+## Accessibility
+
+- ARIA labels and roles
+- Keyboard navigation
+- Focus management
+- Screen reader announcements

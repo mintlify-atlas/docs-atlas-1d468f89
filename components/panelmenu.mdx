@@ -1,0 +1,206 @@
+---
+title: 'PanelMenu'
+description: 'Collapsible panel with hierarchical menu structure'
+---
+
+## Overview
+
+PanelMenu is an accordion-style menu component that displays hierarchical navigation items with expand/collapse functionality.
+
+## Import
+
+```typescript
+import { MagaryPanelmenu, MenuItem } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```html Component
+<magary-panelmenu
+  [title]="'Navigation'"
+  [items]="menuItems"
+  (itemClick)="handleItemClick($event)">
+</magary-panelmenu>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryPanelmenu, MenuItem } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryPanelmenu],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {
+  menuItems: MenuItem[] = [
+    {
+      label: 'Documents',
+      icon: 'file-text',
+      items: [
+        { label: 'New', icon: 'plus', route: '/docs/new' },
+        { label: 'Open', icon: 'folder-open', route: '/docs/open' }
+      ]
+    },
+    {
+      label: 'Settings',
+      icon: 'settings',
+      items: [
+        { label: 'Account', route: '/settings/account' },
+        { label: 'Security', route: '/settings/security' }
+      ]
+    }
+  ];
+  
+  handleItemClick(event: any) {
+    console.log('Clicked:', event.item.label);
+  }
+}
+```
+</CodeGroup>
+
+## Custom Styling
+
+```html
+<magary-panelmenu
+  [title]="'Menu'"
+  [items]="items"
+  [backgroundColor]="'#1e293b'"
+  [textColor]="'#f8fafc'"
+  [hoverColor]="'#3b82f6'"
+  [borderRadius]="'12px'"
+  [width]="'300px'">
+</magary-panelmenu>
+```
+
+## Allow Multiple Expanded
+
+```html
+<magary-panelmenu
+  [items]="items"
+  [allowMultipleExpanded]="true"
+  [defaultOpen]="true">
+</magary-panelmenu>
+```
+
+## Input Properties
+
+<ParamField path="title" type="string" default="'Panel Menu'">
+  Title displayed in the panel header
+</ParamField>
+
+<ParamField path="icon" type="string">
+  Icon displayed next to the title
+</ParamField>
+
+<ParamField path="iconClass" type="string" default="''">
+  CSS class for the icon
+</ParamField>
+
+<ParamField path="items" type="MenuItem[]" default="[]">
+  Array of menu items to display
+</ParamField>
+
+<ParamField path="backgroundColor" type="string" default="'#f9fafb'">
+  Background color of the panel
+</ParamField>
+
+<ParamField path="textColor" type="string" default="'#1f2937'">
+  Text color for menu items
+</ParamField>
+
+<ParamField path="borderRadius" type="string" default="'8px'">
+  Border radius of the panel
+</ParamField>
+
+<ParamField path="shadow" type="number" default="0">
+  Shadow depth (0-5)
+</ParamField>
+
+<ParamField path="width" type="string" default="'100%'">
+  Width of the panel
+</ParamField>
+
+<ParamField path="hoverColor" type="string" default="'#007bff'">
+  Hover color for menu items
+</ParamField>
+
+<ParamField path="allowMultipleExpanded" type="boolean" default="false">
+  Allow multiple menu sections to be expanded simultaneously
+</ParamField>
+
+<ParamField path="defaultOpen" type="boolean" default="false">
+  Whether the panel is open by default
+</ParamField>
+
+<ParamField path="collapsed" type="boolean" default="false">
+  Whether the panel is in collapsed state
+</ParamField>
+
+## Output Events
+
+<ParamField path="menuToggle" type="EventEmitter<MenuToggleEvent>">
+  Emitted when the panel is toggled
+</ParamField>
+
+<ParamField path="itemClick" type="EventEmitter<MenuItemClickEvent>">
+  Emitted when a menu item is clicked
+</ParamField>
+
+<ParamField path="itemExpand" type="EventEmitter<{item: MenuItem, expanded: boolean}>">
+  Emitted when a menu item is expanded or collapsed
+</ParamField>
+
+<ParamField path="expandSidebar" type="EventEmitter<void>">
+  Emitted when sidebar needs to expand (for collapsed mode)
+</ParamField>
+
+## MenuItem Interface
+
+```typescript
+interface MenuItem {
+  label?: string;
+  icon?: string;
+  route?: string;
+  routerLink?: string | any[];
+  items?: MenuItem[]; // Nested items
+  children?: MenuItem[]; // Alternative to items
+  disabled?: boolean;
+  command?: (event?: any) => void;
+  url?: string;
+  target?: string;
+}
+```
+
+## Event Interfaces
+
+```typescript
+interface MenuItemClickEvent {
+  item: MenuItem;
+  level: number;
+  path: string[];
+}
+
+interface MenuToggleEvent {
+  isOpen: boolean;
+  menuTitle: string;
+}
+```
+
+## Features
+
+- **Hierarchical navigation**: Multi-level nested menu items
+- **Expand/collapse**: Interactive accordion behavior
+- **Router integration**: Works with Angular Router
+- **Custom styling**: Fully customizable colors and dimensions
+- **Icon support**: Display icons with Lucide Angular
+- **Hover states**: Visual feedback on interaction
+- **Disabled items**: Support for disabled menu items
+
+## Accessibility
+
+- Keyboard navigation
+- ARIA attributes for screen readers
+- Focus management

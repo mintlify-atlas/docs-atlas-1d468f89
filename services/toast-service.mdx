@@ -1,0 +1,381 @@
+---
+title: Toast Service
+description: Display temporary notification messages with the toast service
+icon: bell
+---
+
+The `MagaryToastService` provides a programmatic way to display toast notifications. It manages toast state using Angular signals and supports different types, auto-dismissal, and sticky toasts.
+
+## Injection
+
+<CodeGroup>
+
+```typescript Component Injection
+import { Component, inject } from '@angular/core';
+import { MagaryToastService } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  template: `
+    <button (click)="showSuccess()">Show Success</button>
+  `
+})
+export class ExampleComponent {
+  toastService = inject(MagaryToastService);
+
+  showSuccess() {
+    this.toastService.add({
+      type: 'success',
+      title: 'Success',
+      message: 'Operation completed successfully!'
+    });
+  }
+}
+```
+
+```typescript Constructor Injection
+import { Component } from '@angular/core';
+import { MagaryToastService } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  template: `...`
+})
+export class ExampleComponent {
+  constructor(private toastService: MagaryToastService) {}
+}
+```
+
+</CodeGroup>
+
+## Properties
+
+### toasts
+
+A readonly signal containing the current array of active toasts.
+
+```typescript
+readonly toasts: Signal<Toast[]>
+```
+
+**Example:**
+
+```typescript
+const activeToasts = this.toastService.toasts();
+console.log('Active toasts:', activeToasts.length);
+```
+
+## Methods
+
+### add()
+
+Adds a new toast notification to the queue.
+
+<ParamField path="toast" type="Toast" required>
+  The toast configuration object
+</ParamField>
+
+<ParamField path="toast.id" type="string">
+  Unique identifier for the toast. If not provided, one will be generated automatically
+</ParamField>
+
+<ParamField path="toast.type" type="'success' | 'info' | 'warning' | 'error'">
+  The type of toast notification. Determines the visual style
+</ParamField>
+
+<ParamField path="toast.title" type="string">
+  The title of the toast notification
+</ParamField>
+
+<ParamField path="toast.message" type="string">
+  The message content of the toast
+</ParamField>
+
+<ParamField path="toast.icon" type="string">
+  Custom icon to display in the toast
+</ParamField>
+
+<ParamField path="toast.duration" type="number">
+  How long the toast should be displayed in milliseconds. Default: 3000
+</ParamField>
+
+<ParamField path="toast.life" type="number">
+  Alias for duration. How long the toast should be displayed in milliseconds
+</ParamField>
+
+<ParamField path="toast.sticky" type="boolean">
+  If true, the toast will not auto-dismiss and must be manually closed. Default: false
+</ParamField>
+
+<ParamField path="toast.data" type="unknown">
+  Additional custom data to attach to the toast
+</ParamField>
+
+**Returns:** `void`
+
+**Example:**
+
+```typescript
+this.toastService.add({
+  type: 'success',
+  title: 'Success',
+  message: 'Your changes have been saved',
+  duration: 5000
+});
+```
+
+### remove()
+
+Removes a specific toast by its ID.
+
+<ParamField path="id" type="string" required>
+  The ID of the toast to remove
+</ParamField>
+
+**Returns:** `void`
+
+**Example:**
+
+```typescript
+const toastId = 'my-custom-toast';
+this.toastService.remove(toastId);
+```
+
+### clear()
+
+Removes all active toasts.
+
+**Parameters:** None
+
+**Returns:** `void`
+
+**Example:**
+
+```typescript
+this.toastService.clear();
+```
+
+## Usage Examples
+
+<CodeGroup>
+
+```typescript Success Toast
+import { Component, inject } from '@angular/core';
+import { MagaryToastService } from 'ng-magary';
+
+@Component({
+  selector: 'app-user-form',
+  template: `...`
+})
+export class UserFormComponent {
+  toastService = inject(MagaryToastService);
+
+  saveUser() {
+    // Save user logic...
+    
+    this.toastService.add({
+      type: 'success',
+      title: 'User Saved',
+      message: 'User profile has been updated successfully'
+    });
+  }
+}
+```
+
+```typescript Error Toast
+import { Component, inject } from '@angular/core';
+import { MagaryToastService } from 'ng-magary';
+import { HttpClient } from '@angular/common/http';
+
+@Component({
+  selector: 'app-data-loader',
+  template: `...`
+})
+export class DataLoaderComponent {
+  toastService = inject(MagaryToastService);
+  http = inject(HttpClient);
+
+  loadData() {
+    this.http.get('/api/data').subscribe({
+      next: (data) => {
+        // Handle data
+      },
+      error: (error) => {
+        this.toastService.add({
+          type: 'error',
+          title: 'Error',
+          message: 'Failed to load data. Please try again.',
+          duration: 5000
+        });
+      }
+    });
+  }
+}
+```
+
+```typescript Sticky Toast
+import { Component, inject } from '@angular/core';
+import { MagaryToastService } from 'ng-magary';
+
+@Component({
+  selector: 'app-notification',
+  template: `...`
+})
+export class NotificationComponent {
+  toastService = inject(MagaryToastService);
+
+  showImportantMessage() {
+    this.toastService.add({
+      type: 'warning',
+      title: 'Important',
+      message: 'This message requires your attention',
+      sticky: true // Won't auto-dismiss
+    });
+  }
+}
+```
+
+```typescript Custom Duration
+import { Component, inject } from '@angular/core';
+import { MagaryToastService } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  template: `...`
+})
+export class ExampleComponent {
+  toastService = inject(MagaryToastService);
+
+  showQuickToast() {
+    this.toastService.add({
+      type: 'info',
+      message: 'Quick message',
+      duration: 1000 // 1 second
+    });
+  }
+
+  showLongToast() {
+    this.toastService.add({
+      type: 'info',
+      message: 'This will stay longer',
+      life: 10000 // 10 seconds (using life alias)
+    });
+  }
+}
+```
+
+```typescript Managing Toasts
+import { Component, inject, effect } from '@angular/core';
+import { MagaryToastService } from 'ng-magary';
+
+@Component({
+  selector: 'app-toast-manager',
+  template: `
+    <div class="toast-controls">
+      <button (click)="addMultiple()">Add Multiple</button>
+      <button (click)="clearAll()">Clear All</button>
+      <p>Active toasts: {{ toastService.toasts().length }}</p>
+    </div>
+  `
+})
+export class ToastManagerComponent {
+  toastService = inject(MagaryToastService);
+
+  constructor() {
+    // React to toast changes
+    effect(() => {
+      const count = this.toastService.toasts().length;
+      console.log('Active toast count:', count);
+    });
+  }
+
+  addMultiple() {
+    this.toastService.add({
+      type: 'info',
+      message: 'First toast'
+    });
+    
+    this.toastService.add({
+      type: 'success',
+      message: 'Second toast'
+    });
+  }
+
+  clearAll() {
+    this.toastService.clear();
+  }
+}
+```
+
+```typescript Custom Toast ID
+import { Component, inject } from '@angular/core';
+import { MagaryToastService } from 'ng-magary';
+
+@Component({
+  selector: 'app-custom-id',
+  template: `...`
+})
+export class CustomIdComponent {
+  toastService = inject(MagaryToastService);
+
+  showLoadingToast() {
+    this.toastService.add({
+      id: 'loading-toast',
+      type: 'info',
+      message: 'Loading data...',
+      sticky: true
+    });
+
+    // Later, remove the specific toast
+    setTimeout(() => {
+      this.toastService.remove('loading-toast');
+      this.toastService.add({
+        type: 'success',
+        message: 'Data loaded!'
+      });
+    }, 3000);
+  }
+}
+```
+
+</CodeGroup>
+
+## Toast Display
+
+To display toasts in your application, you need to include the `mag-toast` component in your template:
+
+```html
+<mag-toast></mag-toast>
+```
+
+Typically, this is added to your root component (e.g., `app.component.html`) so toasts can be displayed from anywhere in your application.
+
+## Type Definitions
+
+```typescript
+export interface Toast {
+  id?: string;
+  type?: 'success' | 'info' | 'warning' | 'error';
+  title?: string;
+  message?: string;
+  icon?: string;
+  duration?: number;
+  life?: number; // alias for duration
+  sticky?: boolean;
+  data?: unknown;
+}
+```
+
+## Behavior
+
+### Auto-Dismissal
+
+By default, toasts auto-dismiss after 3000ms (3 seconds). You can customize this using the `duration` or `life` property.
+
+### Sticky Toasts
+
+Toasts with `sticky: true` will not auto-dismiss and must be manually closed by the user or programmatically removed using the `remove()` or `clear()` methods.
+
+### Toast Queuing
+
+Multiple toasts can be displayed simultaneously. New toasts are added to the end of the queue.

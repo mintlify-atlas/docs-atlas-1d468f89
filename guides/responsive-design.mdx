@@ -1,0 +1,696 @@
+---
+title: Responsive Design
+description: Learn how Magary components adapt to different screen sizes with responsive breakpoints and mobile patterns
+---
+
+## Overview
+
+Magary components are built mobile-first and include responsive styles that adapt to different screen sizes. The library uses standard breakpoints and CSS media queries to ensure your UI looks great on all devices.
+
+## Breakpoints
+
+Magary uses consistent breakpoints across all components:
+
+```css
+/* Mobile (default) */
+/* Styles apply to all screen sizes unless overridden */
+
+/* Tablet and above */
+@media (max-width: 768px) {
+  /* Styles for tablets and larger phones */
+}
+
+/* Small mobile */
+@media (max-width: 640px) {
+  /* Styles for phones */
+}
+
+/* Extra small mobile */
+@media (max-width: 480px) {
+  /* Styles for small phones */
+}
+
+/* Large desktop */
+@media (max-width: 1024px) {
+  /* Styles for larger screens */
+}
+```
+
+### Breakpoint Reference
+
+| Breakpoint | Width | Target Devices |
+|------------|-------|----------------|
+| `xs` | ≤ 480px | Small phones |
+| `sm` | ≤ 640px | Phones |
+| `md` | ≤ 768px | Tablets, large phones |
+| `lg` | ≤ 1024px | Desktops, laptops |
+| `xl` | > 1024px | Large desktops |
+
+## Component Responsive Behavior
+
+### Buttons
+
+Buttons automatically scale down on mobile:
+
+```css
+/* Desktop */
+.p-button-normal {
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  min-height: 44px;
+}
+
+/* Tablet (max-width: 768px) */
+@media (max-width: 768px) {
+  .p-button-normal {
+    padding: 0.625rem 1rem;
+    font-size: 0.9rem;
+    min-height: 40px;
+  }
+}
+
+/* Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .p-button-normal {
+    padding: 0.5rem 0.875rem;
+    font-size: 0.85rem;
+    min-height: 36px;
+  }
+}
+```
+
+**Result:**
+- Touch targets remain accessible (minimum 36px height)
+- Text remains readable
+- Padding scales proportionally
+
+### Dialog
+
+Dialogs become fullscreen on mobile:
+
+```css
+.magary-dialog-wrapper {
+  max-width: 600px;
+  margin: 1rem;
+}
+
+/* Mobile - fullscreen */
+@media (max-width: 768px) {
+  .magary-dialog-wrapper {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
+  
+  .magary-dialog-content {
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+}
+```
+
+Usage:
+```html
+<magary-dialog [(visible)]="showDialog" 
+               header="Settings">
+  <!-- On mobile: full screen -->
+  <!-- On desktop: centered modal -->
+</magary-dialog>
+```
+
+### Sidebar
+
+Sidebar behavior changes based on screen size:
+
+```css
+.magary-sidebar {
+  width: 280px;
+  position: fixed;
+}
+
+/* Mobile - overlay mode */
+@media (max-width: 768px) {
+  .magary-sidebar {
+    width: 85%;  /* Narrower on mobile */
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+  }
+  
+  .magary-sidebar.open {
+    transform: translateX(0);
+  }
+  
+  /* Disable desktop collapse feature on mobile */
+  .magary-sidebar-collapse-button {
+    display: none !important;
+  }
+}
+```
+
+**Mobile behavior:**
+- Overlay instead of push layout
+- Swipe gesture to open/close
+- Hamburger menu button visible
+- No collapse toggle (always full width when open)
+
+### Tabs
+
+Tabs become scrollable on mobile:
+
+```css
+.tab-headers {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+@media (max-width: 767px) {
+  .tab-headers {
+    /* Enable smooth scrolling */
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .tab-headers button {
+    /* Prevent tabs from shrinking */
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}
+```
+
+### Table
+
+Tables adapt for better mobile viewing:
+
+```css
+@media (max-width: 768px) {
+  .magary-table {
+    font-size: 0.875rem;
+    padding: 1rem;  /* Reduce padding */
+  }
+  
+  .magary-table th,
+  .magary-table td {
+    padding: 0.625rem 0.5rem;  /* Tighter spacing */
+  }
+}
+
+/* Stack table for very small screens */
+@media (max-width: 640px) {
+  .magary-table.responsive-stack thead {
+    display: none;  /* Hide header */
+  }
+  
+  .magary-table.responsive-stack tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid var(--surface-200);
+    border-radius: 8px;
+  }
+  
+  .magary-table.responsive-stack td {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem;
+  }
+  
+  .magary-table.responsive-stack td::before {
+    content: attr(data-label);
+    font-weight: bold;
+  }
+}
+```
+
+Usage:
+```html
+<magary-table styleClass="responsive-stack">
+  <!-- Automatically stacks on mobile -->
+</magary-table>
+```
+
+### Kanban Board
+
+Kanban columns stack on mobile:
+
+```css
+.magary-kanban-board {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .magary-kanban-board {
+    flex-direction: column;  /* Stack vertically */
+  }
+  
+  .magary-kanban-column {
+    width: 100%;  /* Full width */
+    min-width: 100%;
+  }
+}
+```
+
+### Gallery
+
+Gallery controls adapt to screen size:
+
+```css
+@media (max-width: 1024px) {
+  .galleria-thumbnails {
+    max-height: 80px;  /* Smaller thumbnails */
+  }
+}
+
+@media (max-width: 768px) {
+  .galleria-indicators {
+    bottom: 60px;  /* More space from bottom */
+  }
+  
+  .galleria-caption {
+    font-size: 0.875rem;  /* Smaller text */
+  }
+}
+
+@media (max-width: 480px) {
+  /* Hide some controls to save space */
+  .galleria-item-nav-prev,
+  .galleria-item-nav-next {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+```
+
+## Mobile-First Approach
+
+Magary follows a mobile-first methodology:
+
+```css
+/* Mobile styles (default) */
+.component {
+  padding: 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* Tablet and up */
+@media (min-width: 769px) {
+  .component {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+}
+
+/* Desktop and up */
+@media (min-width: 1025px) {
+  .component {
+    padding: 1.5rem;
+    font-size: 1.125rem;
+  }
+}
+```
+
+<Note>
+Magary uses max-width media queries internally, but you should use min-width for your custom styles to follow mobile-first best practices.
+</Note>
+
+## Touch-Friendly Design
+
+### Minimum Touch Target Size
+
+All interactive elements meet the 44x44px minimum:
+
+```css
+.p-button {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.magary-checkbox-box {
+  width: 44px;
+  height: 44px;
+}
+
+.tab-headers button {
+  min-height: 48px;  /* Slightly larger for easier tapping */
+}
+```
+
+### Adequate Spacing
+
+```css
+/* Desktop - tighter spacing */
+.button-group {
+  gap: 0.5rem;
+}
+
+/* Mobile - more spacing */
+@media (max-width: 768px) {
+  .button-group {
+    gap: 0.75rem;  /* Prevent accidental taps */
+  }
+}
+```
+
+### Swipe Gestures
+
+Carousel supports touch swipe:
+
+```typescript
+@Component({
+  selector: 'magary-carousel'
+})
+export class MagaryCarousel {
+  onTouchStart(event: TouchEvent) {
+    if (!this.enableSwipe()) return;
+    this.touchStartX = event.touches[0].clientX;
+  }
+  
+  onTouchEnd(event: TouchEvent) {
+    if (!this.enableSwipe()) return;
+    const diff = this.touchStartX - event.changedTouches[0].clientX;
+    
+    if (Math.abs(diff) > 50) {  // Minimum swipe distance
+      if (diff > 0) {
+        this.next();  // Swipe left
+      } else {
+        this.prev();  // Swipe right
+      }
+    }
+  }
+}
+```
+
+## Responsive Utilities
+
+### Container Queries
+
+Use container queries for component-level responsiveness:
+
+```css
+.card-grid {
+  container-type: inline-size;
+  display: grid;
+  gap: 1rem;
+}
+
+/* Component responds to container, not viewport */
+@container (max-width: 600px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@container (min-width: 601px) {
+  .card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+```
+
+### Responsive Image Loading
+
+```html
+<magary-avatar [image]="getResponsiveImage()" 
+               size="large">
+</magary-avatar>
+```
+
+```typescript
+getResponsiveImage(): string {
+  if (window.innerWidth < 768) {
+    return 'avatar-small.jpg';  // Load smaller image
+  }
+  return 'avatar-large.jpg';
+}
+```
+
+## Orientation Support
+
+```css
+/* Portrait orientation */
+@media (orientation: portrait) {
+  .gallery-thumbnails {
+    flex-direction: row;
+  }
+}
+
+/* Landscape orientation */
+@media (orientation: landscape) and (max-width: 768px) {
+  .gallery-thumbnails {
+    flex-direction: column;
+    max-height: 100vh;
+  }
+}
+```
+
+## Responsive Typography
+
+Magary uses fluid typography on some components:
+
+```css
+:root {
+  --font-size-base: clamp(0.875rem, 2vw, 1rem);
+  --font-size-lg: clamp(1rem, 2.5vw, 1.125rem);
+  --font-size-xl: clamp(1.25rem, 3vw, 1.5rem);
+}
+
+h1 {
+  font-size: var(--font-size-xl);
+}
+
+p {
+  font-size: var(--font-size-base);
+}
+```
+
+## Testing Responsive Design
+
+### Chrome DevTools
+
+<Steps>
+  <Step title="Open DevTools">
+    Press `F12` or right-click and select "Inspect"
+  </Step>
+  
+  <Step title="Toggle Device Toolbar">
+    Press `Ctrl+Shift+M` (Windows) or `Cmd+Shift+M` (Mac)
+  </Step>
+  
+  <Step title="Select Device">
+    Choose from preset devices or enter custom dimensions
+  </Step>
+  
+  <Step title="Test Interactions">
+    - Test touch events
+    - Verify text readability
+    - Check button sizes
+    - Test navigation
+  </Step>
+</Steps>
+
+### Real Device Testing
+
+```bash
+# Run dev server accessible on network
+ng serve --host 0.0.0.0
+
+# Access from mobile device
+http://YOUR_COMPUTER_IP:4200
+```
+
+## Best Practices
+
+<Steps>
+  <Step title="Design Mobile-First">
+    Start with mobile layout, then enhance for larger screens.
+    
+    ```css
+    /* Mobile (default) */
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    
+    /* Tablet and up */
+    @media (min-width: 769px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    /* Desktop and up */
+    @media (min-width: 1025px) {
+      .grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    ```
+  </Step>
+  
+  <Step title="Test on Real Devices">
+    Emulators are helpful but not perfect. Test on actual phones and tablets.
+  </Step>
+  
+  <Step title="Consider Touch Targets">
+    Ensure all interactive elements are at least 44x44px for comfortable tapping.
+  </Step>
+  
+  <Step title="Optimize Images">
+    Use appropriate image sizes for different screen sizes.
+    
+    ```html
+    <img srcset="image-small.jpg 480w,
+                 image-medium.jpg 768w,
+                 image-large.jpg 1200w"
+         sizes="(max-width: 480px) 480px,
+                (max-width: 768px) 768px,
+                1200px"
+         src="image-medium.jpg"
+         alt="Responsive image">
+    ```
+  </Step>
+  
+  <Step title="Use Viewport Meta Tag">
+    Always include the viewport meta tag:
+    
+    ```html
+    <meta name="viewport" 
+          content="width=device-width, initial-scale=1">
+    ```
+  </Step>
+</Steps>
+
+## Common Responsive Patterns
+
+### Stack to Grid
+
+```css
+/* Mobile - stacked */
+.feature-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Tablet - 2 columns */
+@media (min-width: 768px) {
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop - 4 columns */
+@media (min-width: 1024px) {
+  .feature-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+```
+
+### Hide/Show Elements
+
+```css
+/* Hide on mobile */
+.desktop-only {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .desktop-only {
+    display: block;
+  }
+}
+
+/* Show only on mobile */
+.mobile-only {
+  display: block;
+}
+
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none;
+  }
+}
+```
+
+### Fluid Width
+
+```css
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 0 2rem;
+  }
+}
+```
+
+<Tip>
+Use CSS Grid with auto-fit/auto-fill for truly responsive layouts that don't require media queries.
+</Tip>
+
+```css
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+```
+
+<Warning>
+Avoid horizontal scrolling on mobile. Always ensure content fits within the viewport width.
+</Warning>
+
+## Performance on Mobile
+
+### Reduce Animation on Mobile
+
+```css
+@media (max-width: 768px) {
+  * {
+    animation-duration: 0.2s !important;  /* Faster animations */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+```
+
+### Lazy Load Off-Screen Content
+
+```html
+<magary-carousel [lazy]="true">
+  <!-- Images load only when needed -->
+</magary-carousel>
+```
+
+### Optimize Bundle Size
+
+```typescript
+// Load heavy components lazily
+const routes: Routes = [
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./dashboard/dashboard.component')
+  }
+];
+```
+
+## Next Steps
+
+- Learn about [Accessibility](/guides/accessibility) on mobile
+- Explore [Animations](/guides/animations) performance
+- See [Styling & Theming](/guides/styling) for responsive variables

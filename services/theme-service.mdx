@@ -1,0 +1,231 @@
+---
+title: Theme Service
+description: Manage application themes with signal-based state management
+icon: palette
+---
+
+The `MagaryThemeService` provides a centralized way to manage application themes using Angular signals. It supports multiple built-in themes, automatic persistence to localStorage, and system preference detection.
+
+## Supported Themes
+
+The service supports the following themes:
+- `light` - Light theme (default)
+- `dark` - Dark theme
+- `purple` - Purple theme
+- `green` - Green theme
+- `neo` - Neo theme
+- `midnight` - Midnight theme
+- `cyberpunk` - Cyberpunk theme
+- `cotton` - Cotton theme
+- `liquid` - Liquid theme
+
+## Injection
+
+<CodeGroup>
+
+```typescript Component Injection
+import { Component, inject } from '@angular/core';
+import { MagaryThemeService } from 'ng-magary';
+
+@Component({
+  selector: 'app-root',
+  template: `
+    <button (click)="toggleTheme()">Toggle Theme</button>
+    <p>Current theme: {{ themeService.currentTheme() }}</p>
+  `
+})
+export class AppComponent {
+  themeService = inject(MagaryThemeService);
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
+  }
+}
+```
+
+```typescript Constructor Injection
+import { Component } from '@angular/core';
+import { MagaryThemeService } from 'ng-magary';
+
+@Component({
+  selector: 'app-root',
+  template: `...`
+})
+export class AppComponent {
+  constructor(private themeService: MagaryThemeService) {}
+}
+```
+
+</CodeGroup>
+
+## Properties
+
+### currentTheme
+
+A readonly signal that tracks the current theme.
+
+```typescript
+readonly currentTheme: Signal<Theme>
+```
+
+**Example:**
+
+```typescript
+const theme = this.themeService.currentTheme();
+console.log('Current theme:', theme); // 'light'
+```
+
+## Methods
+
+### setTheme()
+
+Sets the application theme to a specific value.
+
+<ParamField path="theme" type="Theme" required>
+  The theme to apply. Must be one of: 'light', 'dark', 'purple', 'green', 'neo', 'midnight', 'cyberpunk', 'cotton', or 'liquid'
+</ParamField>
+
+**Returns:** `void`
+
+**Example:**
+
+```typescript
+this.themeService.setTheme('dark');
+```
+
+### toggleTheme()
+
+Cycles through all available themes in order.
+
+**Parameters:** None
+
+**Returns:** `void`
+
+**Example:**
+
+```typescript
+// If current theme is 'light', this will set it to 'dark'
+// Then 'purple', 'green', etc., cycling back to 'light'
+this.themeService.toggleTheme();
+```
+
+## Usage Examples
+
+<CodeGroup>
+
+```typescript Theme Selector Component
+import { Component, inject } from '@angular/core';
+import { MagaryThemeService, Theme } from 'ng-magary';
+
+@Component({
+  selector: 'app-theme-selector',
+  template: `
+    <div class="theme-selector">
+      <label for="theme">Choose Theme:</label>
+      <select 
+        id="theme"
+        [value]="themeService.currentTheme()"
+        (change)="onThemeChange($event)">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="purple">Purple</option>
+        <option value="green">Green</option>
+        <option value="neo">Neo</option>
+        <option value="midnight">Midnight</option>
+        <option value="cyberpunk">Cyberpunk</option>
+        <option value="cotton">Cotton</option>
+        <option value="liquid">Liquid</option>
+      </select>
+    </div>
+  `
+})
+export class ThemeSelectorComponent {
+  themeService = inject(MagaryThemeService);
+
+  onThemeChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    this.themeService.setTheme(select.value as Theme);
+  }
+}
+```
+
+```typescript Theme Toggle Button
+import { Component, inject } from '@angular/core';
+import { MagaryThemeService } from 'ng-magary';
+
+@Component({
+  selector: 'app-theme-toggle',
+  template: `
+    <button 
+      (click)="themeService.toggleTheme()"
+      class="theme-toggle-btn">
+      <span>{{ getThemeIcon() }}</span>
+      {{ themeService.currentTheme() }}
+    </button>
+  `
+})
+export class ThemeToggleComponent {
+  themeService = inject(MagaryThemeService);
+
+  getThemeIcon() {
+    const theme = this.themeService.currentTheme();
+    return theme === 'dark' ? '🌙' : '☀️';
+  }
+}
+```
+
+```typescript Reactive Theme Effects
+import { Component, inject, effect } from '@angular/core';
+import { MagaryThemeService } from 'ng-magary';
+
+@Component({
+  selector: 'app-root',
+  template: `...`
+})
+export class AppComponent {
+  themeService = inject(MagaryThemeService);
+
+  constructor() {
+    // React to theme changes
+    effect(() => {
+      const theme = this.themeService.currentTheme();
+      console.log('Theme changed to:', theme);
+      
+      // Perform side effects based on theme
+      if (theme === 'dark') {
+        this.enableDarkModeFeatures();
+      }
+    });
+  }
+
+  enableDarkModeFeatures() {
+    // Custom logic for dark mode
+  }
+}
+```
+
+</CodeGroup>
+
+## Behavior
+
+### Theme Initialization
+
+When the service is initialized, it determines the initial theme in the following order:
+
+1. **localStorage**: Checks for a previously saved theme under the key `magary-theme`
+2. **System Preference**: Falls back to the user's system color scheme preference (`prefers-color-scheme`)
+3. **Default**: Uses `light` theme if neither is available
+
+### Theme Persistence
+
+The service automatically saves the current theme to localStorage whenever it changes. This ensures the user's theme preference persists across sessions.
+
+### SSR Compatibility
+
+The service is fully compatible with Server-Side Rendering (SSR). Theme initialization and persistence only occur in browser environments.
+
+## Type Definitions
+
+```typescript
+type Theme = 'light' | 'dark' | 'purple' | 'green' | 'neo' | 'midnight' | 'cyberpunk' | 'cotton' | 'liquid';
+```

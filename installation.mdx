@@ -1,0 +1,492 @@
+---
+title: Installation
+description: Complete guide to installing ng-magary with all package managers, peer dependencies, and configuration requirements
+---
+
+# Installation
+
+This guide covers everything you need to install and configure **ng-magary** in your Angular application.
+
+<Note>
+  **Prerequisites**: Ensure you have an Angular application (v17+) created. If starting fresh, use `ng new my-app` or `npx @angular/cli new my-app`.
+</Note>
+
+## Quick Install
+
+Choose your preferred package manager:
+
+<CodeGroup>
+
+```bash npm
+npm install ng-magary @angular/cdk @angular/animations @atlaskit/pragmatic-drag-and-drop lucide lucide-angular gridstack
+```
+
+```bash pnpm
+pnpm add ng-magary @angular/cdk @angular/animations @atlaskit/pragmatic-drag-and-drop lucide lucide-angular gridstack
+```
+
+```bash yarn
+yarn add ng-magary @angular/cdk @angular/animations @atlaskit/pragmatic-drag-and-drop lucide lucide-angular gridstack
+```
+
+```bash bun
+bun add ng-magary @angular/cdk @angular/animations @atlaskit/pragmatic-drag-and-drop lucide lucide-angular gridstack
+```
+
+</CodeGroup>
+
+<Tip>
+  **Recommended**: Use `pnpm` for faster installs and better disk space efficiency.
+</Tip>
+
+## Understanding Dependencies
+
+### Core Package
+
+<Accordion title="ng-magary (Core Library)">
+  The main component library containing all UI components.
+  
+  **Version**: 0.0.22
+  
+  **What's Included**:
+  - 50+ standalone Angular components
+  - TypeScript type definitions
+  - Component styles (scoped)
+  - Theme service and utilities
+</Accordion>
+
+### Peer Dependencies
+
+Magary requires several peer dependencies to function properly:
+
+<AccordionGroup>
+  <Accordion title="@angular/core, @angular/common (Required)">
+    **Version Range**: `^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0`
+    
+    These are Angular's core packages. They're likely already installed in your project.
+    
+    ```json
+    {
+      "@angular/core": "^21.0.0",
+      "@angular/common": "^21.0.0"
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="@angular/animations (Required)">
+    **Version Range**: `^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0`
+    
+    Powers smooth transitions and animations in Magary components.
+    
+    **Why Required**: Magary components use Angular's animation system for:
+    - Dialog enter/exit transitions
+    - Tooltip fade effects
+    - Menu slide animations
+    - Loading states
+  </Accordion>
+
+  <Accordion title="@angular/cdk (Required)">
+    **Version Range**: `^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0 || ^21.0.0`
+    
+    Angular Component Dev Kit provides foundational behaviors.
+    
+    **What It Powers**:
+    - Overlay positioning (tooltips, dialogs, menus)
+    - Accessibility features (a11y module)
+    - Table virtual scrolling
+    - Drag-and-drop foundations
+  </Accordion>
+
+  <Accordion title="@atlaskit/pragmatic-drag-and-drop (Required)">
+    **Version Range**: `>=1.7.0 <2`
+    
+    High-performance drag-and-drop library from Atlassian.
+    
+    **Used By**:
+    - MagaryKanban (kanban board)
+    - MagaryPicklist (dual-list transfer)
+    - MagaryOrderlist (reorderable lists)
+    - MagaryTable (column reordering)
+  </Accordion>
+
+  <Accordion title="lucide & lucide-angular (Required)">
+    **Version Range**: `>=0.469.0 <1`
+    
+    Beautiful, consistent icon library with 1000+ icons.
+    
+    **Why Both Packages**:
+    - `lucide`: Icon data and definitions
+    - `lucide-angular`: Angular component wrappers
+    
+    **Usage Examples**:
+    - Button icons
+    - Menu item icons
+    - Input prefix/suffix icons
+    - Navigation icons
+  </Accordion>
+
+  <Accordion title="gridstack (Required)">
+    **Version Range**: `^12.0.0`
+    
+    Responsive dashboard grid layout engine.
+    
+    **Used By**:
+    - MagaryGrid (dashboard grid component)
+    - MagaryGridItem (grid item wrapper)
+    
+    **Features**:
+    - Drag-and-drop grid items
+    - Responsive breakpoints
+    - Auto-positioning
+  </Accordion>
+</AccordionGroup>
+
+## Step-by-Step Installation
+
+<Steps>
+  <Step title="Install Packages">
+    Run the installation command for your package manager:
+    
+    ```bash
+    pnpm add ng-magary @angular/cdk @angular/animations @atlaskit/pragmatic-drag-and-drop lucide lucide-angular gridstack
+    ```
+    
+    This installs ng-magary and all required peer dependencies.
+  </Step>
+
+  <Step title="Configure Animations Provider">
+    Enable animations in your application config (`app.config.ts` or `main.ts`):
+    
+    <CodeGroup>
+    
+    ```typescript app.config.ts (Standalone)
+    import { ApplicationConfig } from '@angular/core';
+    import { provideAnimations } from '@angular/platform-browser/animations';
+    
+    export const appConfig: ApplicationConfig = {
+      providers: [
+        provideAnimations(), // Required for Magary animations
+        // ... other providers
+      ],
+    };
+    ```
+    
+    ```typescript main.ts (Alternative)
+    import { bootstrapApplication } from '@angular/platform-browser';
+    import { provideAnimations } from '@angular/platform-browser/animations';
+    import { AppComponent } from './app/app.component';
+    
+    bootstrapApplication(AppComponent, {
+      providers: [
+        provideAnimations(),
+      ],
+    });
+    ```
+    
+    </CodeGroup>
+  </Step>
+
+  <Step title="Configure Lucide Icons">
+    Set up Lucide icon library globally:
+    
+    ```typescript app.config.ts
+    import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+    import { provideAnimations } from '@angular/platform-browser/animations';
+    import { LucideAngularModule, icons } from 'lucide-angular';
+    
+    // Helper to convert icon names to kebab-case
+    const kebabCase = (value: string) => 
+      value.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+    
+    // Register all icons in both PascalCase and kebab-case formats
+    const lucideIcons = Object.entries(icons).reduce(
+      (acc, [key, icon]) => {
+        acc[key] = icon;
+        acc[kebabCase(key)] = icon;
+        return acc;
+      },
+      {} as Record<string, unknown>,
+    );
+    
+    export const appConfig: ApplicationConfig = {
+      providers: [
+        provideAnimations(),
+        importProvidersFrom(LucideAngularModule.pick(lucideIcons)),
+      ],
+    };
+    ```
+    
+    <Tip>
+      The kebab-case conversion allows you to use icons with both `icon="ChevronDown"` and `icon="chevron-down"` syntax.
+    </Tip>
+  </Step>
+
+  <Step title="Import Tooltip Styles (Optional)">
+    If you're using `MagaryTooltip`, import its global styles:
+    
+    ```scss styles.scss
+    /* Global styles for tooltip overlay */
+    @use 'ng-magary/styles/tooltip.scss';
+    ```
+    
+    <Warning>
+      Tooltip styles must be imported globally because tooltips are rendered in a global overlay container, outside your component hierarchy.
+    </Warning>
+  </Step>
+
+  <Step title="Verify Installation">
+    Create a test component to verify everything works:
+    
+    ```typescript app.component.ts
+    import { Component } from '@angular/core';
+    import { MagaryButton } from 'ng-magary';
+    
+    @Component({
+      selector: 'app-root',
+      standalone: true,
+      imports: [MagaryButton],
+      template: `
+        <magary-button 
+          label="Hello Magary!" 
+          severity="primary" 
+          icon="rocket"
+        />
+      `,
+    })
+    export class AppComponent {}
+    ```
+    
+    Run `ng serve` and you should see a styled button with a rocket icon.
+  </Step>
+</Steps>
+
+## Version Compatibility Matrix
+
+<Tip>
+  Always check that your Angular version matches the supported ranges.
+</Tip>
+
+| Angular Version | ng-magary | @angular/cdk | @angular/animations |
+|----------------|-----------|--------------|---------------------|
+| 17.x           | ✅ 0.0.22+ | ^17.0.0      | ^17.0.0            |
+| 18.x           | ✅ 0.0.22+ | ^18.0.0      | ^18.0.0            |
+| 19.x           | ✅ 0.0.22+ | ^19.0.0      | ^19.0.0            |
+| 20.x           | ✅ 0.0.22+ | ^20.0.0      | ^20.0.0            |
+| 21.x           | ✅ 0.0.22+ | ^21.0.0      | ^21.0.0            |
+| 16.x or older  | ❌ Not supported | -           | -                  |
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Peer Dependency Warnings">
+    **Issue**: npm/pnpm warns about peer dependency mismatches.
+    
+    **Solution**: 
+    
+    1. Check your Angular version:
+       ```bash
+       ng version
+       ```
+    
+    2. Ensure all Angular packages use the same version:
+       ```bash
+       npm list @angular/core @angular/common @angular/cdk @angular/animations
+       ```
+    
+    3. Update mismatched packages:
+       ```bash
+       npm install @angular/cdk@21 @angular/animations@21
+       ```
+  </Accordion>
+
+  <Accordion title="Icons Not Displaying">
+    **Issue**: Icons appear as empty squares or don't render.
+    
+    **Solution**:
+    
+    1. Verify Lucide module is imported in `app.config.ts`:
+       ```typescript
+       importProvidersFrom(LucideAngularModule.pick(lucideIcons))
+       ```
+    
+    2. Check icon name spelling (case-sensitive):
+       ```html
+       <!-- ✅ Correct -->
+       <magary-button icon="home" />
+       <magary-button icon="ChevronDown" />
+       
+       <!-- ❌ Wrong -->
+       <magary-button icon="Home" />  <!-- PascalCase won't work without kebab-case helper -->
+       ```
+    
+    3. Ensure you're using a valid Lucide icon name from [lucide.dev](https://lucide.dev/icons)
+  </Accordion>
+
+  <Accordion title="Animations Not Working">
+    **Issue**: Components appear/disappear instantly without transitions.
+    
+    **Solution**:
+    
+    1. Add `provideAnimations()` to your app config:
+       ```typescript
+       import { provideAnimations } from '@angular/platform-browser/animations';
+       
+       export const appConfig: ApplicationConfig = {
+         providers: [provideAnimations()],
+       };
+       ```
+    
+    2. If using SSR/server-side rendering, use `provideNoopAnimations()` on the server:
+       ```typescript
+       import { provideNoopAnimations } from '@angular/platform-browser/animations';
+       ```
+  </Accordion>
+
+  <Accordion title="Tooltip Styles Missing">
+    **Issue**: Tooltips have no background or appear unstyled.
+    
+    **Solution**:
+    
+    Import tooltip styles in your global `styles.scss`:
+    
+    ```scss
+    @use 'ng-magary/styles/tooltip.scss';
+    ```
+    
+    Make sure this file is referenced in `angular.json`:
+    
+    ```json
+    "styles": [
+      "src/styles.scss"  // Your global styles file
+    ]
+    ```
+  </Accordion>
+
+  <Accordion title="Build Errors with gridstack">
+    **Issue**: TypeScript or build errors related to gridstack.
+    
+    **Solution**:
+    
+    1. Ensure gridstack is properly installed:
+       ```bash
+       npm install gridstack@^12.0.0
+       ```
+    
+    2. If you're not using grid components, gridstack is still required as a peer dependency but won't affect your bundle size (tree-shaking).
+  </Accordion>
+
+  <Accordion title="Module Not Found Errors">
+    **Issue**: `Cannot find module 'ng-magary'` or similar errors.
+    
+    **Solution**:
+    
+    1. Clear node_modules and reinstall:
+       ```bash
+       rm -rf node_modules package-lock.json
+       npm install
+       ```
+    
+    2. Restart your dev server:
+       ```bash
+       ng serve
+       ```
+    
+    3. Check that ng-magary appears in `node_modules/`:
+       ```bash
+       ls node_modules/ng-magary
+       ```
+  </Accordion>
+</AccordionGroup>
+
+## Advanced Configuration
+
+### Selective Icon Import
+
+To reduce bundle size, import only the icons you use:
+
+```typescript app.config.ts
+import { LucideAngularModule, Home, Settings, User } from 'lucide-angular';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAnimations(),
+    importProvidersFrom(
+      LucideAngularModule.pick({ Home, Settings, User })
+    ),
+  ],
+};
+```
+
+<Warning>
+  This approach requires you to manually import each icon. Use the full icon set approach (from the installation steps) for convenience.
+</Warning>
+
+### Server-Side Rendering (SSR)
+
+If your app uses Angular Universal or SSR:
+
+```typescript app.config.server.ts
+import { ApplicationConfig } from '@angular/core';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
+
+export const serverConfig: ApplicationConfig = {
+  providers: [
+    provideNoopAnimations(), // Use noop animations on server
+  ],
+};
+```
+
+### Standalone vs Module-Based Apps
+
+<Tabs>
+  <Tab title="Standalone (Recommended)">
+    Magary is designed for standalone components. Simply import components in your component's `imports` array:
+    
+    ```typescript
+    import { Component } from '@angular/core';
+    import { MagaryButton, MagaryCard } from 'ng-magary';
+    
+    @Component({
+      standalone: true,
+      imports: [MagaryButton, MagaryCard],
+      // ...
+    })
+    export class MyComponent {}
+    ```
+  </Tab>
+  
+  <Tab title="Module-Based (Legacy)">
+    While Magary is standalone-first, you can use it in module-based apps:
+    
+    ```typescript
+    import { NgModule } from '@angular/core';
+    import { MagaryButton, MagaryCard } from 'ng-magary';
+    
+    @NgModule({
+      imports: [
+        MagaryButton,  // Standalone components can be imported in NgModules
+        MagaryCard,
+      ],
+      declarations: [MyComponent],
+    })
+    export class MyModule {}
+    ```
+  </Tab>
+</Tabs>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quick Start Guide" icon="rocket" href="/quickstart">
+    Build your first Magary component in 5 minutes
+  </Card>
+  <Card title="Theming Guide" icon="palette" href="/theming">
+    Customize colors, shadows, and glassmorphism effects
+  </Card>
+  <Card title="Component Library" icon="grid" href="/components/overview">
+    Explore all 50+ components with examples
+  </Card>
+  <Card title="GitHub Issues" icon="bug" href="https://github.com/JhoanGon/magary/issues">
+    Report bugs or request features
+  </Card>
+</CardGroup>

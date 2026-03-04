@@ -1,0 +1,299 @@
+---
+title: 'Button'
+description: 'Versatile button component with multiple variants, sizes, and interactive states'
+icon: 'hand-pointer'
+---
+
+## Overview
+
+The Button component is a fundamental interactive element that triggers actions when clicked. It supports multiple visual variants, sizes, icons, loading states, and accessibility features.
+
+## Import
+
+```typescript
+import { MagaryButton } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryButton } from 'ng-magary';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagaryButton],
+  template: `
+    <magary-button 
+      label="Click me"
+      (onClick)="handleClick($event)"
+    />
+  `
+})
+export class DemoComponent {
+  handleClick(event: Event) {
+    console.log('Button clicked!', event);
+  }
+}
+```
+
+```html Template
+<magary-button label="Click me" (onClick)="handleClick($event)" />
+```
+</CodeGroup>
+
+## Properties
+
+### Inputs
+
+<ParamField path="label" type="string" default="undefined">
+  Text label displayed on the button
+</ParamField>
+
+<ParamField path="icon" type="string" default="undefined">
+  Lucide icon name to display (e.g., 'home', 'user', 'settings')
+</ParamField>
+
+<ParamField path="severity" type="ButtonSeverity" default="undefined">
+  Visual style variant of the button
+  
+  Options: `'primary'` | `'secondary'` | `'success'` | `'info'` | `'warning'` | `'danger'` | `'help'` | `'premium'`
+</ParamField>
+
+<ParamField path="variant" type="ButtonVariant" default="'solid'">
+  Display variant of the button
+  
+  Options: `'solid'` | `'text'` | `'outlined'`
+</ParamField>
+
+<ParamField path="size" type="ButtonSize" default="'normal'">
+  Size of the button
+  
+  Options: `'small'` | `'normal'` | `'large'`
+</ParamField>
+
+<ParamField path="iconPos" type="IconPosition" default="'left'">
+  Position of the icon relative to the label
+  
+  Options: `'left'` | `'right'`
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, button is disabled and cannot be clicked
+</ParamField>
+
+<ParamField path="loading" type="boolean" default="false">
+  When true, button shows loading state and is disabled
+</ParamField>
+
+<ParamField path="rounded" type="boolean" default="false">
+  When true, button has fully rounded corners (22px border-radius)
+</ParamField>
+
+<ParamField path="shadow" type="ShadowLevel" default="0">
+  Shadow elevation level (0-7)
+  
+  Options: `0` | `1` | `2` | `3` | `4` | `5` | `6` | `7`
+</ParamField>
+
+<ParamField path="iconSize" type="number" default="undefined">
+  Custom size for the icon in pixels
+</ParamField>
+
+<ParamField path="customBackgroundColor" type="string" default="undefined">
+  Custom background color (CSS color value)
+</ParamField>
+
+<ParamField path="width" type="string" default="'auto'">
+  Custom width (CSS value, e.g., '200px', '100%')
+</ParamField>
+
+<ParamField path="height" type="string" default="'auto'">
+  Custom height (CSS value)
+</ParamField>
+
+<ParamField path="ariaLabel" type="string" default="undefined">
+  Custom ARIA label for accessibility. Falls back to label or icon name if not provided
+</ParamField>
+
+### Outputs
+
+<ParamField path="onClick" type="EventEmitter<Event>">
+  Emitted when the button is clicked (while not disabled or loading)
+</ParamField>
+
+<ParamField path="buttonClick" type="EventEmitter<Event>">
+  Alternative click event (same as onClick)
+</ParamField>
+
+## Examples
+
+### Severity Variants
+
+<CodeGroup>
+```html Primary
+<magary-button label="Primary" severity="primary" />
+```
+
+```html Success
+<magary-button label="Success" severity="success" />
+```
+
+```html Danger
+<magary-button label="Delete" severity="danger" />
+```
+
+```html Warning
+<magary-button label="Warning" severity="warning" />
+```
+</CodeGroup>
+
+### Display Variants
+
+<CodeGroup>
+```html Solid
+<magary-button label="Solid" variant="solid" severity="primary" />
+```
+
+```html Outlined
+<magary-button label="Outlined" variant="outlined" severity="primary" />
+```
+
+```html Text
+<magary-button label="Text" variant="text" severity="primary" />
+```
+</CodeGroup>
+
+### With Icons
+
+<CodeGroup>
+```html Icon Left
+<magary-button 
+  label="Save" 
+  icon="save" 
+  iconPos="left"
+  severity="primary"
+/>
+```
+
+```html Icon Right
+<magary-button 
+  label="Next" 
+  icon="arrow-right" 
+  iconPos="right"
+  severity="primary"
+/>
+```
+
+```html Icon Only
+<magary-button 
+  icon="settings" 
+  severity="primary"
+  ariaLabel="Settings"
+/>
+```
+</CodeGroup>
+
+### States
+
+<CodeGroup>
+```html Loading
+<magary-button 
+  label="Saving..." 
+  [loading]="true"
+  severity="primary"
+/>
+```
+
+```html Disabled
+<magary-button 
+  label="Disabled" 
+  [disabled]="true"
+  severity="primary"
+/>
+```
+
+```html Rounded
+<magary-button 
+  label="Rounded" 
+  [rounded]="true"
+  severity="primary"
+/>
+```
+</CodeGroup>
+
+### Sizes
+
+<CodeGroup>
+```html Small
+<magary-button label="Small" size="small" severity="primary" />
+```
+
+```html Normal
+<magary-button label="Normal" size="normal" severity="primary" />
+```
+
+```html Large
+<magary-button label="Large" size="large" severity="primary" />
+```
+</CodeGroup>
+
+### Custom Styling
+
+```html
+<magary-button 
+  label="Custom"
+  customBackgroundColor="#6366f1"
+  width="200px"
+  height="50px"
+  [shadow]="3"
+  [rounded]="true"
+/>
+```
+
+## Accessibility
+
+The Button component includes comprehensive accessibility features:
+
+- **ARIA Labels**: Automatically generates aria-label from label text or icon name
+- **Disabled State**: Properly communicates disabled state to assistive technologies
+- **Keyboard Support**: Fully accessible via keyboard (Enter/Space)
+- **Focus Management**: Visual focus indicators for keyboard navigation
+
+### ARIA Label Resolution
+
+1. Uses custom `ariaLabel` if provided
+2. Falls back to `label` text if available
+3. Generates descriptive label from `icon` name (e.g., "settings button")
+4. Defaults to "Button" if nothing else is available
+
+## Component Details
+
+- **Selector**: `magary-button`
+- **Source**: `/home/daytona/workspace/source/projects/ng-magary/src/lib/Button/button/button.ts`
+- **Standalone**: Yes
+- **Change Detection**: OnPush
+
+## Type Definitions
+
+```typescript
+type ButtonSeverity = 
+  | 'primary' 
+  | 'secondary' 
+  | 'success' 
+  | 'info' 
+  | 'warning' 
+  | 'danger' 
+  | 'help' 
+  | 'premium';
+
+type ButtonVariant = 'solid' | 'text' | 'outlined';
+
+type ButtonSize = 'small' | 'normal' | 'large';
+
+type IconPosition = 'left' | 'right';
+
+type ShadowLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+```

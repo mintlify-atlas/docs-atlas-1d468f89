@@ -1,0 +1,159 @@
+---
+title: 'OverlayPanel'
+description: 'Display content in an overlay panel'
+---
+
+## Overview
+
+OverlayPanel displays a floating overlay panel anchored to a trigger element. Useful for displaying contextual content like forms, menus, or additional information.
+
+## Import
+
+```typescript
+import { MagaryOverlayPanel } from 'ng-magary';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```html Component
+<button (click)="panel.toggle($event)">Toggle Panel</button>
+
+<magary-overlaypanel #panel>
+  <div class="p-4">
+    <h3>Panel Content</h3>
+    <p>This is the overlay panel content.</p>
+  </div>
+</magary-overlaypanel>
+```
+
+```typescript TypeScript
+import { Component } from '@angular/core';
+import { MagaryOverlayPanel } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryOverlayPanel],
+  templateUrl: './example.component.html'
+})
+export class ExampleComponent {}
+```
+</CodeGroup>
+
+## With Close Icon
+
+```html
+<button (click)="panel.toggle($event)">Show Panel</button>
+
+<magary-overlaypanel 
+  #panel
+  [showCloseIcon]="true"
+  [panelAriaLabel]="'User options'">
+  <div class="p-4">
+    <h3>Settings</h3>
+    <p>Configure your preferences</p>
+  </div>
+</magary-overlaypanel>
+```
+
+## Programmatic Control
+
+```typescript
+import { Component, ViewChild } from '@angular/core';
+import { MagaryOverlayPanel } from 'ng-magary';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [MagaryOverlayPanel],
+  template: `
+    <button (click)="openPanel($event)">Open</button>
+    <button (click)="closePanel()">Close</button>
+    
+    <magary-overlaypanel 
+      #panel
+      (onShow)="handleShow()"
+      (onHide)="handleHide()">
+      <p>Panel content</p>
+    </magary-overlaypanel>
+  `
+})
+export class ExampleComponent {
+  @ViewChild('panel') panel!: MagaryOverlayPanel;
+  
+  openPanel(event: Event) {
+    this.panel.show(event);
+  }
+  
+  closePanel() {
+    this.panel.hide();
+  }
+  
+  handleShow() {
+    console.log('Panel opened');
+  }
+  
+  handleHide() {
+    console.log('Panel closed');
+  }
+}
+```
+
+## Input Properties
+
+<ParamField path="dismissable" type="boolean" default="true">
+  Whether clicking outside closes the panel
+</ParamField>
+
+<ParamField path="showCloseIcon" type="boolean" default="false">
+  Show a close icon button in the panel
+</ParamField>
+
+<ParamField path="closeOnEscape" type="boolean" default="true">
+  Close the panel when Escape key is pressed
+</ParamField>
+
+<ParamField path="panelAriaLabel" type="string" default="'Overlay panel'">
+  Aria label for accessibility
+</ParamField>
+
+## Output Events
+
+<ParamField path="onShow" type="EventEmitter<void>">
+  Callback to invoke when panel is shown
+</ParamField>
+
+<ParamField path="onHide" type="EventEmitter<void>">
+  Callback to invoke when panel is hidden
+</ParamField>
+
+## Methods
+
+<ParamField path="toggle(event, target?)" type="void">
+  Toggles the panel visibility
+</ParamField>
+
+<ParamField path="show(event, target?)" type="void">
+  Shows the panel
+</ParamField>
+
+<ParamField path="hide()" type="void">
+  Hides the panel
+</ParamField>
+
+## Features
+
+- **Smart positioning**: Auto-adjusts to stay within viewport
+- **Animation**: Smooth fade and scale transitions
+- **Click outside**: Dismisses when clicking outside (configurable)
+- **Keyboard support**: Closes with Escape key
+- **Focus management**: Returns focus to trigger on close
+- **Scroll handling**: Updates position on scroll/resize
+
+## Accessibility
+
+- Uses `role="dialog"` for screen readers
+- Proper `aria-haspopup`, `aria-controls`, and `aria-expanded` attributes
+- Focus management with focus trap
+- Keyboard navigation support

@@ -1,0 +1,349 @@
+---
+title: Accordion
+description: An expandable/collapsible panel component for organizing content in sections
+---
+
+## Overview
+
+The Accordion component provides a vertically stacked set of expandable/collapsible panels. It supports single or multiple panel expansion and includes smooth animations.
+
+## Component Selector
+
+```html
+<magary-accordion />
+```
+
+The Accordion must be used with `<magary-accordion-tab>` child components.
+
+## Basic Usage
+
+<CodeGroup>
+```typescript Component
+import { Component } from '@angular/core';
+import { MagaryAccordion, MagaryAccordionTab } from 'ng-magary';
+
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [MagaryAccordion, MagaryAccordionTab],
+  template: `
+    <magary-accordion>
+      <magary-accordion-tab header="Section 1">
+        <p>Content for section 1</p>
+      </magary-accordion-tab>
+      <magary-accordion-tab header="Section 2">
+        <p>Content for section 2</p>
+      </magary-accordion-tab>
+      <magary-accordion-tab header="Section 3">
+        <p>Content for section 3</p>
+      </magary-accordion-tab>
+    </magary-accordion>
+  `
+})
+export class DemoComponent {}
+```
+
+```html Template
+<magary-accordion>
+  <magary-accordion-tab header="Section 1">
+    <p>Content for section 1</p>
+  </magary-accordion-tab>
+  <magary-accordion-tab header="Section 2">
+    <p>Content for section 2</p>
+  </magary-accordion-tab>
+  <magary-accordion-tab header="Section 3">
+    <p>Content for section 3</p>
+  </magary-accordion-tab>
+</magary-accordion>
+```
+</CodeGroup>
+
+## Multiple Panels Open
+
+```html
+<magary-accordion [multiple]="true">
+  <magary-accordion-tab header="Panel 1">
+    <p>Content 1</p>
+  </magary-accordion-tab>
+  <magary-accordion-tab header="Panel 2">
+    <p>Content 2</p>
+  </magary-accordion-tab>
+  <magary-accordion-tab header="Panel 3">
+    <p>Content 3</p>
+  </magary-accordion-tab>
+</magary-accordion>
+```
+
+## Pre-selected Panels
+
+```html
+<magary-accordion>
+  <magary-accordion-tab header="Panel 1" [(selected)]="true">
+    <p>This panel is open by default</p>
+  </magary-accordion-tab>
+  <magary-accordion-tab header="Panel 2">
+    <p>Content 2</p>
+  </magary-accordion-tab>
+</magary-accordion>
+```
+
+## Disabled Panel
+
+```html
+<magary-accordion>
+  <magary-accordion-tab header="Enabled Panel">
+    <p>You can toggle this panel</p>
+  </magary-accordion-tab>
+  <magary-accordion-tab header="Disabled Panel" [disabled]="true">
+    <p>This panel cannot be toggled</p>
+  </magary-accordion-tab>
+</magary-accordion>
+```
+
+## Properties
+
+### Accordion (Container)
+
+<ParamField path="multiple" type="boolean" default="false">
+  When true, multiple panels can be expanded at the same time. When false, only one panel can be open (opening a new panel closes the previously open one)
+</ParamField>
+
+### AccordionTab (Child Component)
+
+<ParamField path="header" type="string">
+  The header text displayed in the panel's toggle button
+</ParamField>
+
+<ParamField path="selected" type="boolean" default="false">
+  Whether the panel is expanded. Supports two-way binding with `[(selected)]`
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  When true, prevents the panel from being toggled
+</ParamField>
+
+## Events
+
+### Accordion Events
+
+<ParamField path="onOpen" type="output<MagaryAccordionTabChangeEvent>">
+  Emitted when a panel is expanded. Event contains:
+  - `originalEvent`: The DOM event (or null)
+  - `index`: Index of the opened panel
+</ParamField>
+
+<ParamField path="onClose" type="output<MagaryAccordionTabChangeEvent>">
+  Emitted when a panel is collapsed. Event contains:
+  - `originalEvent`: The DOM event (or null)
+  - `index`: Index of the closed panel
+</ParamField>
+
+## Two-Way Binding
+
+You can control panel state programmatically using two-way binding:
+
+```typescript
+import { Component } from '@angular/core';
+
+@Component({
+  template: `
+    <magary-accordion>
+      <magary-accordion-tab
+        header="Controlled Panel"
+        [(selected)]="isOpen"
+      >
+        <p>Panel content</p>
+      </magary-accordion-tab>
+    </magary-accordion>
+    
+    <button (click)="isOpen = !isOpen">
+      {{ isOpen ? 'Close' : 'Open' }} Panel
+    </button>
+  `
+})
+export class DemoComponent {
+  isOpen = false;
+}
+```
+
+## Animations
+
+The Accordion features smooth expand/collapse animations using Angular animations:
+- Height transition from 0 to auto
+- Opacity fade in/out
+- Cubic bezier easing for natural motion
+
+## Accessibility Features
+
+- ARIA accordion pattern with proper roles
+- Keyboard support for toggling panels
+- `aria-expanded` state on headers
+- `aria-controls` association between headers and content
+- `aria-labelledby` on content panels
+- Disabled state handling
+- Focus management
+
+## Keyboard Navigation
+
+| Key | Action |
+|-----|--------|
+| `Enter` / `Space` | Toggle the focused panel |
+| `Tab` | Move focus to next focusable element |
+| `Shift + Tab` | Move focus to previous element |
+
+## Styling
+
+The Accordion uses the following CSS classes:
+
+- `.magary-accordion`: Main container
+- `.magary-accordion-tab`: Individual accordion panel
+- `.magary-accordion-header`: Panel header/toggle button
+- `.magary-accordion-content`: Panel content area
+- `.selected`: Applied to expanded panels
+- `.disabled`: Applied to disabled panels
+
+## Complete Example
+
+```typescript
+import { Component, signal } from '@angular/core';
+import { MagaryAccordion, MagaryAccordionTab } from 'ng-magary';
+import { CommonModule } from '@angular/common';
+
+interface FAQItem {
+  question: string;
+  answer: string;
+  expanded?: boolean;
+}
+
+@Component({
+  selector: 'app-accordion-demo',
+  standalone: true,
+  imports: [MagaryAccordion, MagaryAccordionTab, CommonModule],
+  template: `
+    <div class="demo-container">
+      <h3>Single Panel (Default)</h3>
+      <magary-accordion (onOpen)="onPanelOpen($event)">
+        <magary-accordion-tab header="What is Angular?">
+          <p>
+            Angular is a platform and framework for building single-page
+            client applications using HTML and TypeScript.
+          </p>
+        </magary-accordion-tab>
+        <magary-accordion-tab header="What is TypeScript?">
+          <p>
+            TypeScript is a strongly typed programming language that builds
+            on JavaScript, giving you better tooling at any scale.
+          </p>
+        </magary-accordion-tab>
+        <magary-accordion-tab header="What are Components?">
+          <p>
+            Components are the fundamental building blocks of Angular
+            applications. They control a portion of the screen called a view.
+          </p>
+        </magary-accordion-tab>
+      </magary-accordion>
+
+      <h3>Multiple Panels Open</h3>
+      <magary-accordion [multiple]="true">
+        <magary-accordion-tab header="Features" [(selected)]="true">
+          <ul>
+            <li>Component-based architecture</li>
+            <li>TypeScript support</li>
+            <li>Dependency injection</li>
+            <li>Reactive forms</li>
+          </ul>
+        </magary-accordion-tab>
+        <magary-accordion-tab header="Benefits">
+          <ul>
+            <li>High performance</li>
+            <li>Strong typing</li>
+            <li>Great tooling</li>
+            <li>Large ecosystem</li>
+          </ul>
+        </magary-accordion-tab>
+        <magary-accordion-tab header="Getting Started">
+          <p>Install Angular CLI: <code>npm install -g @angular/cli</code></p>
+          <p>Create new app: <code>ng new my-app</code></p>
+        </magary-accordion-tab>
+      </magary-accordion>
+
+      <h3>With Disabled Panels</h3>
+      <magary-accordion>
+        <magary-accordion-tab header="Available Panel">
+          <p>This panel can be toggled.</p>
+        </magary-accordion-tab>
+        <magary-accordion-tab header="Coming Soon" [disabled]="true">
+          <p>This content is not yet available.</p>
+        </magary-accordion-tab>
+        <magary-accordion-tab header="Another Panel">
+          <p>This panel is also available.</p>
+        </magary-accordion-tab>
+      </magary-accordion>
+
+      <h3>Programmatic Control</h3>
+      <button (click)="togglePanel()">Toggle First Panel</button>
+      <magary-accordion>
+        <magary-accordion-tab
+          header="Controlled Panel"
+          [(selected)]="panelOpen"
+        >
+          <p>This panel is controlled programmatically.</p>
+          <p>Current state: {{ panelOpen ? 'Open' : 'Closed' }}</p>
+        </magary-accordion-tab>
+        <magary-accordion-tab header="Regular Panel">
+          <p>This panel works normally.</p>
+        </magary-accordion-tab>
+      </magary-accordion>
+
+      <h3>Dynamic Content</h3>
+      <magary-accordion>
+        <magary-accordion-tab
+          *ngFor="let item of faqItems; let i = index"
+          [header]="item.question"
+          [(selected)]="item.expanded"
+        >
+          <p>{{ item.answer }}</p>
+        </magary-accordion-tab>
+      </magary-accordion>
+    </div>
+  `
+})
+export class AccordionDemoComponent {
+  panelOpen = signal(false);
+  
+  faqItems: FAQItem[] = [
+    {
+      question: 'How do I install Magary?',
+      answer: 'Install using npm: npm install ng-magary',
+      expanded: false
+    },
+    {
+      question: 'Is Magary free to use?',
+      answer: 'Yes, Magary is open source and free to use.',
+      expanded: false
+    },
+    {
+      question: 'Does it work with standalone components?',
+      answer: 'Yes, all Magary components are standalone.',
+      expanded: false
+    }
+  ];
+
+  togglePanel() {
+    this.panelOpen.update(v => !v);
+  }
+
+  onPanelOpen(event: { index: number }) {
+    console.log('Panel opened:', event.index);
+  }
+}
+```
+
+## Type Definitions
+
+```typescript
+interface MagaryAccordionTabChangeEvent {
+  originalEvent: Event | null;
+  index: number;
+}
+```
